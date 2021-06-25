@@ -1,0 +1,19 @@
+[package]
+name = "scientific-macro"
+version = "0.1.0"
+authors = ["ALeX Kazik <alex@kazik.de>"]
+edition = "2018"
+description = "Macro for arbitrary precision scientific number"
+repository = "https://github.com/alexkazik/scientific"
+license = "MIT"
+keywords = ["arbitrary", "precision", "scientific", "no_std"]
+categories = ["mathematics", "science", "no-std"]
+
+[dependencies]
+proc-macro2 = "1.0.27"
+quote = "1.0.9"
+scientific = "<0.5"
+syn = "1.0.73"
+
+[lib]
+proc-macro = true
