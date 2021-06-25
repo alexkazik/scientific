@@ -1,0 +1,19 @@
+[package]
+name = "scientific"
+version = "0.1.0"
+authors = ["ALeX Kazik <alex@kazik.de>"]
+edition = "2018"
+description = "Arbitrary precision scientific number (no_std capable, in pure Rust)"
+repository = "https://github.com/alexkazik/scientific"
+license = "MIT"
+keywords = ["arbitrary", "precision", "scientific", "no_std"]
+categories = ["mathematics", "science", "no-std"]
+
+[dependencies]
+serde = { version = "1.0.126", optional = true }
+
+[features]
+default = []
+std = []
+arc = []
+debug = []
