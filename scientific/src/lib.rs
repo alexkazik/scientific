@@ -6,7 +6,7 @@
 //!
 //! Use `Scientific!` in the crate `scientific-macro` to create constant numbers.
 //!
-//! ```ignore
+//! ```
 //! use scientific_macro::Scientific;
 //! let n1 = Scientific!(1e100);
 //! let n2 = Scientific!(1e80);

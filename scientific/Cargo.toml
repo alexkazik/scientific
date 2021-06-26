@@ -12,6 +12,9 @@ categories = ["mathematics", "science", "no-std"]
 [dependencies]
 serde = { version = "1.0.126", optional = true }
 
+[dev-dependencies]
+scientific-macro = "<0.5"
+
 [features]
 default = []
 std = []
