@@ -8,6 +8,7 @@ use core::fmt::{Debug, Display, Formatter, Write};
 /// See the [module-level documentation](crate) for more details.
 // len == 0 <=> value 0
 #[derive(Clone)]
+#[must_use]
 pub struct Scientific {
   pub(crate) sign: Sign,      // ignored for value 0, can be changed at will
   pub(crate) data: Ptr,       // should never be used for value 0

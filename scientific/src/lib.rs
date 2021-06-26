@@ -119,6 +119,7 @@ impl Scientific {
   }
 
   #[inline(always)]
+  #[must_use]
   pub fn to_bytes(&self) -> Vec<u8> {
     s_to_bytes(self)
   }
