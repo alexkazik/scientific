@@ -3,7 +3,6 @@ use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::scientific::{s_mut_make_zero, Scientific};
 use crate::types::sign::Sign;
-use crate::types::trimmer::Trimmer;
 use alloc::vec::Vec;
 use core::mem::size_of;
 
@@ -29,28 +28,51 @@ impl Builder {
   }
 
   #[inline(always)]
-  pub(crate) fn finish(mut self, trimmer: Trimmer) -> Scientific {
-    s_mut_trim_zeroes(&mut self.0, trimmer);
+  pub(crate) fn new_with_data(
+    sign: Sign,
+    data: Ptr,
+    len: isize,
+    exponent: isize,
+    owner: Owner,
+  ) -> Builder {
+    Builder(Scientific {
+      sign,
+      data,
+      len,
+      exponent,
+      owner,
+    })
+  }
+
+  #[inline(always)]
+  pub(crate) fn finish(mut self) -> Scientific {
+    b_mut_trim_zeroes(&mut self.0, None);
+    self.0
+  }
+
+  #[inline(always)]
+  pub(crate) fn truncate(mut self, precision: Precision) -> Scientific {
+    b_mut_trim_zeroes(&mut self.0, Some(precision));
     self.0
   }
 }
 
-pub(crate) fn s_mut_trim_zeroes(value: &mut Scientific, trimmer: Trimmer) {
+fn b_mut_trim_zeroes(value: &mut Scientific, precision: Option<Precision>) {
   // remove leading zeroes
   while value.len > 0 && *value.data == 0 {
     value.data.inc();
     value.len -= 1;
   }
 
-  match trimmer {
-    Trimmer::Basic => (),
-    Trimmer::Trim(Precision::Digits(digits)) => {
+  match precision {
+    None => (),
+    Some(Precision::Digits(digits)) => {
       if value.len > digits {
         value.exponent += value.len - digits;
         value.len = digits;
       }
     }
-    Trimmer::Trim(Precision::Decimals(decimals)) => {
+    Some(Precision::Decimals(decimals)) => {
       let trim_len = -decimals - value.exponent;
       if trim_len > 0 {
         value.len -= trim_len; // this may result in a negative len

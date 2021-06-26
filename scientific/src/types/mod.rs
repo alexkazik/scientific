@@ -12,4 +12,3 @@ pub(crate) mod serde_de;
 #[cfg(feature = "serde")]
 pub(crate) mod serde_ser;
 pub(crate) mod sign;
-pub(crate) mod trimmer;

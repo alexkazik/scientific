@@ -8,7 +8,6 @@ use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::types::trimmer::Trimmer;
 use core::cmp::Ordering;
 
 #[inline(always)]
@@ -96,7 +95,7 @@ fn nz_div(
     result_ptr.inc();
   }
 
-  result.finish(Trimmer::Trim(precision))
+  result.truncate(precision)
 }
 
 // Remove leading zeroes, this is important because p_ge assumes that there are no leading zeroes

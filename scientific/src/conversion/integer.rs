@@ -61,7 +61,7 @@ macro_rules! conversion_signed {
             *result_ptr = (value % 10) as i8;
             value /= 10;
           }
-          result.finish(Trimmer::Basic)
+          result.finish()
         }
       }
     }
@@ -109,7 +109,7 @@ macro_rules! conversion_unsigned {
             *result_ptr = (value % 10) as i8;
             value /= 10;
           }
-          result.finish(Trimmer::Basic)
+          result.finish()
         }
       }
     }
@@ -123,7 +123,6 @@ mod c_use {
   pub(super) use crate::types::conversion_error::ConversionError;
   pub(super) use crate::types::scientific::Scientific;
   pub(super) use crate::types::sign::Sign;
-  pub(super) use crate::types::trimmer::Trimmer;
   pub(super) use core::cmp::Ordering;
   pub(super) use core::convert::TryFrom;
 }

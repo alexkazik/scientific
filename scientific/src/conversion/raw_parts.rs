@@ -1,11 +1,10 @@
 use crate::ptr::Ptr;
-use crate::types::builder::s_mut_trim_zeroes;
+use crate::types::builder::Builder;
 use crate::types::conversion_error::ConversionError;
 use crate::types::mantissa::MANTISSA_0;
 use crate::types::owner::Owner;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::types::trimmer::Trimmer;
 use alloc::vec::Vec;
 
 pub fn s_as_raw_mantissa(value: &Scientific) -> &[u8] {
@@ -30,17 +29,18 @@ pub fn s_from_raw_parts(
   }
 
   let len = mantissa.len() as isize;
-  let mut result = Scientific {
-    sign: if negative {
-      Sign::Negative
-    } else {
-      Sign::Positive
-    },
-    data: Ptr::new(mantissa.as_ptr(), len),
-    len,
-    exponent,
-    owner: Owner::new_vec(mantissa),
-  };
-  s_mut_trim_zeroes(&mut result, Trimmer::Basic);
-  Ok(result)
+  Ok(
+    Builder::new_with_data(
+      if negative {
+        Sign::Negative
+      } else {
+        Sign::Positive
+      },
+      Ptr::new(mantissa.as_ptr(), len),
+      len,
+      exponent,
+      Owner::new_vec(mantissa),
+    )
+    .finish(),
+  )
 }

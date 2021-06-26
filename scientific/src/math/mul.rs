@@ -1,7 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::types::trimmer::Trimmer;
 use core::ops::Mul;
 
 impl Mul for &Scientific {
@@ -46,5 +45,5 @@ fn nz_mul(sign: Sign, lhs: &Scientific, rhs: &Scientific, exponent: isize) -> Sc
   }
   *result_end = sum as i8;
 
-  result.finish(Trimmer::Basic)
+  result.finish()
 }

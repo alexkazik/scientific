@@ -3,7 +3,6 @@ use crate::math::sub::nz_sub;
 use crate::types::builder::Builder;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::types::trimmer::Trimmer;
 use core::cmp::Ordering;
 use core::mem::swap;
 use core::ops::Add;
@@ -82,5 +81,5 @@ pub(crate) fn nz_add<'a>(
     *result_ptr = value;
   }
 
-  result.finish(Trimmer::Basic)
+  result.finish()
 }

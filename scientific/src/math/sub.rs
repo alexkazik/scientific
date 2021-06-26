@@ -4,7 +4,6 @@ use crate::ptr::Ptr;
 use crate::types::builder::Builder;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::types::trimmer::Trimmer;
 use core::cmp::Ordering;
 use core::ops::Sub;
 
@@ -41,7 +40,7 @@ pub(crate) fn nz_sub(lhs: &Scientific, rhs: &Scientific, sign: Sign) -> Scientif
 
   lhs.data.copy_to_nonoverlapping(lhs.len, result_ptr, 0);
   p_sub(result_ptr, result_len, rhs);
-  result.finish(Trimmer::Basic)
+  result.finish()
 }
 
 // Subtract two mantissa (the exponent and sign is ignored)

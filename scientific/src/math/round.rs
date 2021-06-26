@@ -1,7 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::precision::Precision;
 use crate::types::scientific::Scientific;
-use crate::types::trimmer::Trimmer;
 
 pub(crate) fn export_round(value: &Scientific, precision: Precision) -> Scientific {
   let len = match precision {
@@ -22,7 +21,7 @@ pub(crate) fn export_round(value: &Scientific, precision: Precision) -> Scientif
       val = p[pos] + 1;
     }
     p[pos] = val;
-    result.finish(Trimmer::Basic)
+    result.finish()
   } else {
     // call truncate since it's not rounded up, this will return the same result (without copying the mantissa)
     value.truncate(Precision::Digits(len))

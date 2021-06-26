@@ -1,10 +1,9 @@
 use crate::ptr::Ptr;
-use crate::types::builder::s_mut_trim_zeroes;
+use crate::types::builder::Builder;
 use crate::types::conversion_error::ConversionError;
 use crate::types::owner::Owner;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::types::trimmer::Trimmer;
 use alloc::string::ToString;
 use core::str::FromStr;
 
@@ -127,13 +126,6 @@ pub(crate) fn s_parse(
   }
 
   let len = mantissa_end.offset_from(data_start);
-  let mut result = Scientific {
-    sign,
-    data: data_start,
-    len,
-    exponent: exponent - dot_len,
-    owner,
-  };
-  s_mut_trim_zeroes(&mut result, Trimmer::Basic);
-  Ok(result)
+
+  Ok(Builder::new_with_data(sign, data_start, len, exponent - dot_len, owner).finish())
 }
