@@ -49,6 +49,10 @@
 //!
 //! The shifting operators do shift by one digit (and not one bit as you may expected).
 //!
+//! ## Rounding
+//!
+//! There are versions of `div` and `round` which support several rounding options. See [Rounding] and [div_r](Scientific::div_r).
+//!
 //! ## Features
 //!
 //! - `serde`: Enable De-/Serialization with serde.
@@ -108,9 +112,14 @@ pub use crate::types::error::Error;
 use crate::types::mantissa::{MANTISSA_1, MANTISSA_5};
 use crate::types::owner::Owner;
 pub use crate::types::precision::Precision;
+pub use crate::types::rounding::{Round, Rounding, Truncate};
 pub use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
 pub use crate::Precision::{Decimals, Digits};
+pub use crate::Round::{
+  RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
+  RoundHalfToOdd, RoundHalfTowardsZero, RoundHalfUp, RoundUp,
+};
 use alloc::string::String;
 use alloc::vec::Vec;
 use conversion::bytes_de::s_from_bytes;
@@ -183,9 +192,20 @@ impl Scientific {
     export_neg_assign(self);
   }
 
+  /// Alias to `self.div_r(rhs, precision, Truncate)`.
   #[inline(always)]
   pub fn div(&self, rhs: &Scientific, precision: Precision) -> Result<Scientific, Error> {
-    export_div(self, rhs, precision)
+    export_div(self, rhs, precision, Truncate)
+  }
+
+  #[inline(always)]
+  pub fn div_r<R: Rounding>(
+    &self,
+    rhs: &Scientific,
+    precision: Precision,
+    rounding: R,
+  ) -> Result<Scientific, Error> {
+    export_div(self, rhs, precision, rounding)
   }
 
   #[inline(always)]
@@ -210,7 +230,9 @@ impl Scientific {
     r
   }
 
-  /// round to nearest away from zero
+  /// round to nearest half away from zero
+  ///
+  /// Alias to `self.round_r(precision, RoundHalfAwayFromZero)`.
   ///
   /// 0.4, -0.4 => 0.0
   ///
@@ -219,7 +241,12 @@ impl Scientific {
   /// -0.5, -0.6 => -1.0
   #[inline(always)]
   pub fn round(&self, precision: Precision) -> Scientific {
-    export_round(self, precision)
+    export_round(self, precision, RoundHalfAwayFromZero)
+  }
+
+  #[inline(always)]
+  pub fn round_r<R: Rounding>(&self, precision: Precision, rounding: R) -> Scientific {
+    export_round(self, precision, rounding)
   }
 
   #[allow(clippy::len_without_is_empty)]

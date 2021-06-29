@@ -46,6 +46,9 @@ impl Ptr {
   pub(crate) fn invalidate(&mut self) {}
 
   #[inline(always)]
+  pub(crate) fn set_mutable(&mut self) {}
+
+  #[inline(always)]
   pub(crate) fn set_immutable(&mut self) {}
 
   #[inline(always)]

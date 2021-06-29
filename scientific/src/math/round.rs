@@ -1,29 +1,41 @@
 use crate::types::builder::Builder;
 use crate::types::precision::Precision;
+use crate::types::precision::Precision::Digits;
+use crate::types::rounding::Rounding;
 use crate::types::scientific::Scientific;
 
-pub(crate) fn export_round(value: &Scientific, precision: Precision) -> Scientific {
-  let len = match precision {
-    Precision::Digits(digits) => digits,
-    Precision::Decimals(decimals) => value.exponent0() + decimals,
-  };
-  if len <= 0 {
-    Scientific::ZERO
-  } else if len < value.len && value.data[len] >= 5 {
-    // actually round to nearest away from zero
-    let (result, mut p) = Builder::new(value.sign, len + 1, value.exponent + value.len - len);
-    value.data.copy_to_nonoverlapping(len, p, 1);
-    let mut pos = len;
-    let mut val = p[pos] + 1;
-    while val == 10 {
-      p[pos] = 0;
-      pos -= 1;
-      val = p[pos] + 1;
-    }
-    p[pos] = val;
-    result.finish()
+pub(crate) fn export_round<R: Rounding>(
+  value: &Scientific,
+  precision: Precision,
+  rounding: R,
+) -> Scientific {
+  if <R>::is_truncate() {
+    value.truncate(precision)
   } else {
-    // call truncate since it's not rounded up, this will return the same result (without copying the mantissa)
-    value.truncate(Precision::Digits(len))
+    let len = match precision {
+      Precision::Digits(digits) => digits,
+      Precision::Decimals(decimals) => value.exponent0() + decimals,
+    };
+    if len <= 0 {
+      Scientific::ZERO
+    } else if len >= value.len {
+      // more precision requested as available: just return the number
+      value.clone()
+    } else if value.data[len] == 0
+      || !rounding.round_away_from_zero(
+        value.sign.is_negative(),
+        value.data[len - 1],
+        value.data[len],
+      )
+    {
+      // the digit after the cutoff is zero and thus there is no rounding
+      // or the rounding would result in no change
+      value.truncate(Precision::Digits(len))
+    } else {
+      let (result, result_ptr) =
+        Builder::new(value.sign, len + 2, value.exponent + value.len - (len + 1));
+      value.data.copy_to_nonoverlapping(len + 1, result_ptr, 1);
+      result.round(Digits(len), rounding)
+    }
   }
 }

@@ -6,6 +6,7 @@ use crate::types::error::Error;
 use crate::types::mantissa::MANTISSA_1;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
+use crate::types::rounding::Rounding;
 use crate::types::scientific::Scientific;
 use core::cmp::Ordering;
 
@@ -17,22 +18,21 @@ fn div_results_in_zero(lhs: &Scientific, rhs: &Scientific, precision: Precision)
   }
 }
 
-pub(crate) fn export_div(
+pub(crate) fn export_div<R: Rounding>(
   lhs: &Scientific,
   rhs: &Scientific,
   precision: Precision,
+  rounding: R,
 ) -> Result<Scientific, Error> {
   if rhs.is_zero() {
     Err(Error::DivisionByZero)
   } else if lhs.is_zero() || div_results_in_zero(lhs, rhs, precision) {
     Ok(Scientific::ZERO)
   } else if rhs.len == 1 && *rhs.data == 1 {
-    let mut r = lhs.clone();
+    let mut r = (lhs >> rhs.exponent).round_r(precision, rounding);
     if rhs.sign.is_negative() {
       r.neg_assign();
     }
-    r >>= rhs.exponent;
-    r.truncate_assign(precision);
     Ok(r)
   } else if lhs.len == rhs.len && nz_compare_mantissa::<false>(lhs, rhs) == Ordering::Equal {
     let exponent = lhs.exponent0() - rhs.exponent0();
@@ -53,21 +53,25 @@ pub(crate) fn export_div(
       Precision::Digits(digits) => (digits - (lhs.len - rhs.len)),
       Precision::Decimals(decimals) => (lhs.exponent - rhs.exponent + decimals),
     };
-    Ok(nz_div(lhs, rhs, extra_digits, precision))
+    Ok(nz_div(lhs, rhs, extra_digits, precision, rounding))
   }
 }
 
 #[inline(always)]
-fn nz_div(
+fn nz_div<R: Rounding>(
   lhs: &Scientific,
   rhs: &Scientific,
   extra_digits: isize,
   precision: Precision,
+  rounding: R,
 ) -> Scientific {
   // Notice: extra_digits can be negative!
   // n1.len + decimals is guaranteed to be >= n2.len
   #[cfg(feature = "debug")]
   assert!(lhs.len + extra_digits >= rhs.len);
+
+  let round_digits = if <R>::is_truncate() { 0 } else { 1 };
+  let extra_digits = extra_digits + round_digits;
 
   let mut tmp = vec![0; (lhs.len + extra_digits) as usize];
   let mut tmp_ptr = Ptr::new_mut(tmp.as_mut_ptr(), lhs.len + extra_digits);
@@ -77,9 +81,12 @@ fn nz_div(
   let mut tmp_len = 0;
   let (result, mut result_ptr) = Builder::new(
     lhs.sign ^ rhs.sign,
-    lhs.len + extra_digits,
+    lhs.len + extra_digits + round_digits,
     lhs.exponent - rhs.exponent - extra_digits,
   );
+  if !<R>::is_truncate() {
+    result_ptr.inc();
+  }
   let result_end = result_ptr.offset(lhs.len + extra_digits);
   while result_ptr < result_end {
     tmp_len += 1;
@@ -94,7 +101,11 @@ fn nz_div(
     result_ptr.inc();
   }
 
-  result.truncate(precision)
+  if <R>::is_truncate() {
+    result.truncate(precision)
+  } else {
+    result.round(precision, rounding)
+  }
 }
 
 // Remove leading zeroes, this is important because p_ge assumes that there are no leading zeroes

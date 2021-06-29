@@ -84,6 +84,10 @@ impl Ptr {
     self.end = self.start;
   }
 
+  pub(crate) fn set_mutable(&mut self) {
+    self.writeable = true;
+  }
+
   pub(crate) fn set_immutable(&mut self) {
     self.writeable = false;
   }

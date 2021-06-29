@@ -47,6 +47,10 @@ calculations with a slightly better precision as an f64 (aka `Digits(16)`).
 
 The shifting operators do shift by one digit (and not one bit as you may expected).
 
+## Rounding
+
+There are versions of `div` and `round` which support several rounding options. See `Rounding` and `div_r`.
+
 ## Features
 
 - `serde`: Enable De-/Serialization with serde.
