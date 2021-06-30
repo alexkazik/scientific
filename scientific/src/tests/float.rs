@@ -67,7 +67,7 @@ fn float() {
         let sci_result = sci_fn(sci_a, sci_b);
         let diff = diff(sci_a, sci_b, flt_result, &sci_result);
         assert!(
-          diff < 5e-15_f64,
+          diff < 2e-15_f64,
           "function {}({}, {}) -> {:?} = {:?}; diff: {:e}",
           name,
           flt_a,
@@ -107,7 +107,7 @@ fn float() {
     let sci_result = sci_a.sqrt(Precision::F64);
     let diff = diff(sci_a, sci_a, flt_result, &sci_result);
     assert!(
-      diff < 5e-15_f64,
+      diff < 2e-15_f64,
       "function {}({}) -> {:?} = {:?}; diff: {:e}",
       "sqrt",
       flt_a,
