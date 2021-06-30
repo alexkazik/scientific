@@ -1,7 +1,7 @@
 #[cfg(feature = "debug")]
-mod debug;
+pub(crate) mod debug;
 #[cfg(not(feature = "debug"))]
-mod release;
+pub(crate) mod release;
 
 #[cfg(feature = "debug")]
 pub(crate) use crate::ptr::debug::Ptr;
