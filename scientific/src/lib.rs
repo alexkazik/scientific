@@ -6,7 +6,7 @@
 //!
 //! Use `Scientific!` in the crate `scientific-macro` to create constant numbers.
 //!
-//! ```
+//! ```rust
 //! use scientific_macro::Scientific;
 //! let n1 = Scientific!(1e100);
 //! let n2 = Scientific!(1e80);
@@ -45,7 +45,13 @@
 //! Shortcuts: [Precision::INTEGER] for integer calculations (aka `Decimals(0)`) and [Precision::F64] for
 //! calculations with a slightly better precision as an f64 (aka `Digits(16)`).
 //!
+//! ## Shifting
+//!
+//! The shifting operators do shift by one digit (and not one bit as you may expected).
+//!
 //! ## Features
+//!
+//! - `serde`: Enable De-/Serialization with serde.
 //!
 //! - `std`: If activated the library requires `std` and the [std::error::Error] trait is implemented for all error types.
 //!   Without it the library is `no_std`.

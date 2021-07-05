@@ -43,7 +43,13 @@ the number of digits in the mantissa (using <= 0 digits will always result in ze
 Shortcuts: `Precision::INTEGER` for integer calculations (aka `Decimals(0)`) and `Precision::F64` for
 calculations with a slightly better precision as an f64 (aka `Digits(16)`).
 
+## Shifting
+
+The shifting operators do shift by one digit (and not one bit as you may expected).
+
 ## Features
+
+- `serde`: Enable De-/Serialization with serde.
 
 - `std`: If activated the library requires `std` and the `std::error::Error` trait is implemented for all error types.
   Without it the library is `no_std`.

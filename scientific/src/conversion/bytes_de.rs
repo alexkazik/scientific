@@ -136,18 +136,18 @@ fn calculate_trailing_zeroes(len: isize) -> isize {
   // Read in bytes_ser in the section "what to do with the remaining digits?"
   // how it's handled on serialization. This is a shortcut to all the required information.
   const TRAILING_ZEROES: u32 =
-      // (0 << 0) | // dig=0, buf=0
-      (1 << 2) | // dig=0, buf=2
-      (1 << 4) | // dig=0, buf=4
-      // (0 << 6) | // dig=0, buf=6
-      (1 << 8) | // dig=1, buf=0
-      // (0 << 10) | // dig=1, buf=2
-      // (0 << 12) | // dig=1, buf=4
+      // (0 << 0) |  dig=0, buf=0
+      (1 << 2) | //  dig=0, buf=2
+      (1 << 4) | //  dig=0, buf=4
+      // (0 << 6) |  dig=0, buf=6
+      (1 << 8) | //  dig=1, buf=0
+      // (0 << 10) | dig=1, buf=2
+      // (0 << 12) | dig=1, buf=4
       (2 << 14) | // dig=1, buf=6
-      // (0 << 16) | // dig=2, buf=0
+      // (0 << 16) | dig=2, buf=0
       (2 << 18) | // dig=2, buf=2
       (1 << 20) | // dig=2, buf=4
-      (1 << 22)  // dig=2, buf=6
+      (1 << 22)  //  dig=2, buf=6
     ;
   let dig = len % 3;
   let buf = ((len / 3) * 10) % 8;
