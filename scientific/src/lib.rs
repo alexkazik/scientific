@@ -93,7 +93,6 @@ pub(crate) mod ptr;
 #[cfg(test)]
 mod tests;
 pub(crate) mod types;
-pub(crate) mod util;
 
 use crate::__private::unsafe_new;
 use crate::conversion::raw_parts::{s_as_raw_mantissa, s_from_raw_parts};
@@ -106,11 +105,11 @@ use crate::math::sqrt::export_sqrt;
 use crate::ptr::Ptr;
 pub use crate::types::conversion_error::ConversionError;
 pub use crate::types::error::Error;
+use crate::types::mantissa::{MANTISSA_1, MANTISSA_5};
 use crate::types::owner::Owner;
 pub use crate::types::precision::Precision;
 pub use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::util::mantissa::{MANTISSA_1, MANTISSA_5};
 pub use crate::Precision::{Decimals, Digits};
 use alloc::string::String;
 use alloc::vec::Vec;

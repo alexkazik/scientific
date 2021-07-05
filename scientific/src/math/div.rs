@@ -3,12 +3,12 @@ use crate::math::sub::p_sub;
 use crate::ptr::Ptr;
 use crate::types::builder::Builder;
 use crate::types::error::Error;
+use crate::types::mantissa::MANTISSA_1;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
 use crate::types::trimmer::Trimmer;
-use crate::util::mantissa::MANTISSA_1;
 use core::cmp::Ordering;
 
 #[inline(always)]

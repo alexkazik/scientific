@@ -1,11 +1,11 @@
 use crate::ptr::Ptr;
+use crate::types::builder::s_mut_trim_zeroes;
 use crate::types::conversion_error::ConversionError;
+use crate::types::mantissa::MANTISSA_0;
 use crate::types::owner::Owner;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
 use crate::types::trimmer::Trimmer;
-use crate::util::mantissa::MANTISSA_0;
-use crate::util::zeroes::s_mut_trim_zeroes;
 use alloc::vec::Vec;
 
 pub fn s_as_raw_mantissa(value: &Scientific) -> &[u8] {

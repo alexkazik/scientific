@@ -1,6 +1,5 @@
 use crate::types::precision::Precision;
-use crate::types::scientific::Scientific;
-use crate::util::zeroes::s_mut_make_zero;
+use crate::types::scientific::{s_mut_make_zero, Scientific};
 
 pub(crate) fn export_truncate_assign(value: &mut Scientific, precision: Precision) {
   let len = match precision {

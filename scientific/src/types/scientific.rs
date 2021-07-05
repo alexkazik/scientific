@@ -17,6 +17,14 @@ pub struct Scientific {
   pub(crate) owner: Owner,
 }
 
+#[inline(always)]
+pub(crate) fn s_mut_make_zero(value: &mut Scientific) {
+  value.data.invalidate();
+  value.len = 0; // required for is_zero() to work
+  value.exponent = 1; // required for exponent() to work
+  value.owner = Owner::None;
+}
+
 #[cfg(any(doc, feature = "arc"))]
 unsafe impl Send for Scientific {}
 #[cfg(any(doc, feature = "arc"))]
