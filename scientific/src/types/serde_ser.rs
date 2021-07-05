@@ -1,6 +1,6 @@
 use crate::conversion::bytes_ser::s_to_bytes;
+use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::Scientific;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use serde::{Serialize, Serializer};

@@ -1,4 +1,4 @@
-use crate::Scientific;
+use crate::types::scientific::Scientific;
 use core::ops::{Shl, ShlAssign, Shr, ShrAssign};
 
 impl Shl<isize> for &Scientific {

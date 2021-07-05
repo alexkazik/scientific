@@ -1,7 +1,7 @@
 use crate::ptr::Ptr;
 use crate::types::owner::Owner;
+use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::Scientific;
 
 // This function must not change before 0.5 since scientific-macro depends on it.
 #[doc(hidden)]

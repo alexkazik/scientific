@@ -1,5 +1,7 @@
 use crate::math::compare::s_compare;
-use crate::{Error, Precision, Scientific};
+use crate::types::error::Error;
+use crate::types::precision::Precision;
+use crate::types::scientific::Scientific;
 use core::cmp::Ordering;
 
 pub(crate) fn export_sqrt(value: &Scientific, precision: Precision) -> Result<Scientific, Error> {

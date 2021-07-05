@@ -8,7 +8,7 @@ use crate::types::precision::Precision;
 use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
 use crate::types::trimmer::Trimmer;
-use crate::MANTISSA_1;
+use crate::util::mantissa::MANTISSA_1;
 use core::cmp::Ordering;
 
 #[inline(always)]

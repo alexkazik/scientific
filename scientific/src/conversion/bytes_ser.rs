@@ -1,5 +1,5 @@
+use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::Scientific;
 use alloc::vec::Vec;
 use core::convert::TryFrom;
 

@@ -1,4 +1,4 @@
-use crate::Scientific;
+use crate::types::scientific::Scientific;
 
 macro_rules! conversion_signed {
   ($ty:ident, $len:expr, $const:ident) => {

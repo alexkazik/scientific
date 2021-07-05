@@ -1,5 +1,5 @@
 use crate::conversion::bytes_de::s_from_bytes;
-use crate::Scientific;
+use crate::types::scientific::Scientific;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use core::fmt::Formatter;

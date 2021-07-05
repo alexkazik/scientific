@@ -1,5 +1,5 @@
+use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::Scientific;
 use core::hash::{Hash, Hasher};
 
 impl Hash for &Scientific {

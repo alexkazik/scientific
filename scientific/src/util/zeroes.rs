@@ -1,8 +1,8 @@
 use crate::ptr::Ptr;
 use crate::types::owner::Owner;
+use crate::types::precision::Precision;
 use crate::types::scientific::Scientific;
 use crate::types::trimmer::Trimmer;
-use crate::Precision;
 use alloc::vec::Vec;
 
 #[inline(always)]

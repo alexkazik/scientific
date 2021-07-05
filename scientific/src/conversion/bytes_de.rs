@@ -1,8 +1,8 @@
 use crate::ptr::Ptr;
 use crate::types::bytes_error::BytesError;
 use crate::types::owner::Owner;
+use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
-use crate::Scientific;
 use alloc::vec::Vec;
 use core::convert::TryInto;
 

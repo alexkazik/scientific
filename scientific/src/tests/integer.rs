@@ -1,7 +1,7 @@
 use crate::types::error::Error;
+use crate::types::precision::Precision;
+use crate::types::precision::Precision::Decimals;
 use crate::types::scientific::Scientific;
-use crate::Precision;
-use crate::Precision::Decimals;
 use core::convert::TryFrom;
 use core::ops::Neg;
 

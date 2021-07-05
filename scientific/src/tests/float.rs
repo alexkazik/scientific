@@ -1,6 +1,6 @@
 use crate::types::error::Error;
+use crate::types::precision::Precision;
 use crate::types::scientific::Scientific;
-use crate::Precision;
 use core::ops::Neg;
 use std::convert::TryFrom;
 

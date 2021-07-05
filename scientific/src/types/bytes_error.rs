@@ -1,4 +1,4 @@
-use crate::ConversionError;
+use crate::types::conversion_error::ConversionError;
 use core::fmt::{Display, Formatter};
 
 pub(crate) enum BytesError {
