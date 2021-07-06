@@ -70,6 +70,18 @@
 //!
 //! This is not checked!
 
+#[cfg(doctest)]
+mod test_readme_md {
+  macro_rules! external_doc_test {
+    ($x:expr) => {
+      #[doc = $x]
+      extern "C" {}
+    };
+  }
+
+  external_doc_test!(include_str!("../README.md"));
+}
+
 #[macro_use]
 extern crate alloc;
 
