@@ -36,7 +36,7 @@ pub fn s_display_1e(value: &Scientific) -> String {
     return "0".to_string();
   }
   let mut result = String::with_capacity(value.len as usize + 7);
-  if value.sign == Sign::Negative {
+  if value.sign.is_negative() {
     result.push('-');
   }
   if value.exponent >= 0 && value.exponent <= 3 {

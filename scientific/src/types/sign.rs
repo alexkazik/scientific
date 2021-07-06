@@ -1,9 +1,20 @@
 use core::ops::{BitXor, Not};
 
 #[derive(Eq, PartialEq, Copy, Clone)]
-pub(crate) enum Sign {
-  Positive,
-  Negative,
+pub(crate) struct Sign(bool);
+impl Sign {
+  pub(crate) const POSITIVE: Sign = Sign(false);
+  pub(crate) const NEGATIVE: Sign = Sign(true);
+
+  #[inline(always)]
+  pub(crate) const fn is_negative(self) -> bool {
+    self.0
+  }
+
+  #[inline(always)]
+  pub(crate) const fn new(is_negative: bool) -> Sign {
+    Sign(is_negative)
+  }
 }
 
 impl Not for Sign {
@@ -11,10 +22,7 @@ impl Not for Sign {
 
   #[inline(always)]
   fn not(self) -> Self::Output {
-    match self {
-      Sign::Positive => Sign::Negative,
-      Sign::Negative => Sign::Positive,
-    }
+    Sign(!self.0)
   }
 }
 
@@ -23,10 +31,6 @@ impl BitXor for Sign {
 
   #[inline(always)]
   fn bitxor(self, rhs: Self) -> Self::Output {
-    if self == rhs {
-      Sign::Positive
-    } else {
-      Sign::Negative
-    }
+    Sign(self.0 != rhs.0)
   }
 }

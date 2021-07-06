@@ -35,7 +35,7 @@ impl Display for Scientific {
     if self.is_zero() {
       return f.write_char('0');
     }
-    if self.sign == Sign::Negative {
+    if self.sign.is_negative() {
       f.write_char('-')?;
     }
     let exp = self.exponent0();
@@ -83,7 +83,7 @@ impl Debug for Scientific {
     if self.is_zero() {
       return f.write_char('0');
     }
-    if self.sign == Sign::Negative {
+    if self.sign.is_negative() {
       f.write_char('-')?;
     }
     for i in 0..self.len {

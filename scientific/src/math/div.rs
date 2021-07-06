@@ -7,7 +7,6 @@ use crate::types::mantissa::MANTISSA_1;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::scientific::Scientific;
-use crate::types::sign::Sign;
 use core::cmp::Ordering;
 
 #[inline(always)]
@@ -29,7 +28,7 @@ pub(crate) fn export_div(
     Ok(Scientific::ZERO)
   } else if rhs.len == 1 && *rhs.data == 1 {
     let mut r = lhs.clone();
-    if rhs.sign == Sign::Negative {
+    if rhs.sign.is_negative() {
       r.neg_assign();
     }
     r >>= rhs.exponent;

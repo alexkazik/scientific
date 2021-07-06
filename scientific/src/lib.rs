@@ -121,7 +121,7 @@ use math::truncate::export_truncate_assign;
 impl Scientific {
   // This constant must not change before 0.5 since scientific-macro depends on it.
   pub const ZERO: Scientific = Scientific {
-    sign: Sign::Positive,
+    sign: Sign::POSITIVE,
     data: Ptr::new_invalid(),
     len: 0,
     exponent: 1, // required for exponent() to work
@@ -169,13 +169,13 @@ impl Scientific {
   #[inline(always)]
   pub fn abs(&self) -> Scientific {
     let mut result = self.clone();
-    result.sign = Sign::Positive;
+    result.sign = Sign::POSITIVE;
     result
   }
 
   #[inline(always)]
   pub fn abs_assign(&mut self) {
-    self.sign = Sign::Positive;
+    self.sign = Sign::POSITIVE;
   }
 
   #[inline(always)]
@@ -263,12 +263,12 @@ impl Scientific {
   /// Returns true if self has a positive sign, this excludes 0.
   #[inline(always)]
   pub fn is_sign_positive(&self) -> bool {
-    self.len > 0 && self.sign == Sign::Positive
+    self.len > 0 && !self.sign.is_negative()
   }
 
   /// Returns true if self has a negative sign, this excludes 0.
   #[inline(always)]
   pub fn is_sign_negative(&self) -> bool {
-    self.len > 0 && self.sign == Sign::Negative
+    self.len > 0 && self.sign.is_negative()
   }
 }

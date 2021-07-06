@@ -12,7 +12,7 @@ pub(crate) fn s_from_bytes(bytes: &[u8]) -> Result<Scientific, BytesError> {
   }
 
   let prefix = bytes[0];
-  let mantissa_sign = prefix & 0x80;
+  let is_negative = prefix & 0x80 != 0;
   let prefix = prefix & 0x7f;
   let exponent;
   let pos;
@@ -103,11 +103,6 @@ pub(crate) fn s_from_bytes(bytes: &[u8]) -> Result<Scientific, BytesError> {
     return Err(BytesError::MalformedNumber);
   }
   let mut len = owned.len() as isize;
-  let sign = if mantissa_sign != 0 {
-    Sign::Negative
-  } else {
-    Sign::Positive
-  };
   let data = Ptr::new(owned.as_ptr(), len);
   let mut trailing_zeroes = 0;
   while len > 0 && data[len - 1] == 0 {
@@ -122,7 +117,7 @@ pub(crate) fn s_from_bytes(bytes: &[u8]) -> Result<Scientific, BytesError> {
     Err(BytesError::InvalidTrailingZeroes)
   } else {
     Ok(Scientific {
-      sign,
+      sign: Sign::new(is_negative),
       data,
       len,
       exponent,

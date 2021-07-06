@@ -18,7 +18,7 @@ pub fn s_as_raw_mantissa(value: &Scientific) -> &[u8] {
 }
 
 pub fn s_from_raw_parts(
-  negative: bool,
+  is_negative: bool,
   mantissa: Vec<u8>,
   exponent: isize,
 ) -> Result<Scientific, ConversionError> {
@@ -31,11 +31,7 @@ pub fn s_from_raw_parts(
   let len = mantissa.len() as isize;
   Ok(
     Builder::new_with_data(
-      if negative {
-        Sign::Negative
-      } else {
-        Sign::Positive
-      },
+      Sign::new(is_negative),
       Ptr::new(mantissa.as_ptr(), len),
       len,
       exponent,

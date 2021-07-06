@@ -1,5 +1,4 @@
 use crate::types::scientific::Scientific;
-use crate::types::sign::Sign;
 use alloc::vec::Vec;
 use core::convert::TryFrom;
 
@@ -9,11 +8,7 @@ pub(crate) fn s_to_bytes(value: &Scientific) -> Vec<u8> {
     result = Vec::new();
   } else {
     result = Vec::with_capacity((value.len as usize * 5) / 12 + 4);
-    let mantissa_sign = if value.sign == Sign::Negative {
-      0x80
-    } else {
-      0
-    };
+    let mantissa_sign = if value.sign.is_negative() { 0x80 } else { 0 };
     #[allow(clippy::collapsible_else_if)]
     if value.exponent >= -64 && value.exponent <= 59 {
       result.push(mantissa_sign | (((value.exponent as i8) as u8) & 0x7f));

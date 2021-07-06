@@ -14,7 +14,7 @@ macro_rules! conversion_signed {
           match s_compare::<false>(value, &$const) {
             Ordering::Greater => Err(ConversionError::NumberTooLarge),
             Ordering::Equal => {
-              if value.sign == Sign::Negative {
+              if value.sign.is_negative() {
                 // Special case since negating the minimum number does not work, see `isize::wrapping_neg`.
                 Ok($ty::MIN)
               } else {
@@ -31,7 +31,7 @@ macro_rules! conversion_signed {
               }
               result *= $ty::from(10_i8).pow(value.exponent.max(0) as u32);
 
-              if value.sign == Sign::Negative {
+              if value.sign.is_negative() {
                 result = -result;
               }
               Ok(result)
@@ -49,10 +49,9 @@ macro_rules! conversion_signed {
           // Special case since negating the minimum number does not work, see `isize::wrapping_neg`.
           $const
         } else {
-          let mut sign = Sign::Positive;
-          if value < 0 {
+          let sign = Sign::new(value < 0);
+          if sign.is_negative() {
             value = -value;
-            sign = Sign::Negative;
           }
           let (result, mut result_ptr) = Builder::new(sign, $len, 0);
           result_ptr.mut_offset($len);
@@ -78,7 +77,7 @@ macro_rules! conversion_unsigned {
           Ok(0)
         } else if value.exponent < 0 {
           Err(ConversionError::NumberIsNotAnInteger)
-        } else if value.sign == Sign::Negative {
+        } else if value.sign.is_negative() {
           Err(ConversionError::NumberIsNegative)
         } else if s_compare::<false>(value, &$const) != Ordering::Less {
           Err(ConversionError::NumberTooLarge)
@@ -102,7 +101,7 @@ macro_rules! conversion_unsigned {
         if value == 0 {
           Scientific::ZERO
         } else {
-          let (result, mut result_ptr) = Builder::new(Sign::Positive, $len, 0);
+          let (result, mut result_ptr) = Builder::new(Sign::POSITIVE, $len, 0);
           result_ptr.mut_offset($len);
           while value > 0 {
             result_ptr.dec();

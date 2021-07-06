@@ -26,7 +26,6 @@ pub(crate) fn s_parse(
   let len = len as isize;
   let mut data_start = Ptr::new_mut(data_start, len);
   let data_end = data_start.offset(len);
-  let mut sign = Sign::Positive;
 
   // check if len > 0
   if data_start == data_end {
@@ -34,10 +33,8 @@ pub(crate) fn s_parse(
   }
   // remove sign if any
   let next = *data_start as u8;
-  if next == b'+' {
-    data_start.inc();
-  } else if next == b'-' {
-    sign = Sign::Negative;
+  let sign = Sign::new(next == b'-');
+  if sign.is_negative() || next == b'+' {
     data_start.inc();
   }
 

@@ -1,5 +1,4 @@
 use crate::types::scientific::Scientific;
-use crate::types::sign::Sign;
 use core::cmp::Ordering;
 
 impl PartialOrd for Scientific {
@@ -30,29 +29,29 @@ pub(crate) fn s_compare<const USE_SIGN: bool>(lhs: &Scientific, rhs: &Scientific
   if lhs.is_zero() && rhs.is_zero() {
     Ordering::Equal
   } else if lhs.is_zero() {
-    if USE_SIGN && rhs.sign == Sign::Negative {
+    if USE_SIGN && rhs.sign.is_negative() {
       Ordering::Greater
     } else {
       Ordering::Less
     }
   } else if rhs.is_zero() {
-    if USE_SIGN && lhs.sign == Sign::Negative {
+    if USE_SIGN && lhs.sign.is_negative() {
       Ordering::Less
     } else {
       Ordering::Greater
     }
   } else {
     if USE_SIGN && lhs.sign != rhs.sign {
-      if lhs.sign == Sign::Positive {
-        Ordering::Greater
-      } else {
+      if lhs.sign.is_negative() {
         Ordering::Less
+      } else {
+        Ordering::Greater
       }
     } else {
       match lhs.exponent0().cmp(&rhs.exponent0()) {
         Ordering::Equal => nz_compare_mantissa::<USE_SIGN>(lhs, rhs),
         ordering => {
-          if USE_SIGN && lhs.sign == Sign::Negative {
+          if USE_SIGN && lhs.sign.is_negative() {
             ordering.reverse()
           } else {
             ordering
@@ -77,13 +76,13 @@ pub(crate) fn nz_compare_mantissa<const USE_SIGN: bool>(
     if lhs_value != rhs_value {
       #[allow(clippy::collapsible_else_if)]
       return if lhs_value > rhs_value {
-        if USE_SIGN && lhs.sign == Sign::Negative {
+        if USE_SIGN && lhs.sign.is_negative() {
           Ordering::Less
         } else {
           Ordering::Greater
         }
       } else {
-        if USE_SIGN && lhs.sign == Sign::Negative {
+        if USE_SIGN && lhs.sign.is_negative() {
           Ordering::Greater
         } else {
           Ordering::Less
@@ -96,7 +95,7 @@ pub(crate) fn nz_compare_mantissa<const USE_SIGN: bool>(
   }
 
   let ordering = lhs.len.cmp(&rhs.len);
-  if USE_SIGN && lhs.sign == Sign::Negative {
+  if USE_SIGN && lhs.sign.is_negative() {
     ordering.reverse()
   } else {
     ordering

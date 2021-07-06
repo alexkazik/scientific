@@ -24,15 +24,15 @@ impl From<&Scientific> for f64 {
     }
     if value.exponent1() > f64::MAX_10_EXP as isize {
       match value.sign {
-        Sign::Positive => f64::INFINITY,
-        Sign::Negative => f64::NEG_INFINITY,
+        Sign::POSITIVE => f64::INFINITY,
+        Sign::NEGATIVE => f64::NEG_INFINITY,
       }
     } else if value.exponent1() < f64::MIN_10_EXP as isize {
       0f64
     } else {
       const DIGITS: isize = 18;
       let mut str = String::with_capacity(6 + DIGITS as usize);
-      if value.sign == Sign::Negative {
+      if value.sign.is_negative() {
         str.push('-');
       }
       for i in 0..value.len.min(DIGITS) {
@@ -64,15 +64,15 @@ impl From<&Scientific> for f32 {
     }
     if value.exponent1() > f32::MAX_10_EXP as isize {
       match value.sign {
-        Sign::Positive => f32::INFINITY,
-        Sign::Negative => f32::NEG_INFINITY,
+        Sign::POSITIVE => f32::INFINITY,
+        Sign::NEGATIVE => f32::NEG_INFINITY,
       }
     } else if value.exponent1() < f32::MIN_10_EXP as isize {
       0f32
     } else {
       const DIGITS: isize = 10;
       let mut str = String::with_capacity(6 + DIGITS as usize);
-      if value.sign == Sign::Negative {
+      if value.sign.is_negative() {
         str.push('-');
       }
       for i in 0..value.len.min(DIGITS) {
