@@ -79,7 +79,7 @@ pub(crate) fn s_to_bytes(value: &Scientific) -> Vec<u8> {
       len -= 3;
     }
     // what to do with the remaining digits?
-    if buf_len + len * 4 >= 8 {
+    if buf_len + len * 4 > 8 {
       // adding the missing digits in 4 bits each would (together with the filler) reach or
       // exceed 10 bits and interpreted by the decoder as a full triplet -> add another triplet
       // this can't be happening with len=0, so the following read is safe
