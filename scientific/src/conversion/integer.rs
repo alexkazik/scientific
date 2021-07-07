@@ -23,13 +23,14 @@ macro_rules! conversion_signed {
             }
             Ordering::Less => {
               let mut value_ptr = value.data;
+              let value_end = value_ptr.offset(value.len);
               let mut result = 0;
 
-              for _ in value.exponent.max(0)..value.exponent0() {
+              while value_ptr < value_end {
                 result = result * 10 + $ty::from(*value_ptr);
                 value_ptr.inc();
               }
-              result *= $ty::from(10_i8).pow(value.exponent.max(0) as u32);
+              result *= $ty::from(10_i8).pow(value.exponent as u32);
 
               if value.sign.is_negative() {
                 result = -result;
@@ -83,13 +84,14 @@ macro_rules! conversion_unsigned {
           Err(ConversionError::NumberTooLarge)
         } else {
           let mut value_ptr = value.data;
+          let value_end = value_ptr.offset(value.len);
           let mut result = 0;
 
-          for _ in value.exponent.max(0)..value.exponent0() {
+          while value_ptr < value_end {
             result = result * 10 + $ty::from(*value_ptr as u8);
             value_ptr.inc();
           }
-          result *= $ty::from(10_u8).pow(value.exponent.max(0) as u32);
+          result *= $ty::from(10_u8).pow(value.exponent as u32);
 
           Ok(result)
         }
