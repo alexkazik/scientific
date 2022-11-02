@@ -91,14 +91,15 @@ extern crate alloc;
 
 pub use crate::types::conversion_error::ConversionError;
 pub use crate::types::error::Error;
-pub use crate::types::precision::Precision;
-pub use crate::types::rounding::{Round, Rounding, Truncate};
-pub use crate::types::scientific::Scientific;
-pub use crate::Precision::{Decimals, Digits};
-pub use crate::Round::{
-  RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
-  RoundHalfToOdd, RoundHalfTowardsZero, RoundHalfUp, RoundUp,
+pub use crate::types::precision::Precision::{self, Decimals, Digits};
+pub use crate::types::rounding::{
+  Round::{
+    self, RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
+    RoundHalfToOdd, RoundHalfTowardsZero, RoundHalfUp, RoundUp,
+  },
+  Rounding, Truncate,
 };
+pub use crate::types::scientific::Scientific;
 
 #[doc(hidden)]
 pub mod __private;

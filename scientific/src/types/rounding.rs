@@ -1,5 +1,5 @@
 #[cfg(doc)]
-use crate::{
+use crate::types::rounding::Round::{
   RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
   RoundHalfToOdd, RoundHalfTowardsZero, RoundHalfUp, RoundUp,
 };

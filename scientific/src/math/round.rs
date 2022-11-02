@@ -1,6 +1,5 @@
 use crate::types::builder::Builder;
 use crate::types::precision::Precision;
-use crate::types::precision::Precision::Digits;
 use crate::types::rounding::Rounding;
 use crate::types::scientific::Scientific;
 
@@ -35,7 +34,7 @@ pub(crate) fn export_round<R: Rounding>(
       let (result, result_ptr) =
         Builder::new(value.sign, len + 2, value.exponent + value.len - (len + 1));
       value.data.copy_to_nonoverlapping(len + 1, result_ptr, 1);
-      result.round(Digits(len), rounding)
+      result.round(Precision::Digits(len), rounding)
     }
   }
 }

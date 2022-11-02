@@ -5,7 +5,7 @@ use crate::types::builder::Builder;
 use crate::types::error::Error;
 use crate::types::mantissa::MANTISSA_1;
 use crate::types::precision::Precision;
-use crate::types::rounding::Rounding;
+use crate::types::rounding::{Rounding, Truncate};
 use crate::types::scientific::{s_unsafe_static_new, Scientific};
 use core::cmp::Ordering;
 
@@ -99,7 +99,7 @@ fn nz_div<R: Rounding>(
   }
 
   if <R>::is_truncate() {
-    result.truncate(precision)
+    result.round(precision, Truncate)
   } else {
     result.round(precision, rounding)
   }

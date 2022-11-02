@@ -18,11 +18,10 @@ impl Add for &Scientific {
 
 fn export_add(lhs: &Scientific, rhs: &Scientific) -> Scientific {
   if lhs.is_zero() {
-    return rhs.clone();
+    rhs.clone()
   } else if rhs.is_zero() {
-    return lhs.clone();
-  }
-  if lhs.sign == rhs.sign {
+    lhs.clone()
+  } else if lhs.sign == rhs.sign {
     nz_add(lhs, rhs, lhs.sign)
   } else {
     match s_compare::<false>(lhs, rhs) {

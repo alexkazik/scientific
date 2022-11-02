@@ -56,20 +56,12 @@ impl Builder {
   }
 
   #[inline(always)]
-  pub(crate) fn truncate(mut self, precision: Precision) -> Scientific {
-    // there might be no leading zero -> `Truncate` must return true for `is_truncate`
-    #[cfg(feature = "debug")]
-    assert!(Truncate::is_truncate());
-
-    b_mut_trim_zeroes(&mut self.0, Some(precision), Truncate);
-    self.0
-  }
-
-  #[inline(always)]
   pub(crate) fn round<R: Rounding>(mut self, precision: Precision, rounding: R) -> Scientific {
-    // the first digit must be zero in order to be able to propagate the carry for rounding away from zero
-    #[cfg(feature = "debug")]
-    assert_eq!(*self.0.data, 0);
+    if !R::is_truncate() {
+      // the first digit must be zero in order to be able to propagate the carry for rounding away from zero
+      #[cfg(feature = "debug")]
+      assert_eq!(*self.0.data, 0);
+    }
 
     b_mut_trim_zeroes(&mut self.0, Some(precision), rounding);
     self.0

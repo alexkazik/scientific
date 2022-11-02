@@ -13,7 +13,6 @@ pub(crate) struct Ptr {
 impl Ptr {
   #[inline(always)]
   pub(crate) fn new(ptr: *const u8, len: isize) -> Ptr {
-    let ptr = ptr;
     Ptr {
       ptr,
       start: ptr,
@@ -45,7 +44,6 @@ impl Ptr {
 
   #[inline(always)]
   pub(crate) fn new_mut(ptr: *mut u8, len: isize) -> Ptr {
-    let ptr = ptr;
     Ptr {
       ptr,
       start: ptr,

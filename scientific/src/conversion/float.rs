@@ -20,9 +20,8 @@ impl TryFrom<f64> for Scientific {
 impl From<&Scientific> for f64 {
   fn from(value: &Scientific) -> Self {
     if value.is_zero() {
-      return 0f64;
-    }
-    if value.exponent1() > f64::MAX_10_EXP as isize {
+      0f64
+    } else if value.exponent1() > f64::MAX_10_EXP as isize {
       match value.sign {
         Sign::POSITIVE => f64::INFINITY,
         Sign::NEGATIVE => f64::NEG_INFINITY,
@@ -60,9 +59,8 @@ impl TryFrom<f32> for Scientific {
 impl From<&Scientific> for f32 {
   fn from(value: &Scientific) -> Self {
     if value.is_zero() {
-      return 0f32;
-    }
-    if value.exponent1() > f32::MAX_10_EXP as isize {
+      0f32
+    } else if value.exponent1() > f32::MAX_10_EXP as isize {
       match value.sign {
         Sign::POSITIVE => f32::INFINITY,
         Sign::NEGATIVE => f32::NEG_INFINITY,
