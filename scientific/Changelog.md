@@ -1,5 +1,9 @@
 # Changelog for scientific
 
+## upcoming
+
+* Fix clippy warnings
+
 ## 0.1.2 -- 2021-07-08
 
 * Fixed serialization

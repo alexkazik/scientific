@@ -104,18 +104,17 @@ pub(crate) fn s_parse(
     }
   }
 
-  let exponent;
-  if exponent_len == 0 {
-    exponent = 0;
+  let exponent = if exponent_len == 0 {
+    0
   } else {
-    exponent = isize::from_str(unsafe {
+    isize::from_str(unsafe {
       core::str::from_utf8_unchecked(core::slice::from_raw_parts(
         exponent_start.as_slice(exponent_len).as_ptr(),
         exponent_len as usize,
       ))
     })
-    .map_err(|_| ConversionError::ParseError)?;
-  }
+    .map_err(|_| ConversionError::ParseError)?
+  };
 
   if data_start == mantissa_end {
     // no digits given (neither before or after the dot)

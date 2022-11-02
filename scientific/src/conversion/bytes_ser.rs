@@ -80,12 +80,7 @@ pub(crate) fn s_to_bytes(value: &Scientific) -> Vec<u8> {
       // this can't be happening with len=0, so the following read is safe
       let a = *p;
       p.inc();
-      let b;
-      if len == 2 {
-        b = *p;
-      } else {
-        b = 0;
-      }
+      let b = if len == 2 { *p } else { 0 };
       buf = (buf << 10) | ((a as u16) * 100 + (b as u16) * 10);
       buf_len += 10;
     } else {

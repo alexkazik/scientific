@@ -11,7 +11,7 @@ impl PartialOrd for Scientific {
 impl Ord for Scientific {
   #[inline(always)]
   fn cmp(&self, other: &Self) -> Ordering {
-    s_compare::<true>(&self, &other)
+    s_compare::<true>(self, other)
   }
 }
 

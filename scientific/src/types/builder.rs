@@ -92,7 +92,7 @@ fn b_mut_trim_zeroes<R: Rounding>(
   match precision {
     None => (),
     Some(Precision::Digits(digits)) => {
-      let digits = digits + if <R>::is_truncate() { 0 } else { 1 };
+      let digits = digits + isize::from(!<R>::is_truncate());
       if value.len >= digits {
         value.exponent += value.len - digits;
         value.len = digits;
@@ -100,7 +100,7 @@ fn b_mut_trim_zeroes<R: Rounding>(
       }
     }
     Some(Precision::Decimals(decimals)) => {
-      let decimals = decimals + if <R>::is_truncate() { 0 } else { 1 };
+      let decimals = decimals + isize::from(!<R>::is_truncate());
       let trim_len = -decimals - value.exponent;
       if trim_len >= 0 {
         value.len -= trim_len; // this may result in a negative len

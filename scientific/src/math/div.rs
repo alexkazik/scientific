@@ -50,8 +50,8 @@ pub(crate) fn export_div<R: Rounding>(
     })
   } else {
     let extra_digits = match precision {
-      Precision::Digits(digits) => (digits - (lhs.len - rhs.len)),
-      Precision::Decimals(decimals) => (lhs.exponent - rhs.exponent + decimals),
+      Precision::Digits(digits) => digits - (lhs.len - rhs.len),
+      Precision::Decimals(decimals) => lhs.exponent - rhs.exponent + decimals,
     };
     Ok(nz_div(lhs, rhs, extra_digits, precision, rounding))
   }
@@ -70,7 +70,7 @@ fn nz_div<R: Rounding>(
   #[cfg(feature = "debug")]
   assert!(lhs.len + extra_digits >= rhs.len);
 
-  let round_digits = if <R>::is_truncate() { 0 } else { 1 };
+  let round_digits = isize::from(!<R>::is_truncate());
   let extra_digits = extra_digits + round_digits;
 
   let mut tmp = vec![0; (lhs.len + extra_digits) as usize];
