@@ -6,6 +6,7 @@
 * Remove patch level precision of the dependencies
 * Reorder code
 * Use actual end for static Ptr/debug
+* Use NonNull instead of a raw ptr
 
 ## 0.1.2 -- 2021-07-08
 

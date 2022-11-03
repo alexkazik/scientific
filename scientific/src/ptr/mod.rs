@@ -4,6 +4,7 @@ pub(crate) use crate::ptr::debug::Ptr;
 pub(crate) use crate::ptr::release::Ptr;
 use core::cmp::Ordering;
 use core::ops::{Deref, DerefMut, Index, IndexMut};
+use core::ptr::NonNull;
 
 #[cfg(feature = "debug")]
 pub(crate) mod debug;
@@ -14,18 +15,38 @@ pub(crate) mod release;
 
 impl Ptr {
   #[inline(always)]
+  pub(crate) const fn ptr(&self) -> *const u8 {
+    self.ptr.as_ptr()
+  }
+
+  #[inline(always)]
+  pub(crate) const fn ptr_mut(&self) -> *mut u8 {
+    self.ptr.as_ptr()
+  }
+
+  #[inline(always)]
+  pub(crate) fn set_ptr(&mut self, ptr: *const u8) {
+    self.ptr = Self::new_ptr(ptr);
+  }
+
+  #[inline(always)]
+  pub(crate) const fn new_ptr(ptr: *const u8) -> NonNull<u8> {
+    unsafe { NonNull::new_unchecked(ptr as *mut u8) }
+  }
+
+  #[inline(always)]
   pub(crate) fn mut_offset(&mut self, count: isize) {
-    self.ptr = unsafe { self.ptr.offset(count) };
+    self.set_ptr(unsafe { self.ptr().offset(count) });
   }
 
   #[inline(always)]
   pub(crate) fn inc(&mut self) {
-    self.ptr = unsafe { self.ptr.add(1) };
+    self.set_ptr(unsafe { self.ptr().add(1) });
   }
 
   #[inline(always)]
   pub(crate) fn dec(&mut self) {
-    self.ptr = unsafe { self.ptr.sub(1) };
+    self.set_ptr(unsafe { self.ptr().sub(1) });
   }
 }
 
