@@ -64,6 +64,9 @@ impl Ptr {
 
   pub(crate) fn copy_to_nonoverlapping(&self, len: isize, to: Ptr, offset: isize) {
     unsafe {
+      if len < 0 {
+        panic!("Ptr: len is negative");
+      }
       if !(self.ptr() >= self.start && self.ptr().offset(len) <= self.end) {
         panic!("Ptr: self out of bounds");
       }
@@ -92,7 +95,10 @@ impl Ptr {
 
   pub(crate) fn as_slice(&self, len: isize) -> &[u8] {
     unsafe {
-      if len < 0 || self.ptr() < self.start || self.ptr().offset(len) > self.end {
+      if len < 0 {
+        panic!("Ptr: len is negative");
+      }
+      if self.ptr() < self.start || self.ptr().offset(len) > self.end {
         panic!("Ptr: out of bounds");
       }
       from_raw_parts(self.ptr(), len as usize)
