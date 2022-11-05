@@ -3,6 +3,7 @@
 ## upcoming
 
 * Fix clippy warnings
+* Remove patch level precision of the dependencies
 
 ## 0.1.2 -- 2021-07-08
 

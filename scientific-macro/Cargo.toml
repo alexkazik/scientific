@@ -10,10 +10,10 @@ keywords = ["arbitrary", "precision", "scientific", "no_std"]
 categories = ["mathematics", "science", "no-std"]
 
 [dependencies]
-proc-macro2 = "1.0.27"
-quote = "1.0.9"
+proc-macro2 = "1.0"
+quote = "1.0"
 scientific = "<0.5"
-syn = "1.0.73"
+syn = "1.0"
 
 [lib]
 proc-macro = true
