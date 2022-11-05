@@ -1,4 +1,15 @@
-# Arbitrary precision scientific number
+[![Build Status](https://github.com/alexkazik/scientific/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/alexkazik/scientific/actions?query=workflow%3ACI+branch%3Amaster+event%3Apush)
+[![Dependency status](https://deps.rs/repo/github/alexkazik/scientific/status.svg)](https://deps.rs/repo/github/alexkazik/scientific)
+[![crates.io](https://img.shields.io/crates/v/scientific.svg)](https://crates.io/crates/scientific)
+[![Downloads](https://img.shields.io/crates/d/scientific.svg)](https://crates.io/crates/scientific)
+[![Github stars](https://img.shields.io/github/stars/alexkazik/scientific.svg?logo=github)](https://github.com/alexkazik/scientific/stargazers)
+[![License](https://img.shields.io/crates/l/scientific.svg)](./LICENSE)
+
+# crate scientific
+
+<!-- cargo-rdme start -->
+
+Arbitrary precision scientific number
 
 ## Constants
 
@@ -20,16 +31,16 @@ All functions expect a reference to the `Scientific` number. (See example above.
 
 There are `From` and `TryFrom` traits for conversion between `Scientific` and integers, floats and strings.
 
-Converting a number with decimals to an integer will fail.
+Converting a scientific number with decimals to an integer will fail.
 
 There is a `FromStr` instance (which clones the `str` and calls `Scientific::from_string`).
 
 The functions `Scientific::to_bytes` and `Scientific::from_bytes` use a compressed representation and not ASCII
-(this format will also be used when using serde and non human-readable formats).
+(this format will also be used when using serde with non human-readable formats).
 
 ## Precision
 
-Most function work in truly arbitrary precision, please be aware of this.
+Most functions work in truly arbitrary precision, please be aware of this.
 
 For example: adding 1e1000 and 1e-1000, which both have only one byte of mantissa, results in 2001 bytes of mantissa.
 
@@ -55,7 +66,7 @@ There are versions of `div` and `round` which support several rounding options. 
 
 - `serde`: Enable De-/Serialization with serde.
 
-- `std`: If activated the library requires `std` and the `std::error::Error` trait is implemented for all error types.
+- `std`: If activated the library requires `std` and the `Error` trait is implemented for all error types.
   Without it the library is `no_std`.
 
 - `arc`: Use of `Arc` instead of `Rc`, which enables `Send` and `Sync` for `Scientific`.
@@ -71,3 +82,5 @@ The exponent is represented as an `isize`. It is expected that it will never und
 even when smaller numbers are added/subtracted, like e.g. the length of the mantissa.
 
 This is not checked!
+
+<!-- cargo-rdme end -->

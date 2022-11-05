@@ -1,8 +1,8 @@
 #![cfg_attr(not(any(doc, test, feature = "std")), no_std)]
 
-//! # Arbitrary precision scientific number
+//! Arbitrary precision scientific number
 //!
-//! ## Constants
+//! # Constants
 //!
 //! Use `Scientific!` in the crate `scientific-macro` to create constant numbers.
 //!
@@ -14,77 +14,65 @@
 //! // An f64 has only a precision of about 15.9 digits, this are already 21.
 //! ```
 //!
-//! ## Invocation
+//! # Invocation
 //!
-//! All functions expect a reference to the [Scientific] number. (See example above.)
+//! All functions expect a reference to the [`Scientific`](crate::Scientific) number. (See example above.)
 //!
-//! ## Conversion
+//! # Conversion
 //!
-//! There are `From` and `TryFrom` traits for conversion between [Scientific] and integers, floats and strings.
+//! There are `From` and `TryFrom` traits for conversion between [`Scientific`](crate::Scientific) and integers, floats and strings.
 //!
-//! Converting a number with decimals to an integer will fail.
+//! Converting a scientific number with decimals to an integer will fail.
 //!
-//! There is a `FromStr` instance (which clones the `str` and calls [Scientific::from_string]).
+//! There is a `FromStr` instance (which clones the `str` and calls [`Scientific::from_string`](crate::Scientific::from_string)).
 //!
-//! The functions [Scientific::to_bytes] and [Scientific::from_bytes] use a compressed representation and not ASCII
-//! (this format will also be used when using serde and non human-readable formats).
+//! The functions [`Scientific::to_bytes`](crate::Scientific::to_bytes) and [`Scientific::from_bytes`](crate::Scientific::from_bytes) use a compressed representation and not ASCII
+//! (this format will also be used when using serde with non human-readable formats).
 //!
-//! ## Precision
+//! # Precision
 //!
 //! Most functions work in truly arbitrary precision, please be aware of this.
 //!
 //! For example: adding 1e1000 and 1e-1000, which both have only one byte of mantissa, results in 2001 bytes of mantissa.
 //!
-//! [Scientific::div], and [Scientific::sqrt] (which depends on div) as also [Scientific::round] require
+//! [`Scientific::div`](crate::Scientific::div), and [`Scientific::sqrt`](crate::Scientific::sqrt) (which depends on div) as also [`Scientific::round`](crate::Scientific::round) require
 //! a precision to be specified, the result is only calculated to that precision.
 //!
-//! It can be specified as [Decimals] or [Digits]. When using decimals specify the number of decimal places to
+//! It can be specified as [`Decimals`](crate::Decimals) or [`Digits`](crate::Digits). When using decimals specify the number of decimal places to
 //! calculate (`2` for `0.01` as the smallest number, `0` for `1` and `-2` for `100`). When using digits specify
 //! the number of digits in the mantissa (using <= 0 digits will always result in zero).
 //!
-//! Shortcuts: [Precision::INTEGER] for integer calculations (aka `Decimals(0)`) and [Precision::F64] for
+//! Shortcuts: [`Precision::INTEGER`](crate::Precision::INTEGER) for integer calculations (aka `Decimals(0)`) and [`Precision::F64`](crate::Precision::F64) for
 //! calculations with a slightly better precision as an f64 (aka `Digits(16)`).
 //!
-//! ## Shifting
+//! # Shifting
 //!
 //! The shifting operators do shift by one digit (and not one bit as you may expected).
 //!
-//! ## Rounding
+//! # Rounding
 //!
-//! There are versions of `div` and `round` which support several rounding options. See [Rounding] and [div_r](Scientific::div_r).
+//! There are versions of `div` and `round` which support several rounding options. See [`Rounding`](crate::Rounding) and [`div_r`](crate::Scientific::div_r).
 //!
-//! ## Features
+//! # Features
 //!
 //! - `serde`: Enable De-/Serialization with serde.
 //!
-//! - `std`: If activated the library requires `std` and the [std::error::Error] trait is implemented for all error types.
+//! - `std`: If activated the library requires `std` and the [`Error`](::std::error::Error]) trait is implemented for all error types.
 //!   Without it the library is `no_std`.
 //!
-//! - `arc`: Use of [Arc](alloc::sync::Arc) instead of [Rc](alloc::rc::Rc), which enables [Send] and [Sync] for [Scientific].
-//!   Though [Arc](alloc::sync::Arc) is more expensive, but since it's only used during create/clone/drop of
-//!   the [Scientific] number it's probably not that much.
+//! - `arc`: Use of [`Arc`](::alloc::sync::Arc) instead of [`Rc`](::alloc::rc::Rc), which enables [`Send`](::core::marker::Send) and [`Sync`](::core::marker::Sync) for [`Scientific`](crate::Scientific).
+//!   Though [`Arc`](::alloc::sync::Arc) is more expensive, but since it's only used during create/clone/drop of
+//!   the [`Scientific`](crate::Scientific) number it's probably not that much.
 //!
 //! - `debug`: Enabled tracking of pointer operations and some more checks. Very helpful during development
 //!   of this lib.
 //!
-//! ## Exponent
+//! # Exponent
 //!
-//! The exponent is represented as an [isize]. It is expected that it will never under-/overflow,
+//! The exponent is represented as an [`isize`](::core::isize). It is expected that it will never under-/overflow,
 //! even when smaller numbers are added/subtracted, like e.g. the length of the mantissa.
 //!
 //! This is not checked!
-
-#[cfg(doctest)]
-mod test_readme_md {
-  macro_rules! external_doc_test {
-    ($x:expr) => {
-      #[doc = $x]
-      extern "C" {}
-    };
-  }
-
-  external_doc_test!(include_str!("../README.md"));
-}
 
 #[macro_use]
 extern crate alloc;
