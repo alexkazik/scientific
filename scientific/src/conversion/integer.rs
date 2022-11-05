@@ -1,5 +1,3 @@
-use crate::types::scientific::Scientific;
-
 macro_rules! conversion_signed {
   ($ty:ident, $len:expr, $const:ident) => {
     impl TryFrom<&Scientific> for $ty {
@@ -213,14 +211,86 @@ mod c_u128 {
   conversion_unsigned!(u128, DIGITS.len() as isize, SCI);
 }
 
-impl From<isize> for Scientific {
-  fn from(val: isize) -> Self {
-    Scientific::from(val as i128)
+mod c_isize {
+  use crate::types::conversion_error::ConversionError;
+  use crate::types::scientific::Scientific;
+  use core::convert::{TryFrom, TryInto};
+
+  impl TryFrom<&Scientific> for isize {
+    type Error = ConversionError;
+
+    fn try_from(value: &Scientific) -> Result<Self, Self::Error> {
+      #[cfg(target_pointer_width = "16")]
+      return TryInto::<i16>::try_into(value).map(|r| r as isize);
+      #[cfg(target_pointer_width = "32")]
+      return TryInto::<i32>::try_into(value).map(|r| r as isize);
+      #[cfg(target_pointer_width = "64")]
+      return TryInto::<i64>::try_into(value).map(|r| r as isize);
+      #[cfg(not(any(
+        target_pointer_width = "16",
+        target_pointer_width = "32",
+        target_pointer_width = "64"
+      )))]
+      compile_error!("This target_pointer_width is not yet supported, please open a issue.")
+    }
+  }
+
+  impl From<isize> for Scientific {
+    fn from(val: isize) -> Self {
+      #[cfg(target_pointer_width = "16")]
+      return Scientific::from(val as i16);
+      #[cfg(target_pointer_width = "32")]
+      return Scientific::from(val as i32);
+      #[cfg(target_pointer_width = "64")]
+      return Scientific::from(val as i64);
+      #[cfg(not(any(
+        target_pointer_width = "16",
+        target_pointer_width = "32",
+        target_pointer_width = "64"
+      )))]
+      compile_error!("This target_pointer_width is not yet supported, please open a issue.")
+    }
   }
 }
 
-impl From<usize> for Scientific {
-  fn from(val: usize) -> Self {
-    Scientific::from(val as u128)
+mod c_usize {
+  use crate::types::conversion_error::ConversionError;
+  use crate::types::scientific::Scientific;
+  use core::convert::{TryFrom, TryInto};
+
+  impl TryFrom<&Scientific> for usize {
+    type Error = ConversionError;
+
+    fn try_from(value: &Scientific) -> Result<Self, Self::Error> {
+      #[cfg(target_pointer_width = "16")]
+      return TryInto::<u16>::try_into(value).map(|r| r as usize);
+      #[cfg(target_pointer_width = "32")]
+      return TryInto::<u32>::try_into(value).map(|r| r as usize);
+      #[cfg(target_pointer_width = "64")]
+      return TryInto::<u64>::try_into(value).map(|r| r as usize);
+      #[cfg(not(any(
+        target_pointer_width = "16",
+        target_pointer_width = "32",
+        target_pointer_width = "64"
+      )))]
+      compile_error!("This target_pointer_width is not yet supported, please open a issue.")
+    }
+  }
+
+  impl From<usize> for Scientific {
+    fn from(val: usize) -> Self {
+      #[cfg(target_pointer_width = "16")]
+      return Scientific::from(val as u16);
+      #[cfg(target_pointer_width = "32")]
+      return Scientific::from(val as u32);
+      #[cfg(target_pointer_width = "64")]
+      return Scientific::from(val as u64);
+      #[cfg(not(any(
+        target_pointer_width = "16",
+        target_pointer_width = "32",
+        target_pointer_width = "64"
+      )))]
+      compile_error!("This target_pointer_width is not yet supported, please open a issue.")
+    }
   }
 }
