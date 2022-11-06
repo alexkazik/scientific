@@ -28,7 +28,7 @@ impl Ptr {
     Ptr {
       ptr,
       start: ptr,
-      end: (usize::MAX) as *const u8,
+      end: unsafe { ptr.add(slice.len()) },
       writeable: false,
     }
   }

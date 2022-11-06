@@ -5,6 +5,7 @@
 * Fix clippy warnings
 * Remove patch level precision of the dependencies
 * Reorder code
+* Use actual end for static Ptr/debug
 
 ## 0.1.2 -- 2021-07-08
 
