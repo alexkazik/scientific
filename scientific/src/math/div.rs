@@ -4,10 +4,9 @@ use crate::ptr::Ptr;
 use crate::types::builder::Builder;
 use crate::types::error::Error;
 use crate::types::mantissa::MANTISSA_1;
-use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::rounding::Rounding;
-use crate::types::scientific::Scientific;
+use crate::types::scientific::{s_unsafe_static_new, Scientific};
 use core::cmp::Ordering;
 
 #[inline(always)]
@@ -41,13 +40,11 @@ pub(crate) fn export_div<R: Rounding>(
         return Ok(Scientific::ZERO);
       }
     }
-    Ok(Scientific {
-      sign: lhs.sign ^ rhs.sign,
-      data: Ptr::new_const(&MANTISSA_1),
-      len: 1,
+    Ok(s_unsafe_static_new(
+      lhs.sign ^ rhs.sign,
+      &MANTISSA_1,
       exponent,
-      owner: Owner::None,
-    })
+    ))
   } else {
     let extra_digits = match precision {
       Precision::Digits(digits) => digits - (lhs.len - rhs.len),

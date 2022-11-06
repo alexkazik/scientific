@@ -25,6 +25,21 @@ pub(crate) fn s_mut_make_zero(value: &mut Scientific) {
   value.owner = Owner::None;
 }
 
+#[inline(always)]
+pub(crate) const fn s_unsafe_static_new(
+  sign: Sign,
+  mantissa: &'static [u8],
+  exponent: isize,
+) -> Scientific {
+  Scientific {
+    sign,
+    data: Ptr::new_const(mantissa),
+    len: mantissa.len() as isize,
+    exponent,
+    owner: Owner::None,
+  }
+}
+
 #[cfg(any(doc, feature = "arc"))]
 unsafe impl Send for Scientific {}
 #[cfg(any(doc, feature = "arc"))]

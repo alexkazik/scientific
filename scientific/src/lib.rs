@@ -89,7 +89,6 @@ mod test_readme_md {
 #[macro_use]
 extern crate alloc;
 
-use crate::__private::unsafe_new;
 use crate::conversion::bytes_de::s_from_bytes;
 use crate::conversion::bytes_ser::s_to_bytes;
 use crate::conversion::raw_parts::{s_as_raw_mantissa, s_from_raw_parts};
@@ -108,6 +107,7 @@ use crate::types::mantissa::{MANTISSA_1, MANTISSA_5};
 use crate::types::owner::Owner;
 pub use crate::types::precision::Precision;
 pub use crate::types::rounding::{Round, Rounding, Truncate};
+use crate::types::scientific::s_unsafe_static_new;
 pub use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
 pub use crate::Precision::{Decimals, Digits};
@@ -136,8 +136,8 @@ impl Scientific {
     exponent: 1, // required for exponent() to work
     owner: Owner::None,
   };
-  pub const ONE: Scientific = unsafe_new(false, &MANTISSA_1, 0);
-  pub(crate) const POINT5: Scientific = unsafe_new(false, &MANTISSA_5, -1);
+  pub const ONE: Scientific = s_unsafe_static_new(Sign::POSITIVE, &MANTISSA_1, 0);
+  pub(crate) const POINT5: Scientific = s_unsafe_static_new(Sign::POSITIVE, &MANTISSA_5, -1);
 
   #[inline(always)]
   pub fn from_string(mut source: String) -> Result<Scientific, ConversionError> {
