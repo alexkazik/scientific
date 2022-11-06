@@ -89,23 +89,18 @@ mod test_readme_md {
 #[macro_use]
 extern crate alloc;
 
-#[doc(hidden)]
-pub mod __private;
-pub(crate) mod conversion;
-pub(crate) mod math;
-pub(crate) mod ptr;
-#[cfg(test)]
-mod tests;
-pub(crate) mod types;
-
 use crate::__private::unsafe_new;
+use crate::conversion::bytes_de::s_from_bytes;
+use crate::conversion::bytes_ser::s_to_bytes;
 use crate::conversion::raw_parts::{s_as_raw_mantissa, s_from_raw_parts};
 use crate::conversion::string::s_parse;
 use crate::math::div::export_div;
 use crate::math::div_rem::export_div_rem;
 use crate::math::neg::export_neg_assign;
 use crate::math::powi::export_powi;
+use crate::math::round::export_round;
 use crate::math::sqrt::export_sqrt;
+use crate::math::truncate::export_truncate_assign;
 use crate::ptr::Ptr;
 pub use crate::types::conversion_error::ConversionError;
 pub use crate::types::error::Error;
@@ -122,10 +117,15 @@ pub use crate::Round::{
 };
 use alloc::string::String;
 use alloc::vec::Vec;
-use conversion::bytes_de::s_from_bytes;
-use conversion::bytes_ser::s_to_bytes;
-use math::round::export_round;
-use math::truncate::export_truncate_assign;
+
+#[doc(hidden)]
+pub mod __private;
+pub(crate) mod conversion;
+pub(crate) mod math;
+pub(crate) mod ptr;
+#[cfg(test)]
+mod tests;
+pub(crate) mod types;
 
 impl Scientific {
   // This constant must not change before 0.5 since scientific-macro depends on it.

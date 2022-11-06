@@ -1,11 +1,11 @@
-mod float;
-mod integer;
-
 use crate::conversion::raw_parts::s_from_raw_parts;
 use crate::types::precision::Precision::{Decimals, Digits};
 use crate::types::scientific::Scientific;
 use core::str::FromStr;
 use std::default::Default;
+
+mod float;
+mod integer;
 
 #[test]
 fn truncate() {

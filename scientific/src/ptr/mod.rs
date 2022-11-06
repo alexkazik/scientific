@@ -1,14 +1,14 @@
 #[cfg(feature = "debug")]
-pub(crate) mod debug;
-#[cfg(not(feature = "debug"))]
-pub(crate) mod release;
-
-#[cfg(feature = "debug")]
 pub(crate) use crate::ptr::debug::Ptr;
 #[cfg(not(feature = "debug"))]
 pub(crate) use crate::ptr::release::Ptr;
 use core::cmp::Ordering;
 use core::ops::{Deref, DerefMut, Index, IndexMut};
+
+#[cfg(feature = "debug")]
+pub(crate) mod debug;
+#[cfg(not(feature = "debug"))]
+pub(crate) mod release;
 
 // common stuff
 
