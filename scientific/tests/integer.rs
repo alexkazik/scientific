@@ -1,9 +1,6 @@
-use crate::types::error::Error;
-use crate::types::precision::Precision;
-use crate::types::precision::Precision::Decimals;
-use crate::types::scientific::Scientific;
 use core::convert::TryFrom;
 use core::ops::Neg;
+use scientific::{Decimals, Error, Precision, Scientific};
 
 const POSITIVE_NUMBERS: [i128; 24] = [
   9_223_372_036_854_775_807, // 1<<63-1, i64::MAX

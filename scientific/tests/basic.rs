@@ -1,11 +1,6 @@
-use crate::conversion::raw_parts::s_from_raw_parts;
-use crate::types::precision::Precision::{Decimals, Digits};
-use crate::types::scientific::Scientific;
 use core::str::FromStr;
+use scientific::{Decimals, Digits, Scientific};
 use std::default::Default;
-
-mod float;
-mod integer;
 
 #[test]
 fn truncate() {
@@ -66,7 +61,7 @@ fn round() {
 #[test]
 fn raw_parts() {
   let n1 = Scientific::from_string("12.34e10".to_string()).unwrap();
-  let n2 = s_from_raw_parts(
+  let n2 = Scientific::from_raw_parts(
     n1.is_sign_negative(),
     n1.as_raw_mantissa().to_vec(),
     n1.exponent(),

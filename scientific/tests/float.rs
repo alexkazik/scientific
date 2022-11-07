@@ -1,7 +1,5 @@
-use crate::types::error::Error;
-use crate::types::precision::Precision;
-use crate::types::scientific::Scientific;
 use core::ops::Neg;
+use scientific::{Error, Precision, Scientific};
 use std::convert::TryFrom;
 
 const POSITIVE_NUMBERS: [f64; 32] = [

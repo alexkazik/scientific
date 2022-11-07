@@ -94,6 +94,4 @@ pub mod __private;
 pub(crate) mod conversion;
 pub(crate) mod math;
 pub(crate) mod ptr;
-#[cfg(test)]
-mod tests;
 pub(crate) mod types;
