@@ -1,6 +1,6 @@
 # Changelog for scientific
 
-## upcoming
+## 0.1.3 -- 2021-11-09
 
 * Fix clippy warnings
 * Remove patch level precision of the dependencies
