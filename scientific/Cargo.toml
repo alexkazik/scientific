@@ -20,3 +20,8 @@ default = []
 std = []
 arc = []
 debug = []
+
+[package.metadata.docs.rs]
+all-features = true
+# enable unstable features in the documentation
+rustdoc-args = ["--cfg", "docsrs"]

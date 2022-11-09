@@ -11,6 +11,7 @@
 * Change to cargo rdme, small adaptions to the doc
 * Move tests to usual directory
 * Remove doc and test from conditional checks
+* Use docsrs to document features
 
 ## 0.1.2 -- 2021-07-08
 

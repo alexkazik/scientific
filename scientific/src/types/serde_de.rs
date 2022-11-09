@@ -6,6 +6,7 @@ use core::fmt::Formatter;
 use serde::de::{SeqAccess, Visitor};
 use serde::{Deserialize, Deserializer};
 
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 impl<'de> Deserialize<'de> for Scientific {
   fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
   where

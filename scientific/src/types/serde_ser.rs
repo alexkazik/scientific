@@ -4,6 +4,7 @@ use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use serde::{Serialize, Serializer};
 
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 impl Serialize for Scientific {
   fn serialize<S>(&self, serializer: S) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error>
   where

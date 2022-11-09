@@ -232,8 +232,10 @@ pub(crate) const fn s_unsafe_static_new(
 }
 
 #[cfg(feature = "arc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "arc")))]
 unsafe impl Send for Scientific {}
 #[cfg(feature = "arc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "arc")))]
 unsafe impl Sync for Scientific {}
 
 impl Display for Scientific {
