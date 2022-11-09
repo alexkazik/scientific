@@ -231,9 +231,9 @@ pub(crate) const fn s_unsafe_static_new(
   }
 }
 
-#[cfg(any(doc, feature = "arc"))]
+#[cfg(feature = "arc")]
 unsafe impl Send for Scientific {}
-#[cfg(any(doc, feature = "arc"))]
+#[cfg(feature = "arc")]
 unsafe impl Sync for Scientific {}
 
 impl Display for Scientific {

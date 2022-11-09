@@ -26,5 +26,5 @@ impl Display for ConversionError {
   }
 }
 
-#[cfg(any(doc, feature = "std"))]
+#[cfg(feature = "std")]
 impl std::error::Error for ConversionError {}

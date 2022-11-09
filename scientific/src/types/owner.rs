@@ -1,11 +1,11 @@
-#[cfg(not(any(doc, feature = "arc")))]
+#[cfg(not(feature = "arc"))]
 use alloc::rc::Rc;
 use alloc::string::String;
-#[cfg(any(doc, feature = "arc"))]
+#[cfg(feature = "arc")]
 use alloc::sync::Arc;
 use alloc::vec::Vec;
 
-#[cfg(not(any(doc, feature = "arc")))]
+#[cfg(not(feature = "arc"))]
 #[derive(Clone)]
 pub(crate) enum Owner {
   None,
@@ -13,7 +13,7 @@ pub(crate) enum Owner {
   VecInternal(Rc<Vec<u8>>),
 }
 
-#[cfg(any(doc, feature = "arc"))]
+#[cfg(feature = "arc")]
 #[derive(Clone)]
 pub(crate) enum Owner {
   None,
@@ -22,7 +22,7 @@ pub(crate) enum Owner {
 }
 
 impl Owner {
-  #[cfg(not(any(doc, feature = "arc")))]
+  #[cfg(not(feature = "arc"))]
   #[inline(always)]
   pub(crate) fn new_string(data: String) -> Owner {
     Owner::StringInternal(Rc::new(data))
@@ -33,7 +33,7 @@ impl Owner {
     Owner::StringInternal(Arc::new(data))
   }
 
-  #[cfg(not(any(doc, feature = "arc")))]
+  #[cfg(not(feature = "arc"))]
   #[inline(always)]
   pub(crate) fn new_vec(data: Vec<u8>) -> Owner {
     Owner::VecInternal(Rc::new(data))

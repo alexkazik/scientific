@@ -10,6 +10,7 @@
 * Add TryFrom for u/isize, improve From<u/isize>
 * Change to cargo rdme, small adaptions to the doc
 * Move tests to usual directory
+* Remove doc and test from conditional checks
 
 ## 0.1.2 -- 2021-07-08
 

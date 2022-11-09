@@ -17,5 +17,5 @@ impl Display for Error {
   }
 }
 
-#[cfg(any(doc, feature = "std"))]
+#[cfg(feature = "std")]
 impl std::error::Error for Error {}
