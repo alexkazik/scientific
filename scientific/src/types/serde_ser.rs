@@ -1,4 +1,4 @@
-use crate::conversion::bytes_ser::s_to_bytes;
+use crate::types::sci::Sci;
 use crate::types::scientific::Scientific;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
@@ -11,7 +11,7 @@ impl Serialize for Scientific {
     S: Serializer,
   {
     if serializer.is_human_readable() {
-      serializer.serialize_str(&s_display_1e(self))
+      serializer.serialize_str(&s_display_1e(&self.inner))
     } else {
       serializer.serialize_newtype_struct("Scientific", {
         struct SW(Vec<u8>);
@@ -25,13 +25,13 @@ impl Serialize for Scientific {
           }
         }
 
-        &SW(s_to_bytes(self))
+        &SW(self.to_bytes())
       })
     }
   }
 }
 
-pub fn s_display_1e(value: &Scientific) -> String {
+fn s_display_1e(value: &Sci) -> String {
   if value.is_zero() {
     return "0".to_string();
   }

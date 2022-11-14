@@ -1,36 +1,34 @@
-use crate::math::compare::s_compare;
 use crate::types::error::Error;
 use crate::types::precision::Precision;
-use crate::types::scientific::Scientific;
+use crate::types::sci::Sci;
 use core::cmp::Ordering;
 
-pub(crate) fn export_sqrt(value: &Scientific, precision: Precision) -> Result<Scientific, Error> {
-  if value.is_sign_negative() {
-    Err(Error::NumberIsNegative)
-  } else if value.is_zero() {
-    Ok(Scientific::ZERO)
-  } else {
-    match s_compare::<false>(value, &Scientific::ONE) {
-      Ordering::Less => nz_sqrt(value, precision, (value.exponent0() - 1) / 2),
-      Ordering::Equal => Ok(Scientific::ONE),
-      Ordering::Greater => nz_sqrt(value, precision, value.exponent0() / 2),
+impl Sci {
+  pub(crate) fn sqrt(&self, precision: Precision) -> Result<Sci, Error> {
+    if self.is_zero() {
+      Ok(Sci::ZERO)
+    } else if self.sign.is_negative() {
+      Err(Error::NumberIsNegative)
+    } else {
+      match self.compare::<false>(&Sci::ONE) {
+        Ordering::Less => nz_sqrt(self, precision, (self.exponent0() - 1) / 2),
+        Ordering::Equal => Ok(Sci::ONE),
+        Ordering::Greater => nz_sqrt(self, precision, self.exponent0() / 2),
+      }
     }
   }
 }
 
 // Babylonian method
-fn nz_sqrt(
-  value: &Scientific,
-  precision: Precision,
-  guess_exponent_adapt: isize,
-) -> Result<Scientific, Error> {
-  let mut guess = value >> guess_exponent_adapt;
+fn nz_sqrt(value: &Sci, precision: Precision, guess_exponent_adapt: isize) -> Result<Sci, Error> {
+  let mut guess = value.clone();
+  guess.shr_assign(guess_exponent_adapt);
   guess.truncate_assign(precision);
   loop {
-    let mut next_guess = &Scientific::POINT5 * &(&guess + &value.div(&guess, precision)?);
+    let mut next_guess = Sci::POINT5.mul(&(guess.add(&value.div(&guess, precision)?)));
     next_guess.truncate_assign(precision);
 
-    if guess == next_guess {
+    if guess.compare::<true>(&next_guess) == Ordering::Equal {
       return Ok(guess);
     }
     guess = next_guess;

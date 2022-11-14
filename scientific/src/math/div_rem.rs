@@ -1,14 +1,13 @@
 use crate::types::error::Error;
 use crate::types::precision::Precision;
-use crate::types::scientific::Scientific;
+use crate::types::sci::Sci;
 
-pub(crate) fn export_div_rem(
-  lhs: &Scientific,
-  rhs: &Scientific,
-) -> Result<(Scientific, Scientific), Error> {
-  let quot = lhs.div(rhs, Precision::INTEGER)?;
+impl Sci {
+  pub(crate) fn div_rem(&self, rhs: &Sci) -> Result<(Sci, Sci), Error> {
+    let quot = self.div(rhs, Precision::INTEGER)?;
 
-  let rem = lhs - &(&quot * rhs);
+    let rem = self.sub(&quot.mul(rhs));
 
-  Ok((quot, rem))
+    Ok((quot, rem))
+  }
 }

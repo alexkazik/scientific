@@ -1,4 +1,3 @@
-use crate::conversion::bytes_de::s_from_bytes;
 use crate::types::scientific::Scientific;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
@@ -24,7 +23,7 @@ impl<'de> Deserialize<'de> for Scientific {
       where
         E: serde::de::Error,
       {
-        s_from_bytes(v).map_err(|bse| serde::de::Error::custom(bse.to_string()))
+        Scientific::from_bytes(v).map_err(|bse| serde::de::Error::custom(bse.to_string()))
       }
 
       fn visit_newtype_struct<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
@@ -45,7 +44,7 @@ impl<'de> Deserialize<'de> for Scientific {
         while let Some(e) = seq.next_element()? {
           buf.push(e);
         }
-        s_from_bytes(&buf).map_err(|bse| serde::de::Error::custom(bse.to_string()))
+        Scientific::from_bytes(&buf).map_err(|bse| serde::de::Error::custom(bse.to_string()))
       }
     }
 

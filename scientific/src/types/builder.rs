@@ -2,12 +2,12 @@ use crate::ptr::Ptr;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::rounding::{Rounding, Truncate};
-use crate::types::scientific::{s_mut_make_zero, Scientific};
+use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 use alloc::vec::Vec;
 use core::mem::size_of;
 
-pub(crate) struct Builder(Scientific);
+pub(crate) struct Builder(Sci);
 
 impl Builder {
   pub(crate) fn new(sign: Sign, len: isize, exponent: isize) -> (Builder, Ptr) {
@@ -17,7 +17,7 @@ impl Builder {
     let mut vec = vec![0; len as usize];
     let data = vec.as_mut_ptr();
     (
-      Builder(Scientific {
+      Builder(Sci {
         sign,
         data: Ptr::new(data, len),
         len,
@@ -36,7 +36,7 @@ impl Builder {
     exponent: isize,
     owner: Owner,
   ) -> Builder {
-    Builder(Scientific {
+    Builder(Sci {
       sign,
       data,
       len,
@@ -46,7 +46,7 @@ impl Builder {
   }
 
   #[inline(always)]
-  pub(crate) fn finish(mut self) -> Scientific {
+  pub(crate) fn finish(mut self) -> Sci {
     // there might be no leading zero -> `Truncate` must return true for `is_truncate`
     #[cfg(feature = "debug")]
     assert!(Truncate::is_truncate());
@@ -56,7 +56,7 @@ impl Builder {
   }
 
   #[inline(always)]
-  pub(crate) fn round<R: Rounding>(mut self, precision: Precision, rounding: R) -> Scientific {
+  pub(crate) fn round<R: Rounding>(mut self, precision: Precision, rounding: R) -> Sci {
     if !R::is_truncate() {
       // the first digit must be zero in order to be able to propagate the carry for rounding away from zero
       #[cfg(feature = "debug")]
@@ -68,11 +68,7 @@ impl Builder {
   }
 }
 
-fn b_mut_trim_zeroes<R: Rounding>(
-  value: &mut Scientific,
-  precision: Option<Precision>,
-  rounding: R,
-) {
+fn b_mut_trim_zeroes<R: Rounding>(value: &mut Sci, precision: Option<Precision>, rounding: R) {
   // remove leading zeroes
   while value.len > 0 && *value.data == 0 {
     value.data.inc();
@@ -144,7 +140,7 @@ fn b_mut_trim_zeroes<R: Rounding>(
 
   if value.len <= 0 {
     // if nothing remains -> set to zero
-    s_mut_make_zero(value);
+    value.assign_zero();
   } else if value.owner.capacity() > 20 * (size_of::<isize>() as isize)
     && value.len * 3 < value.owner.capacity()
   {
@@ -154,7 +150,7 @@ fn b_mut_trim_zeroes<R: Rounding>(
     value.data.copy_to_nonoverlapping(value.len, data, 0);
     unsafe { vec.set_len(value.len as usize) };
     data.set_immutable();
-    *value = Scientific {
+    *value = Sci {
       sign: value.sign,
       data,
       len: value.len,

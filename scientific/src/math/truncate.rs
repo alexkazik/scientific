@@ -1,23 +1,25 @@
 use crate::types::precision::Precision;
-use crate::types::scientific::{s_mut_make_zero, Scientific};
+use crate::types::sci::Sci;
 
-pub(crate) fn export_truncate_assign(value: &mut Scientific, precision: Precision) {
-  let len = match precision {
-    Precision::Digits(digits) => digits,
-    Precision::Decimals(decimals) => value.exponent0() + decimals,
-  };
-  if value.len > len {
-    value.exponent += value.len - len;
-    value.len = len; // len may be zero or negative
+impl Sci {
+  pub(crate) fn truncate_assign(&mut self, precision: Precision) {
+    let len = match precision {
+      Precision::Digits(digits) => digits,
+      Precision::Decimals(decimals) => self.exponent0() + decimals,
+    };
+    if self.len > len {
+      self.exponent += self.len - len;
+      self.len = len; // len may be zero or negative
 
-    // remove trailing zeroes
-    while value.len > 0 && value.data[value.len - 1] == 0 {
-      value.len -= 1;
-      value.exponent += 1;
-    }
+      // remove trailing zeroes
+      while self.len > 0 && self.data[self.len - 1] == 0 {
+        self.len -= 1;
+        self.exponent += 1;
+      }
 
-    if value.len <= 0 {
-      s_mut_make_zero(value);
+      if self.len <= 0 {
+        self.assign_zero();
+      }
     }
   }
 }

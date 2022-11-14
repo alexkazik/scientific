@@ -1,32 +1,35 @@
-use crate::types::scientific::Scientific;
+use crate::types::sci::Sci;
+use core::ops::ShrAssign;
 
-pub(crate) fn export_powi(base: &Scientific, exponent: usize) -> Scientific {
-  if exponent == 0 {
-    Scientific::ONE
-  } else if base.is_zero() {
-    Scientific::ZERO
-  } else {
-    nz_powi(base, exponent)
+impl Sci {
+  pub(crate) fn powi(&self, exponent: usize) -> Sci {
+    if exponent == 0 {
+      Sci::ONE
+    } else if self.is_zero() {
+      Sci::ZERO
+    } else {
+      nz_powi(self, exponent)
+    }
   }
 }
 
 #[inline(always)]
-fn nz_powi(base: &Scientific, mut exponent: usize) -> Scientific {
+fn nz_powi(base: &Sci, mut exponent: usize) -> Sci {
   // base is not zero, exponent is greater than zero
   let mut power = base.clone();
   while exponent & 1 == 0 {
-    power = &power * &power;
-    exponent >>= 1;
+    power = power.mul(&power);
+    exponent.shr_assign(1);
   }
   let mut result = power.clone();
-  exponent >>= 1;
+  exponent.shr_assign(1);
 
   while exponent > 0 {
-    power = &power * &power;
+    power = power.mul(&power);
     if exponent & 1 != 0 {
-      result = &result * &power;
+      result = result.mul(&power);
     }
-    exponent >>= 1;
+    exponent.shr_assign(1);
   }
   result
 }

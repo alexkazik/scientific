@@ -1,27 +1,24 @@
 use crate::types::builder::Builder;
-use crate::types::scientific::Scientific;
+use crate::types::sci::Sci;
 use crate::types::sign::Sign;
-use core::ops::Mul;
 
-impl Mul for &Scientific {
-  type Output = Scientific;
-
-  #[inline(always)]
-  fn mul(self, rhs: Self) -> Self::Output {
-    export_mul(self, rhs)
-  }
-}
-
-fn export_mul(lhs: &Scientific, rhs: &Scientific) -> Scientific {
-  if lhs.is_zero() || rhs.is_zero() {
-    Scientific::ZERO
-  } else {
-    nz_mul(lhs.sign ^ rhs.sign, lhs, rhs, lhs.exponent + rhs.exponent)
+impl Sci {
+  pub(crate) fn mul(&self, rhs: &Sci) -> Sci {
+    if self.is_zero() || rhs.is_zero() {
+      Sci::ZERO
+    } else {
+      nz_mul(
+        self.sign ^ rhs.sign,
+        self,
+        rhs,
+        self.exponent + rhs.exponent,
+      )
+    }
   }
 }
 
 #[inline(always)]
-fn nz_mul(sign: Sign, lhs: &Scientific, rhs: &Scientific, exponent: isize) -> Scientific {
+fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: isize) -> Sci {
   let result_len = lhs.len + rhs.len + 1;
 
   let (result, result_ptr) = Builder::new(sign, result_len, exponent);

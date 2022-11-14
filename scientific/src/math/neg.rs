@@ -1,23 +1,8 @@
-use crate::types::scientific::Scientific;
-use core::ops::Neg;
+use crate::types::sci::Sci;
 
-impl Neg for &Scientific {
-  type Output = Scientific;
-
+impl Sci {
   #[inline(always)]
-  fn neg(self) -> Self::Output {
-    export_neg(self)
+  pub(crate) fn neg_assign(&mut self) {
+    self.sign = !self.sign;
   }
-}
-
-#[inline(always)]
-fn export_neg(value: &Scientific) -> Scientific {
-  let mut result = value.clone();
-  result.sign = !result.sign;
-  result
-}
-
-#[inline(always)]
-pub(crate) fn export_neg_assign(value: &mut Scientific) {
-  value.sign = !value.sign;
 }
