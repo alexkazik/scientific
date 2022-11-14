@@ -1,3 +1,5 @@
+#![allow(clippy::zero_prefixed_literal)]
+
 use core::ops::Neg;
 use scientific::{Error, Precision, Scientific};
 use std::convert::TryFrom;
@@ -37,6 +39,7 @@ const POSITIVE_NUMBERS: [f64; 32] = [
   0.1,
 ];
 
+#[allow(clippy::type_complexity)]
 const FUNCTIONS: [(
   &str,
   fn(f64, f64) -> f64,
@@ -57,7 +60,7 @@ const FUNCTIONS: [(
 fn float() {
   let numbers = POSITIVE_NUMBERS
     .iter()
-    .map(|i| *i)
+    .copied()
     .chain(POSITIVE_NUMBERS.iter().map(Neg::neg))
     .map(|n| (n, Scientific::from_string(n.to_string()).unwrap()))
     .collect::<Vec<(f64, Scientific)>>();
@@ -70,13 +73,7 @@ fn float() {
         let diff = diff(sci_a, sci_b, flt_result, &sci_result);
         assert!(
           diff < 2e-15_f64,
-          "function {}({}, {}) -> {:?} = {:?}; diff: {:e}",
-          name,
-          flt_a,
-          flt_b,
-          flt_result,
-          sci_result,
-          diff,
+          "function {name}({flt_a}, {flt_b}) -> {flt_result:?} = {sci_result:?}; diff: {diff:e}",
         );
       }
       // partial_cmp

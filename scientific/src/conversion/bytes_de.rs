@@ -7,6 +7,7 @@ use alloc::vec::Vec;
 use core::convert::TryInto;
 
 impl Sci {
+  #[allow(clippy::too_many_lines)]
   pub(crate) fn from_bytes(bytes: &[u8]) -> Result<Sci, BytesError> {
     if bytes.is_empty() {
       return Ok(Sci::ZERO);
@@ -78,7 +79,7 @@ impl Sci {
         match it.next() {
           None => break '_loop,
           Some(&v) => {
-            buf = (buf << 8) | (v as u16);
+            buf = (buf << 8) | u16::from(v);
             buf_len += 8;
           }
         }

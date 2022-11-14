@@ -64,19 +64,17 @@ impl Ptr {
 
   pub(crate) fn copy_to_nonoverlapping(&self, len: isize, to: Ptr, offset: isize) {
     unsafe {
-      if len < 0 {
-        panic!("Ptr: len is negative");
-      }
-      if !(self.ptr() >= self.start && self.ptr().offset(len) <= self.end) {
-        panic!("Ptr: self out of bounds");
-      }
-      if !to.writeable {
-        panic!("Ptr: write to const");
-      }
-      if !(to.ptr().offset(offset) >= to.start && to.ptr().offset(offset + len) <= to.end) {
-        panic!("Ptr: to out of bounds");
-      }
-      copy_nonoverlapping(self.ptr(), to.ptr_mut().offset(offset), len as usize)
+      assert!(len >= 0, "Ptr: len is negative");
+      assert!(
+        self.ptr() >= self.start && self.ptr().offset(len) <= self.end,
+        "Ptr: self out of bounds"
+      );
+      assert!(to.writeable, "Ptr: write to const");
+      assert!(
+        to.ptr().offset(offset) >= to.start && to.ptr().offset(offset + len) <= to.end,
+        "Ptr: to out of bounds"
+      );
+      copy_nonoverlapping(self.ptr(), to.ptr_mut().offset(offset), len as usize);
     }
   }
 
@@ -95,24 +93,23 @@ impl Ptr {
 
   pub(crate) fn as_slice(&self, len: isize) -> &[u8] {
     unsafe {
-      if len < 0 {
-        panic!("Ptr: len is negative");
-      }
-      if self.ptr() < self.start || self.ptr().offset(len) > self.end {
-        panic!("Ptr: out of bounds");
-      }
+      assert!(len >= 0, "Ptr: len is negative");
+      assert!(
+        self.ptr() >= self.start && self.ptr().offset(len) <= self.end,
+        "Ptr: out of bounds"
+      );
       from_raw_parts(self.ptr(), len as usize)
     }
   }
 
   pub(crate) fn offset_from(&self, other: Ptr) -> isize {
-    if self.ptr() < self.start
-      || self.ptr() > self.end
-      || other.ptr() < other.start
-      || other.ptr() > other.end
-    {
-      panic!("Ptr: out of bounds");
-    }
+    assert!(
+      self.ptr() >= self.start
+        && self.ptr() <= self.end
+        && other.ptr() >= other.start
+        && other.ptr() <= other.end,
+      "Ptr: out of bounds"
+    );
     unsafe { self.ptr().offset_from(other.ptr()) }
   }
 }
@@ -123,10 +120,8 @@ impl Index<isize> for Ptr {
   fn index(&self, index: isize) -> &Self::Output {
     unsafe {
       let ptr = self.ptr().offset(index);
-      if !(ptr >= self.start && ptr < self.end) {
-        panic!("Ptr: out of bounds");
-      }
-      (ptr as *const i8).as_ref().unwrap()
+      assert!(ptr >= self.start && ptr < self.end, "Ptr: out of bounds");
+      ptr.cast::<i8>().as_ref().unwrap()
     }
   }
 }
@@ -134,14 +129,10 @@ impl Index<isize> for Ptr {
 impl IndexMut<isize> for Ptr {
   fn index_mut(&mut self, index: isize) -> &mut Self::Output {
     unsafe {
-      if !self.writeable {
-        panic!("Ptr: write to const");
-      }
+      assert!(self.writeable, "Ptr: write to const");
       let ptr = self.ptr().offset(index);
-      if !(ptr >= self.start && ptr < self.end) {
-        panic!("Ptr: out of bounds");
-      }
-      (ptr as *mut i8).as_mut().unwrap()
+      assert!(ptr >= self.start && ptr < self.end, "Ptr: out of bounds");
+      ptr.cast::<i8>().cast_mut().as_mut().unwrap()
     }
   }
 }

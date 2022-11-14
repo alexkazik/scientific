@@ -9,20 +9,21 @@ use core::cmp::Ordering;
 ///
 /// Method                    | Result is -2  | Result is -1  | Result is 0  | Result is 1 | Result is 2 | Implementor
 /// ------------------------- | :-----------: | :-----------: | :----------: | :---------: | :---------: | ------------------
-/// Directed, Down            | \[-2.0, -1.0) | \[-1.0,  0.0) |  \[0.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [RoundDown]
-/// Directed, Up              |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 0.0] |  (0.0, 1.0] |  (1.0, 2.0] | [RoundUp]
-/// Directed, Towards 0       |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [Truncate]
-/// Directed, Away From 0     | \[-2.0, -1.0) | \[-1.0,  0.0) |      0.0     |  (0.0, 1.0] |  (1.0, 2.0] | [RoundAwayFromZero]
-/// Nearest, Half Down        |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [RoundHalfDown]
-/// Nearest, Half Up          | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [RoundHalfUp]
-/// Nearest, Half Towards 0   | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [RoundHalfTowardsZero]
-/// Nearest, Half Away From 0 |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [RoundHalfAwayFromZero]
-/// Nearest, Half To Even     | \[-2.5, -1.5] |  (-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5) | \[1.5, 2.5] | [RoundHalfToEven]
-/// Nearest, half To Odd      |  (-2.5, -1.5) | \[-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5] |  (1.5, 2.5) | [RoundHalfToOdd]
+/// Directed, Down            | \[-2.0, -1.0) | \[-1.0,  0.0) |  \[0.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [`RoundDown`]
+/// Directed, Up              |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 0.0] |  (0.0, 1.0] |  (1.0, 2.0] | [`RoundUp`]
+/// Directed, Towards 0       |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [`Truncate`]
+/// Directed, Away From 0     | \[-2.0, -1.0) | \[-1.0,  0.0) |      0.0     |  (0.0, 1.0] |  (1.0, 2.0] | [`RoundAwayFromZero`]
+/// Nearest, Half Down        |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [`RoundHalfDown`]
+/// Nearest, Half Up          | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [`RoundHalfUp`]
+/// Nearest, Half Towards 0   | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [`RoundHalfTowardsZero`]
+/// Nearest, Half Away From 0 |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [`RoundHalfAwayFromZero`]
+/// Nearest, Half To Even     | \[-2.5, -1.5] |  (-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5) | \[1.5, 2.5] | [`RoundHalfToEven`]
+/// Nearest, half To Odd      |  (-2.5, -1.5) | \[-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5] |  (1.5, 2.5) | [`RoundHalfToOdd`]
 
 pub trait Rounding: Copy {
   /// Defaults to `false`.
   #[inline(always)]
+  #[must_use]
   fn is_truncate() -> bool {
     false
   }

@@ -47,6 +47,7 @@ impl Scientific {
 
   // This function must not change before 0.5 since scientific-macro depends on it.
   #[inline(always)]
+  #[must_use]
   pub fn as_raw_mantissa(&self) -> &[u8] {
     self.inner.as_raw_mantissa()
   }
@@ -120,27 +121,32 @@ impl Scientific {
 
   #[allow(clippy::len_without_is_empty)]
   #[inline(always)]
+  #[must_use]
   pub fn len(&self) -> isize {
     self.inner.len
   }
 
   #[inline(always)]
+  #[must_use]
   pub fn decimals(&self) -> isize {
     -self.inner.exponent
   }
 
   #[inline(always)]
+  #[must_use]
   pub fn exponent0(&self) -> isize {
     self.inner.exponent0()
   }
 
   #[inline(always)]
+  #[must_use]
   pub fn exponent1(&self) -> isize {
     self.inner.exponent1()
   }
 
   // This function must not change before 0.5 since scientific-macro depends on it.
   #[inline(always)]
+  #[must_use]
   pub fn exponent(&self) -> isize {
     self.inner.exponent
   }
@@ -154,18 +160,21 @@ impl Scientific {
 
   // This function must not change before 0.5 since scientific-macro depends on it.
   #[inline(always)]
+  #[must_use]
   pub fn is_zero(&self) -> bool {
     self.inner.is_zero()
   }
 
   /// Returns true if self has a positive sign, this excludes 0.
   #[inline(always)]
+  #[must_use]
   pub fn is_sign_positive(&self) -> bool {
     self.inner.len > 0 && !self.inner.sign.is_negative()
   }
 
   /// Returns true if self has a negative sign, this excludes 0.
   #[inline(always)]
+  #[must_use]
   pub fn is_sign_negative(&self) -> bool {
     self.inner.len > 0 && self.inner.sign.is_negative()
   }

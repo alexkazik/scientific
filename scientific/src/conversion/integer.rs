@@ -1,3 +1,5 @@
+#![allow(clippy::wildcard_imports)]
+
 macro_rules! conversion_signed {
   ($ty:ident, $len:expr, $const:ident) => {
     impl TryFrom<&Scientific> for $ty {

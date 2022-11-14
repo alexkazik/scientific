@@ -1,3 +1,5 @@
+#![allow(clippy::zero_prefixed_literal)]
+
 use core::convert::TryFrom;
 use core::ops::Neg;
 use scientific::{Decimals, Error, Precision, Scientific};
@@ -29,6 +31,7 @@ const POSITIVE_NUMBERS: [i128; 24] = [
   0_000_000_000_000_000_000,
 ];
 
+#[allow(clippy::type_complexity)]
 const FUNCTIONS: [(
   &str,
   fn(i128, i128) -> Result<i128, Error>,
@@ -61,7 +64,7 @@ fn int_rem(a: i128, b: i128) -> Result<i128, Error> {
 fn integer() {
   let numbers = POSITIVE_NUMBERS
     .iter()
-    .map(|i| *i)
+    .copied()
     .chain(POSITIVE_NUMBERS.iter().map(Neg::neg))
     .map(|n| (n, Scientific::from(n)))
     .collect::<Vec<(i128, Scientific)>>();
@@ -75,12 +78,7 @@ fn integer() {
         assert_eq!(
           int_result.map(|i| Scientific::from_string(i.to_string()).unwrap()),
           sci_result,
-          "function {}({}, {}) -> {:?} = {:?}",
-          name,
-          int_a,
-          int_b,
-          int_result,
-          sci_result,
+          "function {name}({int_a}, {int_b}) -> {int_result:?} = {sci_result:?}",
         );
       }
       // compare

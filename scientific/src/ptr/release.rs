@@ -48,12 +48,15 @@ impl Ptr {
     unsafe { copy_nonoverlapping(self.ptr(), to.ptr_mut().offset(offset), len as usize) }
   }
 
+  #[allow(clippy::unused_self)]
   #[inline(always)]
   pub(crate) fn invalidate(&mut self) {}
 
+  #[allow(clippy::unused_self)]
   #[inline(always)]
   pub(crate) fn set_mutable(&mut self) {}
 
+  #[allow(clippy::unused_self)]
   #[inline(always)]
   pub(crate) fn set_immutable(&mut self) {}
 
@@ -73,13 +76,13 @@ impl Index<isize> for Ptr {
 
   #[inline(always)]
   fn index(&self, index: isize) -> &Self::Output {
-    unsafe { (self.ptr() as *const i8).offset(index).as_ref().unwrap() }
+    unsafe { self.ptr().cast::<i8>().offset(index).as_ref().unwrap() }
   }
 }
 
 impl IndexMut<isize> for Ptr {
   #[inline(always)]
   fn index_mut(&mut self, index: isize) -> &mut Self::Output {
-    unsafe { (self.ptr_mut() as *mut i8).offset(index).as_mut().unwrap() }
+    unsafe { self.ptr_mut().cast::<i8>().offset(index).as_mut().unwrap() }
   }
 }
