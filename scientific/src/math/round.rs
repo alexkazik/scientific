@@ -28,7 +28,7 @@ impl Sci {
       // is added in front
       self.exponent += self.len;
       self.len = 1;
-      self.data = Ptr::new(MANTISSA_1.as_ptr(), 1);
+      self.data = Ptr::new(&MANTISSA_1);
       self.owner = Owner::None;
     } else {
       // adapt length (and exponent)
@@ -47,11 +47,10 @@ impl Sci {
         // all digits where 9 and this is an overflow
         // replace mantissa with `1` and set exponent/len/owner accordingly
         self.len = 1;
-        self.data = Ptr::new(MANTISSA_1.as_ptr(), 1);
+        self.data = Ptr::new(&MANTISSA_1);
         self.owner = Owner::None;
       } else {
         *ptr += 1;
-        self.data.set_immutable();
       }
     }
   }
@@ -67,12 +66,10 @@ fn make_writeable(sci: &mut Sci) -> Ptr {
     Err(_) => {
       // copy the data from the old to the new owner
       let vec = sci.data.as_slice(sci.len).to_vec();
-      sci.data = Ptr::new(vec.as_slice().as_ptr(), sci.len);
+      sci.data = Ptr::new(vec.as_slice());
       sci.owner = Owner::new_vec(vec);
     }
   }
 
-  let mut data = sci.data; // remainder: Ptr is Copy
-  data.set_mutable();
-  data
+  sci.data.as_mutable() // remainder: Ptr is Copy
 }

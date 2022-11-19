@@ -9,23 +9,16 @@ pub(crate) struct Ptr {
 
 impl Ptr {
   #[inline(always)]
-  pub(crate) fn new(ptr: *const u8, _len: isize) -> Ptr {
-    Ptr {
-      ptr: Self::new_ptr(ptr),
-    }
-  }
-
-  #[inline(always)]
-  pub(crate) const fn new_const(slice: &[u8]) -> Ptr {
+  pub(crate) const fn new(slice: &[u8]) -> Ptr {
     Ptr {
       ptr: Self::new_ptr(slice.as_ptr()),
     }
   }
 
   #[inline(always)]
-  pub(crate) fn new_mut(ptr: *mut u8, _len: isize) -> Ptr {
+  pub(crate) fn new_mut(slice: &mut [u8]) -> Ptr {
     Ptr {
-      ptr: Self::new_ptr(ptr),
+      ptr: Self::new_ptr(slice.as_ptr()),
     }
   }
 
@@ -54,11 +47,15 @@ impl Ptr {
 
   #[allow(clippy::unused_self)]
   #[inline(always)]
-  pub(crate) fn set_mutable(&mut self) {}
+  pub(crate) fn as_mutable(self) -> Self {
+    self
+  }
 
   #[allow(clippy::unused_self)]
   #[inline(always)]
-  pub(crate) fn set_immutable(&mut self) {}
+  pub(crate) fn as_immutable(self) -> Self {
+    self
+  }
 
   #[inline(always)]
   pub(crate) fn as_slice(&self, len: isize) -> &[u8] {

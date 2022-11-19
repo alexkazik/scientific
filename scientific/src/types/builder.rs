@@ -11,16 +11,16 @@ impl Builder {
     assert!(len > 0);
 
     let mut vec = vec![0; len as usize];
-    let data = vec.as_mut_ptr();
+    let data = Ptr::new_mut(vec.as_mut_slice());
     (
       Builder(Sci {
         sign,
-        data: Ptr::new(data, len),
+        data: data.as_immutable(),
         len,
         exponent,
         owner: Owner::new_vec(vec),
       }),
-      Ptr::new_mut(data, len),
+      data,
     )
   }
 
@@ -34,7 +34,7 @@ impl Builder {
   ) -> Builder {
     Builder(Sci {
       sign,
-      data,
+      data: data.as_immutable(),
       len,
       exponent,
       owner,

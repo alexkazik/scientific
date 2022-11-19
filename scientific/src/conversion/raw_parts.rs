@@ -33,7 +33,7 @@ impl Sci {
     Ok(
       Builder::new_with_data(
         Sign::new(is_negative),
-        Ptr::new(mantissa.as_ptr(), len),
+        Ptr::new(mantissa.as_slice()),
         len,
         exponent,
         Owner::new_vec(mantissa),

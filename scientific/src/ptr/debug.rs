@@ -12,17 +12,7 @@ pub(crate) struct Ptr {
 
 impl Ptr {
   #[inline(always)]
-  pub(crate) fn new(ptr: *const u8, len: isize) -> Ptr {
-    Ptr {
-      ptr: Self::new_ptr(ptr),
-      start: ptr,
-      end: unsafe { ptr.offset(len) },
-      writeable: false,
-    }
-  }
-
-  #[inline(always)]
-  pub(crate) const fn new_const(slice: &[u8]) -> Ptr {
+  pub(crate) const fn new(slice: &[u8]) -> Ptr {
     let ptr = slice.as_ptr();
     Ptr {
       ptr: Self::new_ptr(ptr),
@@ -43,11 +33,12 @@ impl Ptr {
   }
 
   #[inline(always)]
-  pub(crate) fn new_mut(ptr: *mut u8, len: isize) -> Ptr {
+  pub(crate) fn new_mut(slice: &mut [u8]) -> Ptr {
+    let ptr = slice.as_mut_ptr();
     Ptr {
       ptr: Self::new_ptr(ptr),
       start: ptr,
-      end: unsafe { ptr.offset(len) },
+      end: unsafe { ptr.add(slice.len()) },
       writeable: true,
     }
   }
@@ -83,12 +74,14 @@ impl Ptr {
     self.end = self.start;
   }
 
-  pub(crate) fn set_mutable(&mut self) {
+  pub(crate) fn as_mutable(mut self) -> Self {
     self.writeable = true;
+    self
   }
 
-  pub(crate) fn set_immutable(&mut self) {
+  pub(crate) fn as_immutable(mut self) -> Self {
     self.writeable = false;
+    self
   }
 
   pub(crate) fn as_slice(&self, len: isize) -> &[u8] {

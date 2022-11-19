@@ -10,7 +10,7 @@ use core::str::FromStr;
 impl Sci {
   pub(crate) fn from_string(mut data: String) -> Result<Sci, ConversionError> {
     let len = data.len() as isize;
-    let mut data_start = Ptr::new_mut(data.as_mut_ptr(), len);
+    let mut data_start = Ptr::new_mut(unsafe { data.as_bytes_mut() });
     let data_end = data_start.offset(len);
 
     // check if len > 0

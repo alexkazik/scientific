@@ -58,7 +58,7 @@ fn nz_div(lhs: &Sci, rhs: &Sci, extra_digits: isize, precision: Precision) -> Sc
   assert!(lhs.len + extra_digits >= rhs.len);
 
   let mut tmp = vec![0; (lhs.len + extra_digits) as usize];
-  let mut tmp_ptr = Ptr::new_mut(tmp.as_mut_ptr(), lhs.len + extra_digits);
+  let mut tmp_ptr = Ptr::new_mut(tmp.as_mut_slice());
   lhs
     .data
     .copy_to_nonoverlapping(lhs.len + extra_digits.min(0), tmp_ptr, 0);

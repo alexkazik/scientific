@@ -42,7 +42,7 @@ impl Sci {
   ) -> Sci {
     Sci {
       sign,
-      data: Ptr::new_const(mantissa),
+      data: Ptr::new(mantissa),
       len: mantissa.len() as isize,
       exponent,
       owner: Owner::None,

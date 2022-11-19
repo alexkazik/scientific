@@ -105,7 +105,7 @@ impl Sci {
       return Err(BytesError::MalformedNumber);
     }
     let mut len = owned.len() as isize;
-    let data = Ptr::new(owned.as_ptr(), len);
+    let data = Ptr::new(owned.as_slice());
     let mut trailing_zeroes = 0;
     while len > 0 && data[len - 1] == 0 {
       len -= 1;
