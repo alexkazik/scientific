@@ -1,4 +1,6 @@
 use crate::types::sci::Sci;
+#[cfg(feature = "debug")]
+use core::fmt::Debug;
 use core::fmt::{Formatter, Write};
 
 impl Sci {
@@ -16,5 +18,12 @@ impl Sci {
       write!(f, "e{}", self.exponent)?;
     }
     Ok(())
+  }
+}
+
+#[cfg(feature = "debug")]
+impl Debug for Sci {
+  fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+    self.debug(f)
   }
 }

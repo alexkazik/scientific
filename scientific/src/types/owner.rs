@@ -44,12 +44,53 @@ impl Owner {
     Owner::VecInternal(Arc::new(data))
   }
 
+  #[cfg(not(feature = "arc"))]
   #[inline]
-  pub(crate) fn capacity(&self) -> isize {
-    match &self {
-      Owner::None => 0,
-      Owner::StringInternal(s) => s.capacity() as isize,
-      Owner::VecInternal(v) => v.capacity() as isize,
+  pub(crate) fn make_writeable(&mut self) -> Result<(), ()> {
+    match self {
+      Owner::None => Err(()),
+      Owner::StringInternal(ref s) => {
+        if Rc::strong_count(s) == 1 {
+          Ok(())
+        } else {
+          Err(())
+        }
+      }
+      Owner::VecInternal(ref v) => {
+        if Rc::strong_count(v) == 1 {
+          Ok(())
+        } else {
+          Err(())
+        }
+      }
+    }
+  }
+
+  #[cfg(feature = "arc")]
+  #[inline]
+  pub(crate) fn make_writeable(&mut self) -> Result<(), ()> {
+    match core::mem::replace(self, Owner::None) {
+      Owner::None => Err(()),
+      Owner::StringInternal(s) => match Arc::try_unwrap(s) {
+        Ok(s) => {
+          *self = Owner::new_string(s);
+          Ok(())
+        }
+        Err(s) => {
+          *self = Owner::StringInternal(s);
+          Err(())
+        }
+      },
+      Owner::VecInternal(v) => match Arc::try_unwrap(v) {
+        Ok(v) => {
+          *self = Owner::new_vec(v);
+          Ok(())
+        }
+        Err(s) => {
+          *self = Owner::VecInternal(s);
+          Err(())
+        }
+      },
     }
   }
 }

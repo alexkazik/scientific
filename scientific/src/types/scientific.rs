@@ -87,6 +87,10 @@ impl Scientific {
     self.inner.neg_assign();
   }
 
+  /// Please be aware that `div_truncate` is only calculating digits up to the specified precision.
+  ///
+  /// For example 509/100 with a precision of 2 digits or 1 decimals will calculate 5.0 and
+  /// not 5.1 as it's may be expected with rounding in mind.
   #[inline(always)]
   pub fn div_truncate(&self, rhs: &Scientific, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
@@ -113,10 +117,15 @@ impl Scientific {
   }
 
   #[inline(always)]
-  pub fn round<R: Rounding>(&self, precision: Precision, rounding: R) -> Scientific {
-    Scientific {
-      inner: self.inner.round(precision, rounding),
-    }
+  pub fn round_assign(&mut self, precision: Precision, rounding: Rounding) {
+    self.inner.round_assign(precision, rounding);
+  }
+
+  #[inline]
+  pub fn round(&self, precision: Precision, rounding: Rounding) -> Scientific {
+    let mut r = self.clone();
+    r.inner.round_assign(precision, rounding);
+    r
   }
 
   #[allow(clippy::len_without_is_empty)]

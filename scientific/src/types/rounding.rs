@@ -1,70 +1,31 @@
-#[cfg(doc)]
-use crate::types::rounding::Round::{
-  RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
-  RoundHalfToOdd, RoundHalfTowardsZero, RoundHalfUp, RoundUp,
-};
 use core::cmp::Ordering;
+use core::hint::unreachable_unchecked;
 
-/// Trait to implement different rounding methods.
+/// Enum to implement different rounding methods.
 ///
 /// Method                    | Result is -2  | Result is -1  | Result is 0  | Result is 1 | Result is 2 | Implementor
 /// ------------------------- | :-----------: | :-----------: | :----------: | :---------: | :---------: | ------------------
-/// Directed, Down            | \[-2.0, -1.0) | \[-1.0,  0.0) |  \[0.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [`RoundDown`]
-/// Directed, Up              |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 0.0] |  (0.0, 1.0] |  (1.0, 2.0] | [`RoundUp`]
-/// Directed, Towards 0       |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [`Truncate`]
-/// Directed, Away From 0     | \[-2.0, -1.0) | \[-1.0,  0.0) |      0.0     |  (0.0, 1.0] |  (1.0, 2.0] | [`RoundAwayFromZero`]
-/// Nearest, Half Down        |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [`RoundHalfDown`]
-/// Nearest, Half Up          | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [`RoundHalfUp`]
-/// Nearest, Half Towards 0   | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [`RoundHalfTowardsZero`]
-/// Nearest, Half Away From 0 |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [`RoundHalfAwayFromZero`]
-/// Nearest, Half To Even     | \[-2.5, -1.5] |  (-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5) | \[1.5, 2.5] | [`RoundHalfToEven`]
-/// Nearest, half To Odd      |  (-2.5, -1.5) | \[-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5] |  (1.5, 2.5) | [`RoundHalfToOdd`]
-
-pub trait Rounding: Copy {
-  /// Defaults to `false`.
-  #[inline(always)]
-  #[must_use]
-  fn is_truncate() -> bool {
-    false
-  }
-  /// Return whether the rounding results in the number (ignoring the sign) should be increased.
-  ///
-  /// `before` and `after` are the digits before and after the dot (or any other point to perform
-  /// the rounding).
-  ///
-  /// Valid numbers for `before` are 0-9, and 1-9 for `after`.
-  ///
-  /// If `is_truncate` returns `true` then this function must always return `false`.
-  ///
-  /// Please see the source for examples.
-  fn round_away_from_zero(self, is_negative: bool, before: i8, after: i8) -> bool;
-}
-
-/// Also known as round towards zero, please see [Rounding] for an overview.
-#[derive(Copy, Clone)]
-pub struct Truncate;
-
-impl Rounding for Truncate {
-  #[inline(always)]
-  fn is_truncate() -> bool {
-    true
-  }
-
-  #[inline(always)]
-  fn round_away_from_zero(self, _is_negative: bool, _before: i8, _after: i8) -> bool {
-    false
-  }
-}
-
-/// Please see [Rounding] for an overview.
+/// Directed, Down            | \[-2.0, -1.0) | \[-1.0,  0.0) |  \[0.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [`RoundDown`](Rounding::RoundDown)
+/// Directed, Up              |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 0.0] |  (0.0, 1.0] |  (1.0, 2.0] | [`RoundUp`](Rounding::RoundUp)
+/// Directed, Towards 0       |  (-3.0, -2.0] |  (-2.0, -1.0] |  (-1.0, 1.0) | \[1.0, 2.0) | \[2.0, 3.0) | [`RoundTowardsZero`](Rounding::RoundTowardsZero)
+/// Directed, Away From 0     | \[-2.0, -1.0) | \[-1.0,  0.0) |      0.0     |  (0.0, 1.0] |  (1.0, 2.0] | [`RoundAwayFromZero`](Rounding::RoundAwayFromZero)
+/// Nearest, Half Down        |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [`RoundHalfDown`](Rounding::RoundHalfDown)
+/// Nearest, Half Up          | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [`RoundHalfUp`](Rounding::RoundHalfUp)
+/// Nearest, Half Towards 0   | \[-2.5, -1.5) | \[-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5] |  (1.5, 2.5] | [`RoundHalfTowardsZero`](Rounding::RoundHalfTowardsZero)
+/// Nearest, Half Away From 0 |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [`RoundHalfAwayFromZero`](Rounding::RoundHalfAwayFromZero)
+/// Nearest, Half To Even     | \[-2.5, -1.5] |  (-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5) | \[1.5, 2.5] | [`RoundHalfToEven`](Rounding::RoundHalfToEven)
+/// Nearest, half To Odd      |  (-2.5, -1.5) | \[-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5] |  (1.5, 2.5) | [`RoundHalfToOdd`](Rounding::RoundHalfToOdd)
+#[derive(Copy, Clone, Debug)]
+#[non_exhaustive]
 #[cfg_attr(no_re_export, allow(dead_code))]
-#[derive(Copy, Clone)]
-pub enum Round {
-  RoundAwayFromZero,
+pub enum Rounding {
   /// Also known as floor.
   RoundDown,
   /// Also known as ceiling.
   RoundUp,
+  /// Also known as truncate.
+  RoundTowardsZero,
+  RoundAwayFromZero,
   RoundHalfDown,
   RoundHalfUp,
   RoundHalfTowardsZero,
@@ -73,35 +34,64 @@ pub enum Round {
   RoundHalfToOdd,
 }
 
-impl Rounding for Round {
+impl Default for Rounding {
+  fn default() -> Self {
+    Rounding::RoundHalfAwayFromZero
+  }
+}
+
+impl Rounding {
   #[inline(always)]
-  fn round_away_from_zero(self, is_negative: bool, before: i8, after: i8) -> bool {
+  pub(crate) fn round_away_from_zero(
+    self,
+    is_negative: bool,
+    before: i8,
+    after: i8,
+    no_trailing_digits: bool,
+  ) -> bool {
     match self {
-      Round::RoundAwayFromZero => true,
-      Round::RoundDown => is_negative,
-      Round::RoundUp => !is_negative,
-      Round::RoundHalfDown => match after.cmp(&5) {
-        Ordering::Less => false,
-        Ordering::Equal => is_negative,
-        Ordering::Greater => true,
-      },
-      Round::RoundHalfUp => match after.cmp(&5) {
-        Ordering::Less => false,
-        Ordering::Equal => !is_negative,
-        Ordering::Greater => true,
-      },
-      Round::RoundHalfTowardsZero => after > 5,
-      Round::RoundHalfAwayFromZero => after >= 5,
-      Round::RoundHalfToEven => match after.cmp(&5) {
-        Ordering::Less => false,
-        Ordering::Equal => before & 1 != 0,
-        Ordering::Greater => true,
-      },
-      Round::RoundHalfToOdd => match after.cmp(&5) {
-        Ordering::Less => false,
-        Ordering::Equal => before & 1 == 0,
-        Ordering::Greater => true,
-      },
+      Rounding::RoundDown
+      | Rounding::RoundUp
+      | Rounding::RoundTowardsZero
+      | Rounding::RoundAwayFromZero => {
+        if after == 0 && no_trailing_digits {
+          false
+        } else {
+          match self {
+            Rounding::RoundDown => is_negative,
+            Rounding::RoundUp => !is_negative,
+            Rounding::RoundTowardsZero => false,
+            Rounding::RoundAwayFromZero => true,
+            _ => unsafe { unreachable_unchecked() },
+          }
+        }
+      }
+      Rounding::RoundHalfDown
+      | Rounding::RoundHalfUp
+      | Rounding::RoundHalfTowardsZero
+      | Rounding::RoundHalfAwayFromZero
+      | Rounding::RoundHalfToEven
+      | Rounding::RoundHalfToOdd => {
+        match after.cmp(&5).then_with(|| {
+          if no_trailing_digits {
+            Ordering::Equal
+          } else {
+            Ordering::Greater
+          }
+        }) {
+          Ordering::Less => false,
+          Ordering::Equal => match self {
+            Rounding::RoundHalfDown => is_negative,
+            Rounding::RoundHalfUp => !is_negative,
+            Rounding::RoundHalfTowardsZero => false,
+            Rounding::RoundHalfAwayFromZero => true,
+            Rounding::RoundHalfToEven => before & 1 != 0,
+            Rounding::RoundHalfToOdd => before & 1 == 0,
+            _ => unsafe { unreachable_unchecked() },
+          },
+          Ordering::Greater => true,
+        }
+      }
     }
   }
 }

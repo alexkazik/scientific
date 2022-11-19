@@ -1,5 +1,5 @@
 use core::str::FromStr;
-use scientific::{Decimals, Digits, RoundHalfAwayFromZero, Scientific};
+use scientific::{Decimals, Digits, Precision, RoundHalfAwayFromZero as RHAFZ, Scientific};
 use std::default::Default;
 
 #[test]
@@ -32,30 +32,21 @@ fn truncate() {
 
 #[test]
 fn round() {
-  assert_eq!(
-    Scientific::from_str("5453.23265346")
-      .unwrap()
-      .round(Digits(2), RoundHalfAwayFromZero),
-    Scientific::from_str("5500").unwrap(),
-  );
-  assert_eq!(
-    Scientific::from_str("5453.23265346")
-      .unwrap()
-      .round(Digits(3), RoundHalfAwayFromZero),
-    Scientific::from_str("5450").unwrap(),
-  );
-  assert_eq!(
-    Scientific::from_str("5453.23265346")
-      .unwrap()
-      .round(Decimals(0), RoundHalfAwayFromZero),
-    Scientific::from_str("5453").unwrap(),
-  );
-  assert_eq!(
-    Scientific::from_str("5453.23265346")
-      .unwrap()
-      .round(Decimals(3), RoundHalfAwayFromZero),
-    Scientific::from_str("5453.233").unwrap(),
-  );
+  const TESTS: [(&str, Precision, &str); 7] = [
+    ("5453.23265346", Digits(2), "5500"),
+    ("5453.23265346", Digits(3), "5450"),
+    ("5453.23265346", Decimals(-5), "0"),
+    ("5453.23265346", Decimals(-4), "10000"),
+    ("5453.23265346", Decimals(-3), "5000"),
+    ("5453.23265346", Decimals(0), "5453"),
+    ("5453.23265346", Decimals(3), "5453.233"),
+  ];
+  for (base, precision, result) in TESTS {
+    assert_eq!(
+      Scientific::from_str(base).unwrap().round(precision, RHAFZ),
+      Scientific::from_str(result).unwrap(),
+    );
+  }
 }
 
 #[test]

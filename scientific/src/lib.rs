@@ -63,7 +63,7 @@
 //!
 //! # Rounding
 //!
-//! There are versions of `div` and `round` which support several rounding options. See [`Rounding`](crate::Rounding) and [`div_r`](crate::Scientific::div_r).
+//! The function [`round`](crate::Scientific::round)/[`round_assign`](crate::Scientific::round_assign) support several rounding options. See [`Rounding`](crate::Rounding).
 //!
 //! # Features
 //!
@@ -96,12 +96,9 @@ pub use crate::types::error::Error;
 #[cfg(not(no_re_export))]
 pub use crate::types::precision::Precision::{self, Decimals, Digits};
 #[cfg(not(no_re_export))]
-pub use crate::types::rounding::{
-  Round::{
-    self, RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
-    RoundHalfToOdd, RoundHalfTowardsZero, RoundHalfUp, RoundUp,
-  },
-  Rounding, Truncate,
+pub use crate::types::rounding::Rounding::{
+  self, RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
+  RoundHalfToOdd, RoundHalfTowardsZero, RoundHalfUp, RoundUp,
 };
 #[cfg(not(no_re_export))]
 pub use crate::types::scientific::Scientific;

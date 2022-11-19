@@ -60,7 +60,7 @@ The shifting operators do shift by one digit (and not one bit as you may expecte
 
 ## Rounding
 
-There are versions of `div` and `round` which support several rounding options. See `Rounding` and `div_r`.
+The function `round`/`round_assign` support several rounding options. See `Rounding`.
 
 ## Features
 
