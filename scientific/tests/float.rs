@@ -114,6 +114,9 @@ fn float() {
       sci_result,
       diff,
     );
+    // bytes
+    let bytes = sci_a.to_bytes();
+    assert_eq!(Ok(sci_a), Scientific::from_bytes(&bytes).as_ref());
   }
 }
 

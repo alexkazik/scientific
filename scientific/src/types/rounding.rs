@@ -57,6 +57,7 @@ impl Rounding for Truncate {
 }
 
 /// Please see [Rounding] for an overview.
+#[cfg_attr(no_re_export, allow(dead_code))]
 #[derive(Copy, Clone)]
 pub enum Round {
   RoundAwayFromZero,

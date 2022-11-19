@@ -89,9 +89,13 @@
 #[macro_use]
 extern crate alloc;
 
+#[cfg(not(no_re_export))]
 pub use crate::types::conversion_error::ConversionError;
+#[cfg(not(no_re_export))]
 pub use crate::types::error::Error;
+#[cfg(not(no_re_export))]
 pub use crate::types::precision::Precision::{self, Decimals, Digits};
+#[cfg(not(no_re_export))]
 pub use crate::types::rounding::{
   Round::{
     self, RoundAwayFromZero, RoundDown, RoundHalfAwayFromZero, RoundHalfDown, RoundHalfToEven,
@@ -99,10 +103,13 @@ pub use crate::types::rounding::{
   },
   Rounding, Truncate,
 };
+#[cfg(not(no_re_export))]
 pub use crate::types::scientific::Scientific;
 
 #[doc(hidden)]
+#[cfg(not(no_re_export))]
 pub mod __private;
+
 pub(crate) mod conversion;
 pub(crate) mod math;
 pub(crate) mod ptr;
