@@ -1,5 +1,5 @@
 use crate::ptr::Ptr;
-use crate::types::bytes_error::BytesError;
+use crate::types::conversion_error::ConversionError;
 use crate::types::owner::Owner;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
@@ -8,7 +8,7 @@ use core::convert::TryInto;
 
 impl Sci {
   #[allow(clippy::too_many_lines)]
-  pub(crate) fn from_bytes(bytes: &[u8]) -> Result<Sci, BytesError> {
+  pub(crate) fn from_bytes(bytes: &[u8]) -> Result<Sci, ConversionError> {
     if bytes.is_empty() {
       return Ok(Sci::ZERO);
     }
@@ -27,35 +27,35 @@ impl Sci {
       pos = 1;
     } else if prefix == 0x3c {
       if bytes.len() < 1 + 1 {
-        return Err(BytesError::MalformedNumber);
+        return Err(ConversionError::ParseError);
       }
       exponent = (bytes[1] as i8) as isize;
       pos = 1 + 1;
     } else if prefix == 0x3d {
       if bytes.len() < 1 + 2 {
-        return Err(BytesError::MalformedNumber);
+        return Err(ConversionError::ParseError);
       }
       exponent = i16::from_be_bytes(bytes[1..=2].try_into().unwrap()) as isize;
       pos = 1 + 2;
     } else {
       #[cfg(target_pointer_width = "16")]
-      return Err(BytesError::ExponentTooLarge);
+      return Err(ConversionError::ExponentTooLargeForThisPlatform);
 
       #[cfg(any(target_pointer_width = "32", target_pointer_width = "64"))]
       if prefix == 0x3e {
         if bytes.len() < 1 + 4 {
-          return Err(BytesError::MalformedNumber);
+          return Err(ConversionError::ParseError);
         }
         exponent = i32::from_be_bytes(bytes[1..=4].try_into().unwrap()) as isize;
         pos = 1 + 4;
       } else {
         #[cfg(target_pointer_width = "32")]
-        return Err(BytesError::ExponentTooLarge);
+        return Err(ConversionError::ExponentTooLargeForThisPlatform);
 
         #[cfg(target_pointer_width = "64")]
         {
           if bytes.len() < 1 + 8 {
-            return Err(BytesError::MalformedNumber);
+            return Err(ConversionError::ParseError);
           }
           exponent = i64::from_be_bytes(bytes[1..=8].try_into().unwrap()) as isize;
           pos = 1 + 8;
@@ -87,7 +87,7 @@ impl Sci {
       buf_len -= 10;
       let v = (buf >> buf_len) & 1023;
       if v >= 1000 {
-        return Err(BytesError::MalformedNumber);
+        return Err(ConversionError::ParseError);
       }
       owned.push((v / 100) as u8);
       owned.push(((v / 10) % 10) as u8);
@@ -97,12 +97,12 @@ impl Sci {
       buf_len -= 4;
       let v = (buf >> buf_len) & 15;
       if v > 10 {
-        return Err(BytesError::MalformedNumber);
+        return Err(ConversionError::ParseError);
       }
       owned.push(v as u8);
     }
     if buf_len > 0 && buf << (16 - buf_len) != 0 {
-      return Err(BytesError::MalformedNumber);
+      return Err(ConversionError::ParseError);
     }
     let mut len = owned.len() as isize;
     let data = Ptr::new(owned.as_slice());
@@ -111,12 +111,8 @@ impl Sci {
       len -= 1;
       trailing_zeroes += 1;
     }
-    if len == 0 {
-      Err(BytesError::NumberTooShort)
-    } else if *data == 0 {
-      Err(BytesError::NumberHasLeadingZeroes)
-    } else if trailing_zeroes != calculate_trailing_zeroes(len) {
-      Err(BytesError::InvalidTrailingZeroes)
+    if len == 0 || *data == 0 || trailing_zeroes != calculate_trailing_zeroes(len) {
+      Err(ConversionError::ParseError)
     } else {
       Ok(Sci {
         sign: Sign::new(is_negative),

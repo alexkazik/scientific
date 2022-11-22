@@ -1,5 +1,4 @@
 pub(crate) mod builder;
-pub(crate) mod bytes_error;
 pub(crate) mod conversion_error;
 pub(crate) mod debug;
 pub(crate) mod display;
