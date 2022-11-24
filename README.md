@@ -13,7 +13,7 @@ Arbitrary precision scientific number
 
 ## Constants
 
-Use `Scientific!` in the crate `scientific-macro` to create constant numbers.
+Use `Scientific!` in the crate [`scientific-macro`](https://docs.rs/scientific-macro) to create constant numbers.
 
 ```rust
 use scientific_macro::Scientific;

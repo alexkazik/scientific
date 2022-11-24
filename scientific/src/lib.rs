@@ -16,9 +16,9 @@
 //!
 //! # Constants
 //!
-//! Use `Scientific!` in the crate `scientific-macro` to create constant numbers.
+//! Use `Scientific!` in the crate [`scientific-macro`](https://docs.rs/scientific-macro) to create constant numbers.
 //!
-//! ```rust
+//! ```ignore
 //! use scientific_macro::Scientific;
 //! let n1 = Scientific!(1e100);
 //! let n2 = Scientific!(1e80);
