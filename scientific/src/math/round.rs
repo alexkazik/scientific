@@ -1,14 +1,20 @@
 use crate::ptr::Ptr;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
-use crate::types::rounding::Rounding;
+use crate::types::rounding_mode::RoundingMode;
+use crate::types::rounding_rpsp::RPSP;
 use crate::types::sci::Sci;
 
 impl Sci {
-  pub(crate) fn round_assign(&mut self, precision: Precision, rounding: Rounding) {
+  pub(crate) fn round_assign(&mut self, precision: Precision, rounding: RoundingMode) {
     let len = self.precision_len(precision);
     if len < 0 {
-      self.assign_zero();
+      if let (RoundingMode::RPSP(RPSP), Precision::Decimals(d)) = (rounding, precision) {
+        self.exponent = -d;
+        self.assign_one();
+      } else {
+        self.assign_zero();
+      }
     } else if len >= self.len {
       // more precision requested as available: just return the number
     } else if !rounding.round_away_from_zero(

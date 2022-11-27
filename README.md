@@ -62,6 +62,10 @@ The shifting operators do shift by one digit (and not one bit as you may expecte
 
 The function `round`/`round_assign` support several rounding options. See `Rounding`.
 
+The functions above should be only used for the final rounding. If rounding in between is required (e.g. to keep the mantissa manageable) use
+`round_rpsp`/`round_assign` with a higher precision than the final one. It's ok to be just one digit longer.
+RPSP stands for Rounding to prepare for shorter precision, see [Wikipedia](https://en.wikipedia.org/wiki/Rounding#Rounding_to_prepare_for_shorter_precision) for more information.
+
 ## Features
 
 - `serde`: Enable De-/Serialization with serde.

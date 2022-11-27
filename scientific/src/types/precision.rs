@@ -2,6 +2,7 @@ use core::ops::{Add, AddAssign, Sub, SubAssign};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Precision {
+  /// The number of digits to round/truncate to. If the number is less or equal to zero then the result is always zero!
   Digits(isize),
   Decimals(isize),
 }

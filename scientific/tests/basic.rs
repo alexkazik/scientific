@@ -50,6 +50,51 @@ fn round() {
 }
 
 #[test]
+fn round_rpsp() {
+  const TESTS: [(&str, Precision, &str); 29] = [
+    ("0.00", Decimals(0), "0"),
+    ("0.01", Decimals(0), "1"),
+    ("0.10", Decimals(0), "1"),
+    // ...
+    ("20.00", Decimals(0), "20"),
+    ("20.01", Decimals(0), "21"),
+    ("20.10", Decimals(0), "21"),
+    ("20.90", Decimals(0), "21"),
+    ("21.00", Decimals(0), "21"),
+    ("21.50", Decimals(0), "21"),
+    ("21.90", Decimals(0), "21"),
+    ("22.00", Decimals(0), "22"),
+    ("22.50", Decimals(0), "22"),
+    ("22.90", Decimals(0), "22"),
+    ("23.00", Decimals(0), "23"),
+    ("23.50", Decimals(0), "23"),
+    ("23.90", Decimals(0), "23"),
+    ("24.00", Decimals(0), "24"),
+    ("24.50", Decimals(0), "24"),
+    ("24.90", Decimals(0), "24"),
+    ("25.00", Decimals(0), "25"),
+    ("25.01", Decimals(0), "26"),
+    ("25.10", Decimals(0), "26"),
+    ("25.90", Decimals(0), "26"),
+    ("26.00", Decimals(0), "26"),
+    ("26.50", Decimals(0), "26"),
+    ("26.90", Decimals(0), "26"),
+    // ...
+    ("29.00", Decimals(0), "29"),
+    ("29.50", Decimals(0), "29"),
+    ("29.90", Decimals(0), "29"),
+  ];
+  for (base, precision, result) in TESTS {
+    let rounded = Scientific::from_str(base).unwrap().round_rpsp(precision);
+    assert_eq!(
+      rounded,
+      Scientific::from_str(result).unwrap(),
+      "{base} {precision:?} => {result} != {rounded}"
+    );
+  }
+}
+
+#[test]
 fn raw_parts() {
   let n1 = Scientific::from_string("12.34e10".to_string()).unwrap();
   let n2 = Scientific::from_raw_parts(

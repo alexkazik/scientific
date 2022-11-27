@@ -7,6 +7,8 @@ pub(crate) mod hash;
 pub(crate) mod owner;
 pub(crate) mod precision;
 pub(crate) mod rounding;
+pub(crate) mod rounding_mode;
+pub(crate) mod rounding_rpsp;
 pub(crate) mod sci;
 pub(crate) mod scientific;
 #[cfg(feature = "serde")]

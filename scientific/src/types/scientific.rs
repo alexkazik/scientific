@@ -2,6 +2,8 @@ use crate::types::conversion_error::ConversionError;
 use crate::types::error::Error;
 use crate::types::precision::Precision;
 use crate::types::rounding::Rounding;
+use crate::types::rounding_mode::RoundingMode;
+use crate::types::rounding_rpsp::RPSP;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 use alloc::string::{String, ToString};
@@ -118,13 +120,28 @@ impl Scientific {
 
   #[inline(always)]
   pub fn round_assign(&mut self, precision: Precision, rounding: Rounding) {
-    self.inner.round_assign(precision, rounding);
+    self
+      .inner
+      .round_assign(precision, RoundingMode::Rounding(rounding));
   }
 
   #[inline]
   pub fn round(&self, precision: Precision, rounding: Rounding) -> Scientific {
     let mut r = self.clone();
-    r.inner.round_assign(precision, rounding);
+    r.inner
+      .round_assign(precision, RoundingMode::Rounding(rounding));
+    r
+  }
+
+  #[inline(always)]
+  pub fn round_rpsp_assign(&mut self, precision: Precision) {
+    self.inner.round_assign(precision, RoundingMode::RPSP(RPSP));
+  }
+
+  #[inline]
+  pub fn round_rpsp(&self, precision: Precision) -> Scientific {
+    let mut r = self.clone();
+    r.inner.round_assign(precision, RoundingMode::RPSP(RPSP));
     r
   }
 
