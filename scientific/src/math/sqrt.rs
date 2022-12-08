@@ -35,6 +35,7 @@ fn nz_sqrt(value: &Sci, precision: Precision, guess_exponent_adapt: isize) -> Re
       &(guess.add(&value.div(
         &guess,
         Precision::Digits(limit_div(value, &guess, precision)),
+        false,
       )?)),
     );
     limit(&mut next_guess, precision);

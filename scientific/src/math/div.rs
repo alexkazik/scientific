@@ -3,6 +3,8 @@ use crate::types::builder::Builder;
 use crate::types::error::Error;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
+use crate::types::rounding_mode::RoundingMode;
+use crate::types::rounding_rpsp::RPSP;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 use alloc::vec::Vec;
@@ -73,13 +75,13 @@ impl Remainder for Sci {
 
 impl Sci {
   // this function is not inlined as the called functions will be inlined
-  pub(crate) fn div(&self, rhs: &Sci, precision: Precision) -> Result<Sci, Error> {
-    Ok(self.div_multi::<Infallible>(rhs, precision)?.0)
+  pub(crate) fn div(&self, rhs: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Error> {
+    Ok(self.div_multi::<Infallible>(rhs, precision, use_rpsp)?.0)
   }
 
   // this function is not inlined as the called functions will be inlined
   pub(crate) fn div_rem(&self, rhs: &Sci) -> Result<(Sci, Sci), Error> {
-    let (quot, rem) = self.div_multi::<Sci>(rhs, Precision::INTEGER)?;
+    let (quot, rem) = self.div_multi::<Sci>(rhs, Precision::INTEGER, false)?;
 
     let rem = rem.unwrap_or_else(|| self.sub(&quot.mul(rhs)));
 
@@ -91,17 +93,29 @@ impl Sci {
     &self,
     rhs: &Sci,
     precision: Precision,
+    use_rpsp: bool,
   ) -> Result<(Sci, Option<R>), Error> {
+    #[cfg(feature = "debug")]
+    assert!(!(R::has_result() && use_rpsp));
+
     if rhs.is_zero() {
       Err(Error::DivisionByZero)
     } else if self.is_zero() {
       Ok((Sci::ZERO, R::from_zero()))
     } else if div_results_in_zero(self, rhs, precision) {
-      Ok((Sci::ZERO, R::from_sci(self)))
+      if let (true, Precision::Decimals(d)) = (use_rpsp, precision) {
+        Ok((Sci::one(self.sign ^ rhs.sign, -d), None))
+      } else {
+        Ok((Sci::ZERO, R::from_sci(self)))
+      }
     } else if rhs.len == 1 && *rhs.data == 1 {
       let mut r = self.clone();
       r.shr_assign(rhs.exponent);
-      r.truncate_assign(precision);
+      if use_rpsp {
+        r.round_assign(precision, RoundingMode::RPSP(RPSP));
+      } else {
+        r.truncate_assign(precision);
+      }
       if rhs.sign.is_negative() {
         r.neg_assign();
       }
@@ -126,7 +140,7 @@ impl Sci {
       if R::has_result() {
         extra_digits = extra_digits.max(0);
       }
-      Ok(nz_div::<R>(self, rhs, extra_digits, precision))
+      Ok(nz_div::<R>(self, rhs, extra_digits, precision, use_rpsp))
     }
   }
 }
@@ -137,6 +151,7 @@ fn nz_div<R: Remainder>(
   rhs: &Sci,
   extra_digits: isize,
   precision: Precision,
+  use_rpsp: bool,
 ) -> (Sci, Option<R>) {
   // Notice: extra_digits can be negative!
   // lhs.len + decimals is guaranteed to be >= rhs.len
@@ -151,10 +166,9 @@ fn nz_div<R: Remainder>(
   let mut tmp_len = 0;
   let (result, mut result_ptr) = Builder::new(
     lhs.sign ^ rhs.sign,
-    lhs.len + extra_digits,
-    lhs.exponent - rhs.exponent - extra_digits,
+    lhs.len + extra_digits + isize::from(use_rpsp),
+    lhs.exponent - rhs.exponent - extra_digits - isize::from(use_rpsp),
   );
-  // let mut result_start = result_ptr;
   let result_end = result_ptr.offset(lhs.len + extra_digits);
   while result_ptr < result_end {
     tmp_len += 1;
@@ -169,22 +183,31 @@ fn nz_div<R: Remainder>(
     result_ptr.inc();
   }
 
+  if use_rpsp && (extra_digits < 0 || tmp_len > 0) {
+    *result_ptr = 8;
+  }
+
   let mut result = result.finish();
 
-  let orig_len = result.len;
-  result.truncate_assign(precision);
-  let remainder = if orig_len == result.len {
-    R::from_parts(
-      lhs.sign,
-      tmp,
-      tmp_ptr,
-      tmp_len,
-      rhs.exponent.min(lhs.exponent),
-    )
+  if use_rpsp {
+    result.round_assign(precision, RoundingMode::RPSP(RPSP));
+    (result, None)
   } else {
-    None
-  };
-  (result, remainder)
+    let orig_len = result.len;
+    result.truncate_assign(precision);
+    let remainder = if orig_len == result.len {
+      R::from_parts(
+        lhs.sign,
+        tmp,
+        tmp_ptr,
+        tmp_len,
+        rhs.exponent.min(lhs.exponent),
+      )
+    } else {
+      None
+    };
+    (result, remainder)
+  }
 }
 
 // Remove leading zeroes, this is important because p_ge assumes that there are no leading zeroes

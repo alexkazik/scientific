@@ -96,7 +96,7 @@ impl Scientific {
   #[inline(always)]
   pub fn div_truncate(&self, rhs: &Scientific, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
-      inner: self.inner.div(&rhs.inner, precision)?,
+      inner: self.inner.div(&rhs.inner, precision, false)?,
     })
   }
 
@@ -104,6 +104,17 @@ impl Scientific {
   pub fn div_rem(&self, rhs: &Scientific) -> Result<(Scientific, Scientific), Error> {
     let (d, r) = self.inner.div_rem(&rhs.inner)?;
     Ok((Scientific { inner: d }, Scientific { inner: r }))
+  }
+
+  /// Calculate division with included rpsp (Rounding to Prepare for Shorter Precision)
+  ///
+  /// Use rpsp (Rounding to Prepare for Shorter Precision) only during internal calculations and
+  /// do one "proper" round at the end of all calculations.
+  #[inline(always)]
+  pub fn div_rpsp(&self, rhs: &Scientific, precision: Precision) -> Result<Scientific, Error> {
+    Ok(Scientific {
+      inner: self.inner.div(&rhs.inner, precision, true)?,
+    })
   }
 
   #[inline(always)]

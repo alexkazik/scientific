@@ -2,7 +2,7 @@
 
 use core::convert::TryFrom;
 use core::ops::Neg;
-use scientific::{Decimals, Error, Precision, Scientific};
+use scientific::{Decimals, Digits, Error, Precision, Scientific};
 
 const POSITIVE_NUMBERS: [i128; 24] = [
   9_223_372_036_854_775_807, // 1<<63-1, i64::MAX
@@ -88,7 +88,14 @@ fn integer() {
         int_result, sci_result,
         "function {}({}, {}) -> {:?} = {:?}",
         "cmp", int_a, int_b, int_result, sci_result,
-      )
+      );
+      // div_rpsp
+      let big = sci_a.div_truncate(sci_b, Digits(20)).map(|mut b| {
+        b.round_rpsp_assign(Decimals(1));
+        b
+      });
+      let fast = sci_a.div_rpsp(sci_b, Decimals(1));
+      assert_eq!(big, fast, "div_rpsp vs. div and round_rpsp");
     }
     // i128 via string
     let i2s = sci_a;
