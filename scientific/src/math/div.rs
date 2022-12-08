@@ -1,9 +1,13 @@
 use crate::ptr::Ptr;
 use crate::types::builder::Builder;
 use crate::types::error::Error;
+use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::sci::Sci;
+use crate::types::sign::Sign;
+use alloc::vec::Vec;
 use core::cmp::Ordering;
+use core::convert::Infallible;
 
 #[inline(always)]
 fn div_results_in_zero(lhs: &Sci, rhs: &Sci, precision: Precision) -> bool {
@@ -13,12 +17,87 @@ fn div_results_in_zero(lhs: &Sci, rhs: &Sci, precision: Precision) -> bool {
   }
 }
 
+pub(crate) trait Remainder
+where
+  Self: Sized,
+{
+  fn has_result() -> bool;
+  fn from_zero() -> Option<Self>;
+  fn from_sci(sci: &Sci) -> Option<Self>;
+  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self>;
+}
+
+impl Remainder for Infallible {
+  #[inline(always)]
+  fn has_result() -> bool {
+    false
+  }
+
+  #[inline(always)]
+  fn from_zero() -> Option<Self> {
+    None
+  }
+
+  #[inline(always)]
+  fn from_sci(_: &Sci) -> Option<Self> {
+    None
+  }
+
+  #[inline(always)]
+  fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: isize, _: isize) -> Option<Self> {
+    None
+  }
+}
+
+impl Remainder for Sci {
+  #[inline(always)]
+  fn has_result() -> bool {
+    true
+  }
+
+  #[inline(always)]
+  fn from_zero() -> Option<Self> {
+    Some(Sci::ZERO)
+  }
+
+  #[inline(always)]
+  fn from_sci(sci: &Sci) -> Option<Self> {
+    Some(sci.clone())
+  }
+
+  #[inline(always)]
+  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self> {
+    Some(Builder::new_with_data(sign, data, len, exponent, Owner::new_vec(vec)).finish())
+  }
+}
+
 impl Sci {
+  // this function is not inlined as the called functions will be inlined
   pub(crate) fn div(&self, rhs: &Sci, precision: Precision) -> Result<Sci, Error> {
+    Ok(self.div_multi::<Infallible>(rhs, precision)?.0)
+  }
+
+  // this function is not inlined as the called functions will be inlined
+  pub(crate) fn div_rem(&self, rhs: &Sci) -> Result<(Sci, Sci), Error> {
+    let (quot, rem) = self.div_multi::<Sci>(rhs, Precision::INTEGER)?;
+
+    let rem = rem.unwrap_or_else(|| self.sub(&quot.mul(rhs)));
+
+    Ok((quot, rem))
+  }
+
+  #[inline(always)]
+  fn div_multi<R: Remainder>(
+    &self,
+    rhs: &Sci,
+    precision: Precision,
+  ) -> Result<(Sci, Option<R>), Error> {
     if rhs.is_zero() {
       Err(Error::DivisionByZero)
-    } else if self.is_zero() || div_results_in_zero(self, rhs, precision) {
-      Ok(Sci::ZERO)
+    } else if self.is_zero() {
+      Ok((Sci::ZERO, R::from_zero()))
+    } else if div_results_in_zero(self, rhs, precision) {
+      Ok((Sci::ZERO, R::from_sci(self)))
     } else if rhs.len == 1 && *rhs.data == 1 {
       let mut r = self.clone();
       r.shr_assign(rhs.exponent);
@@ -26,27 +105,39 @@ impl Sci {
       if rhs.sign.is_negative() {
         r.neg_assign();
       }
-      Ok(r)
+      let remainder = if self.len == r.len {
+        // self is the same as the result -> no remainder
+        R::from_zero()
+      } else {
+        // some portions of self is lost due to truncating -> has remainder (to be calculated when needed)
+        None
+      };
+      Ok((r, remainder))
     } else if self.len == rhs.len && self.nz_compare_mantissa::<false>(rhs) == Ordering::Equal {
-      let exponent = self.exponent0() - rhs.exponent0();
-      if let Precision::Decimals(decimals) = precision {
-        if -decimals > exponent {
-          return Ok(Sci::ZERO);
-        }
-      }
-      Ok(Sci::one(self.sign ^ rhs.sign, exponent))
+      Ok((
+        Sci::one(self.sign ^ rhs.sign, self.exponent0() - rhs.exponent0()),
+        R::from_zero(),
+      ))
     } else {
-      let extra_digits = match precision {
+      let mut extra_digits = match precision {
         Precision::Digits(digits) => digits - (self.len - rhs.len),
         Precision::Decimals(decimals) => self.exponent - rhs.exponent + decimals,
       };
-      Ok(nz_div(self, rhs, extra_digits, precision))
+      if R::has_result() {
+        extra_digits = extra_digits.max(0);
+      }
+      Ok(nz_div::<R>(self, rhs, extra_digits, precision))
     }
   }
 }
 
 #[inline(always)]
-fn nz_div(lhs: &Sci, rhs: &Sci, extra_digits: isize, precision: Precision) -> Sci {
+fn nz_div<R: Remainder>(
+  lhs: &Sci,
+  rhs: &Sci,
+  extra_digits: isize,
+  precision: Precision,
+) -> (Sci, Option<R>) {
   // Notice: extra_digits can be negative!
   // lhs.len + decimals is guaranteed to be >= rhs.len
   #[cfg(feature = "debug")]
@@ -63,6 +154,7 @@ fn nz_div(lhs: &Sci, rhs: &Sci, extra_digits: isize, precision: Precision) -> Sc
     lhs.len + extra_digits,
     lhs.exponent - rhs.exponent - extra_digits,
   );
+  // let mut result_start = result_ptr;
   let result_end = result_ptr.offset(lhs.len + extra_digits);
   while result_ptr < result_end {
     tmp_len += 1;
@@ -78,8 +170,21 @@ fn nz_div(lhs: &Sci, rhs: &Sci, extra_digits: isize, precision: Precision) -> Sc
   }
 
   let mut result = result.finish();
+
+  let orig_len = result.len;
   result.truncate_assign(precision);
-  result
+  let remainder = if orig_len == result.len {
+    R::from_parts(
+      lhs.sign,
+      tmp,
+      tmp_ptr,
+      tmp_len,
+      rhs.exponent.min(lhs.exponent),
+    )
+  } else {
+    None
+  };
+  (result, remainder)
 }
 
 // Remove leading zeroes, this is important because p_ge assumes that there are no leading zeroes
