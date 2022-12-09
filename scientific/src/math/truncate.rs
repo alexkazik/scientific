@@ -3,10 +3,7 @@ use crate::types::sci::Sci;
 
 impl Sci {
   pub(crate) fn truncate_assign(&mut self, precision: Precision) {
-    let len = match precision {
-      Precision::Digits(digits) => digits,
-      Precision::Decimals(decimals) => self.exponent0() + decimals,
-    };
+    let len = self.precision_len(precision);
     if self.len > len {
       self.exponent += self.len - len;
       self.len = len; // len may be zero or negative

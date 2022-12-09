@@ -1,7 +1,6 @@
 use crate::ptr::Ptr;
 use crate::types::builder::Builder;
 use crate::types::error::Error;
-use crate::types::mantissa::MANTISSA_1;
 use crate::types::precision::Precision;
 use crate::types::sci::Sci;
 use core::cmp::Ordering;
@@ -35,11 +34,7 @@ impl Sci {
           return Ok(Sci::ZERO);
         }
       }
-      Ok(Sci::nz_unsafe_static_new(
-        self.sign ^ rhs.sign,
-        &MANTISSA_1,
-        exponent,
-      ))
+      Ok(Sci::one(self.sign ^ rhs.sign, exponent))
     } else {
       let extra_digits = match precision {
         Precision::Digits(digits) => digits - (self.len - rhs.len),
@@ -53,7 +48,7 @@ impl Sci {
 #[inline(always)]
 fn nz_div(lhs: &Sci, rhs: &Sci, extra_digits: isize, precision: Precision) -> Sci {
   // Notice: extra_digits can be negative!
-  // n1.len + decimals is guaranteed to be >= n2.len
+  // lhs.len + decimals is guaranteed to be >= rhs.len
   #[cfg(feature = "debug")]
   assert!(lhs.len + extra_digits >= rhs.len);
 

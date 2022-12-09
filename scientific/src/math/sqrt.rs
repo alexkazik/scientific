@@ -28,7 +28,7 @@ fn nz_sqrt(value: &Sci, precision: Precision, guess_exponent_adapt: isize) -> Re
     let mut next_guess = Sci::POINT5.mul(&(guess.add(&value.div(&guess, precision)?)));
     next_guess.truncate_assign(precision);
 
-    if guess.compare::<true>(&next_guess) == Ordering::Equal {
+    if guess.compare::<false>(&next_guess) == Ordering::Equal {
       return Ok(guess);
     }
     guess = next_guess;

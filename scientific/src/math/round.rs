@@ -1,5 +1,4 @@
 use crate::ptr::Ptr;
-use crate::types::mantissa::MANTISSA_1;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::rounding::Rounding;
@@ -7,10 +6,7 @@ use crate::types::sci::Sci;
 
 impl Sci {
   pub(crate) fn round_assign(&mut self, precision: Precision, rounding: Rounding) {
-    let len = match precision {
-      Precision::Digits(digits) => digits,
-      Precision::Decimals(decimals) => self.exponent0() + decimals,
-    };
+    let len = self.precision_len(precision);
     if len < 0 {
       self.assign_zero();
     } else if len >= self.len {
@@ -27,9 +23,7 @@ impl Sci {
       // the new number should have 0 of the current digits but due to overflow one
       // is added in front
       self.exponent += self.len;
-      self.len = 1;
-      self.data = Ptr::new(&MANTISSA_1);
-      self.owner = Owner::None;
+      self.assign_one();
     } else {
       // adapt length (and exponent)
       self.exponent += self.len - len;
@@ -46,9 +40,7 @@ impl Sci {
       if self.len == 0 {
         // all digits where 9 and this is an overflow
         // replace mantissa with `1` and set exponent/len/owner accordingly
-        self.len = 1;
-        self.data = Ptr::new(&MANTISSA_1);
-        self.owner = Owner::None;
+        self.assign_one();
       } else {
         *ptr += 1;
       }

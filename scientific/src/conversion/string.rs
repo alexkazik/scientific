@@ -54,9 +54,7 @@ impl Sci {
       exponent_len = 0;
     } else {
       let next = *data_ptr as u8;
-      if next != b'.' {
-        // did not found a dot
-      } else {
+      if next == b'.' {
         // found a dot
         data_ptr.inc();
         while data_ptr != data_end {

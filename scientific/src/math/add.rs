@@ -56,8 +56,8 @@ impl Sci {
     while carry != 0 {
       result_ptr.dec();
       let mut value = *result_ptr + carry;
-      if value >= 10 {
-        value -= 10;
+      if value == 10 {
+        value = 0;
         carry = 1;
       } else {
         carry = 0;

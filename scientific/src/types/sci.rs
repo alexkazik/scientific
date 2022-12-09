@@ -1,7 +1,10 @@
 use crate::ptr::Ptr;
-use crate::types::mantissa::{MANTISSA_1, MANTISSA_5};
 use crate::types::owner::Owner;
+use crate::types::precision::Precision;
 use crate::types::sign::Sign;
+
+const MANTISSA_1: [u8; 1] = [1];
+const MANTISSA_5: [u8; 1] = [5];
 
 // len == 0 <=> value 0
 #[derive(Clone)]
@@ -23,8 +26,20 @@ impl Sci {
     exponent: 1,              // required for exponent() to work
     owner: Owner::None,
   };
-  pub(crate) const ONE: Sci = Sci::nz_unsafe_static_new(Sign::POSITIVE, &MANTISSA_1, 0);
+  pub(crate) const ONE: Sci = Sci::one(Sign::POSITIVE, 0);
   pub(crate) const POINT5: Sci = Sci::nz_unsafe_static_new(Sign::POSITIVE, &MANTISSA_5, -1);
+
+  #[inline(always)]
+  pub(crate) const fn one(sign: Sign, exponent: isize) -> Sci {
+    Sci::nz_unsafe_static_new(sign, &MANTISSA_1, exponent)
+  }
+
+  #[inline(always)]
+  pub(crate) fn assign_one(&mut self) {
+    self.len = 1;
+    self.data = Ptr::new(&MANTISSA_1);
+    self.owner = Owner::None;
+  }
 
   #[inline(always)]
   pub(crate) fn assign_zero(&mut self) {
@@ -63,5 +78,13 @@ impl Sci {
   #[inline(always)]
   pub(crate) fn exponent1(&self) -> isize {
     self.exponent + self.len - 1
+  }
+
+  #[inline]
+  pub(crate) fn precision_len(&self, precision: Precision) -> isize {
+    match precision {
+      Precision::Digits(digits) => digits,
+      Precision::Decimals(decimals) => self.exponent0() + decimals,
+    }
   }
 }

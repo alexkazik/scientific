@@ -1,11 +1,12 @@
 use crate::ptr::Ptr;
 use crate::types::builder::Builder;
 use crate::types::conversion_error::ConversionError;
-use crate::types::mantissa::MANTISSA_0;
 use crate::types::owner::Owner;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 use alloc::vec::Vec;
+
+pub(crate) const MANTISSA_0: [u8; 1] = [0];
 
 impl Sci {
   pub(crate) fn as_raw_mantissa(&self) -> &[u8] {

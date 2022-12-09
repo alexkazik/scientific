@@ -5,7 +5,6 @@ pub(crate) mod debug;
 pub(crate) mod display;
 pub(crate) mod error;
 pub(crate) mod hash;
-pub(crate) mod mantissa;
 pub(crate) mod owner;
 pub(crate) mod precision;
 pub(crate) mod rounding;

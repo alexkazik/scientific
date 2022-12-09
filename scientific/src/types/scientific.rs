@@ -70,7 +70,7 @@ impl Scientific {
     })
   }
 
-  #[inline(always)]
+  #[inline]
   pub fn abs(&self) -> Scientific {
     let mut result = self.clone();
     result.inner.sign = Sign::POSITIVE;
@@ -109,7 +109,7 @@ impl Scientific {
     self.inner.truncate_assign(precision);
   }
 
-  #[inline(always)]
+  #[inline]
   pub fn truncate(&self, precision: Precision) -> Scientific {
     let mut r = self.clone();
     r.inner.truncate_assign(precision);
@@ -178,14 +178,14 @@ impl Scientific {
   #[inline(always)]
   #[must_use]
   pub fn is_sign_positive(&self) -> bool {
-    self.inner.len > 0 && !self.inner.sign.is_negative()
+    !self.is_zero() && !self.inner.sign.is_negative()
   }
 
   /// Returns true if self has a negative sign, this excludes 0.
   #[inline(always)]
   #[must_use]
   pub fn is_sign_negative(&self) -> bool {
-    self.inner.len > 0 && self.inner.sign.is_negative()
+    !self.is_zero() && self.inner.sign.is_negative()
   }
 }
 
@@ -244,7 +244,7 @@ impl Mul for &Scientific {
 impl Neg for &Scientific {
   type Output = Scientific;
 
-  #[inline(always)]
+  #[inline]
   fn neg(self) -> Self::Output {
     let mut result = self.clone();
     result.inner.neg_assign();
