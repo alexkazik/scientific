@@ -1,5 +1,5 @@
 use core::str::FromStr;
-use scientific::{Decimals, Digits, Scientific};
+use scientific::{Decimals, Digits, RoundHalfAwayFromZero, Scientific};
 use std::default::Default;
 
 #[test]
@@ -35,25 +35,25 @@ fn round() {
   assert_eq!(
     Scientific::from_str("5453.23265346")
       .unwrap()
-      .round(Digits(2)),
+      .round(Digits(2), RoundHalfAwayFromZero),
     Scientific::from_str("5500").unwrap(),
   );
   assert_eq!(
     Scientific::from_str("5453.23265346")
       .unwrap()
-      .round(Digits(3)),
+      .round(Digits(3), RoundHalfAwayFromZero),
     Scientific::from_str("5450").unwrap(),
   );
   assert_eq!(
     Scientific::from_str("5453.23265346")
       .unwrap()
-      .round(Decimals(0)),
+      .round(Decimals(0), RoundHalfAwayFromZero),
     Scientific::from_str("5453").unwrap(),
   );
   assert_eq!(
     Scientific::from_str("5453.23265346")
       .unwrap()
-      .round(Decimals(3)),
+      .round(Decimals(3), RoundHalfAwayFromZero),
     Scientific::from_str("5453.233").unwrap(),
   );
 }

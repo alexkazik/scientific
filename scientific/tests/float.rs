@@ -45,7 +45,11 @@ const FUNCTIONS: [(
   ("add", |a, b| a + b, |a, b| Ok(a + b)),
   ("sub", |a, b| a - b, |a, b| Ok(a - b)),
   ("mul", |a, b| a * b, |a, b| Ok(a * b)),
-  ("div", |a, b| a / b, |a, b| a.div(b, Precision::F64)),
+  (
+    "div",
+    |a, b| a / b,
+    |a, b| a.div_truncate(b, Precision::F64),
+  ),
   // rem can't be tested due to the lack of precision in float
 ];
 
@@ -102,7 +106,7 @@ fn float() {
     }
     // sqrt
     let flt_result = flt_a.sqrt();
-    let sci_result = sci_a.sqrt(Precision::F64);
+    let sci_result = sci_a.sqrt_truncate(Precision::F64);
     let diff = diff(sci_a, sci_a, flt_result, &sci_result);
     assert!(
       diff < 2e-15_f64,

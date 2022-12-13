@@ -1,15 +1,10 @@
 use crate::types::builder::Builder;
 use crate::types::precision::Precision;
-use crate::types::rounding::Round::RoundHalfAwayFromZero;
 use crate::types::rounding::Rounding;
 use crate::types::sci::Sci;
 
 impl Sci {
-  pub(crate) fn round(&self, precision: Precision) -> Sci {
-    self.round_r(precision, RoundHalfAwayFromZero)
-  }
-
-  pub(crate) fn round_r<R: Rounding>(&self, precision: Precision, rounding: R) -> Sci {
+  pub(crate) fn round<R: Rounding>(&self, precision: Precision, rounding: R) -> Sci {
     if <R>::is_truncate() {
       let mut result = self.clone();
       result.truncate_assign(precision);

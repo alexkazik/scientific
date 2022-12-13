@@ -37,8 +37,8 @@ const FUNCTIONS: [(
   ("add", |a, b| Ok(a + b), |a, b| Ok(a + b)),
   ("sub", |a, b| Ok(a - b), |a, b| Ok(a - b)),
   ("mul", |a, b| Ok(a * b), |a, b| Ok(a * b)),
-  ("div", int_div, |a, b| a.div(b, Precision::INTEGER)),
-  ("rem", int_rem, |a, b| a.rem(b)),
+  ("div", int_div, |a, b| a.div_truncate(b, Precision::INTEGER)),
+  ("rem", int_rem, |a, b| a.div_rem(b).map(|(_, r)| r)),
 ];
 
 fn int_div(a: i128, b: i128) -> Result<i128, Error> {
@@ -110,7 +110,7 @@ fn integer() {
     // sqrt
     if *int_a >= 0 {
       let sci_cubed = sci_a * sci_a;
-      let sci_result = sci_cubed.sqrt(Decimals(100));
+      let sci_result = sci_cubed.sqrt_truncate(Decimals(100));
       assert_eq!(
         Ok(sci_a.clone()),
         sci_result,

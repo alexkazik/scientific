@@ -33,7 +33,7 @@ impl Sci {
     } else if rhs.len == 1 && *rhs.data == 1 {
       let mut r = self.clone();
       r.shr_assign(rhs.exponent);
-      let mut r = r.round_r(precision, rounding);
+      let mut r = r.round(precision, rounding);
       if rhs.sign.is_negative() {
         r.neg_assign();
       }

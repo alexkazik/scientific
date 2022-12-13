@@ -63,7 +63,7 @@ impl Scientific {
   }
 
   #[inline(always)]
-  pub fn sqrt(&self, precision: Precision) -> Result<Scientific, Error> {
+  pub fn sqrt_truncate(&self, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
       inner: self.inner.sqrt(precision)?,
     })
@@ -86,23 +86,10 @@ impl Scientific {
     self.inner.neg_assign();
   }
 
-  /// Alias to `self.div_r(rhs, precision, Truncate)`.
   #[inline(always)]
-  pub fn div(&self, rhs: &Scientific, precision: Precision) -> Result<Scientific, Error> {
+  pub fn div_truncate(&self, rhs: &Scientific, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
       inner: self.inner.div(&rhs.inner, precision)?,
-    })
-  }
-
-  #[inline(always)]
-  pub fn div_r<R: Rounding>(
-    &self,
-    rhs: &Scientific,
-    precision: Precision,
-    rounding: R,
-  ) -> Result<Scientific, Error> {
-    Ok(Scientific {
-      inner: self.inner.div_r(&rhs.inner, precision, rounding)?,
     })
   }
 
@@ -110,11 +97,6 @@ impl Scientific {
   pub fn div_rem(&self, rhs: &Scientific) -> Result<(Scientific, Scientific), Error> {
     let (d, r) = self.inner.div_rem(&rhs.inner)?;
     Ok((Scientific { inner: d }, Scientific { inner: r }))
-  }
-
-  #[inline(always)]
-  pub fn rem(&self, rhs: &Scientific) -> Result<Scientific, Error> {
-    Ok(self.div_rem(rhs)?.1)
   }
 
   #[inline(always)]
@@ -129,26 +111,10 @@ impl Scientific {
     r
   }
 
-  /// round to nearest half away from zero
-  ///
-  /// Alias to `self.round_r(precision, RoundHalfAwayFromZero)`.
-  ///
-  /// 0.4, -0.4 => 0.0
-  ///
-  /// 0.5, 0.6 => 1.0
-  ///
-  /// -0.5, -0.6 => -1.0
   #[inline(always)]
-  pub fn round(&self, precision: Precision) -> Scientific {
+  pub fn round<R: Rounding>(&self, precision: Precision, rounding: R) -> Scientific {
     Scientific {
-      inner: self.inner.round(precision),
-    }
-  }
-
-  #[inline(always)]
-  pub fn round_r<R: Rounding>(&self, precision: Precision, rounding: R) -> Scientific {
-    Scientific {
-      inner: self.inner.round_r(precision, rounding),
+      inner: self.inner.round(precision, rounding),
     }
   }
 
