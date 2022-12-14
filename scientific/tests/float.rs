@@ -103,7 +103,7 @@ fn float() {
     }
     // sqrt
     let flt_result = flt_a.sqrt();
-    let sci_result = sci_a.sqrt_truncate(Precision::F64);
+    let sci_result = sci_a.sqrt_rpsp(Precision::F64);
     let diff = diff(sci_a, sci_a, flt_result, &sci_result);
     assert!(
       diff < 2e-15_f64,

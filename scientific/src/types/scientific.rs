@@ -68,7 +68,14 @@ impl Scientific {
   #[inline(always)]
   pub fn sqrt_truncate(&self, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
-      inner: self.inner.sqrt(precision)?,
+      inner: self.inner.sqrt(precision, false)?,
+    })
+  }
+
+  #[inline(always)]
+  pub fn sqrt_rpsp(&self, precision: Precision) -> Result<Scientific, Error> {
+    Ok(Scientific {
+      inner: self.inner.sqrt(precision, true)?,
     })
   }
 
