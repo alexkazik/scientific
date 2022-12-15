@@ -1,6 +1,12 @@
 # Changelog for scientific
 
-## 0.1.3 -- 2021-11-09
+## 0.2.0 -- 2022-12-15
+
+* Breaking change!
+* Rewrite several functions and internals
+* Add Rounding to prepare for shorter precision
+
+## 0.1.3 -- 2022-11-09
 
 * Fix clippy warnings
 * Remove patch level precision of the dependencies
