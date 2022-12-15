@@ -65,7 +65,7 @@ fn make_writeable(sci: &mut Sci) -> Ptr {
       // copy the data from the old to the new owner
       let vec = sci.data.as_slice(sci.len).to_vec();
       sci.data = Ptr::new(vec.as_slice());
-      sci.owner = Owner::new_vec(vec);
+      sci.owner = Owner::new(vec);
     }
   }
 

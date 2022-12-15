@@ -119,7 +119,7 @@ impl Sci {
         data,
         len,
         exponent,
-        owner: Owner::new_vec(owned),
+        owner: Owner::new(owned),
       })
     }
   }

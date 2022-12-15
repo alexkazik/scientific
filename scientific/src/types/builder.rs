@@ -18,7 +18,7 @@ impl Builder {
         data: data.as_immutable(),
         len,
         exponent,
-        owner: Owner::new_vec(vec),
+        owner: Owner::new(vec),
       }),
       data,
     )

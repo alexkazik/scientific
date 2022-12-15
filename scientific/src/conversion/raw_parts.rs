@@ -37,7 +37,7 @@ impl Sci {
         Ptr::new(mantissa.as_slice()),
         len,
         exponent,
-        Owner::new_vec(mantissa),
+        Owner::new(mantissa),
       )
       .finish(),
     )

@@ -8,9 +8,10 @@ use alloc::string::String;
 use core::str::FromStr;
 
 impl Sci {
-  pub(crate) fn from_string(mut data: String) -> Result<Sci, ConversionError> {
+  pub(crate) fn from_string(data: String) -> Result<Sci, ConversionError> {
+    let mut data = data.into_bytes();
     let len = data.len() as isize;
-    let mut data_start = Ptr::new_mut(unsafe { data.as_bytes_mut() });
+    let mut data_start = Ptr::new_mut(data.as_mut_slice());
     let data_end = data_start.offset(len);
 
     // check if len > 0
@@ -107,15 +108,6 @@ impl Sci {
 
     let len = mantissa_end.offset_from(data_start);
 
-    Ok(
-      Builder::new_with_data(
-        sign,
-        data_start,
-        len,
-        exponent - dot_len,
-        Owner::new_string(data),
-      )
-      .finish(),
-    )
+    Ok(Builder::new_with_data(sign, data_start, len, exponent - dot_len, Owner::new(data)).finish())
   }
 }
