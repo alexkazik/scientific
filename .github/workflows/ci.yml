@@ -37,7 +37,7 @@ jobs:
       - run: cargo clippy --all-features --tests -- -D warnings
 
       # ensure that the library doesn't use re-exports
-      - run: RUSTFLAGS="--cfg no_re_export" cargo build
+      - run: RUSTFLAGS="--cfg no_re_export" cargo build -p scientific
 
       # check if the readme is up to date
       - run: cargo install cargo-rdme
