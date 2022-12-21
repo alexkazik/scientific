@@ -30,14 +30,14 @@ impl Sci {
       return Err(ConversionError::ParseError);
     }
     let next = *data_start as u8;
-    if !((b'0'..=b'9').contains(&next) || next == b'.') {
+    if !(next.is_ascii_digit() || next == b'.') {
       return Err(ConversionError::ParseError);
     }
 
     let mut data_ptr = data_start;
     while data_ptr != data_end {
       let next = *data_ptr as u8;
-      if !(b'0'..=b'9').contains(&next) {
+      if !next.is_ascii_digit() {
         break;
       }
       *data_ptr = (next & 0x0f) as i8; // convert ascii to decimal
@@ -60,7 +60,7 @@ impl Sci {
         data_ptr.inc();
         while data_ptr != data_end {
           let next = *data_ptr as u8;
-          if !(b'0'..=b'9').contains(&next) {
+          if !next.is_ascii_digit() {
             break;
           }
           *mantissa_end = (next & 0x0f) as i8; // convert ascii to decimal
