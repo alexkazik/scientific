@@ -15,7 +15,7 @@ use core::hint::unreachable_unchecked;
 /// Nearest, Half Away From 0 |  (-2.5, -1.5] |  (-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5) | \[1.5, 2.5) | [`RoundHalfAwayFromZero`](Rounding::RoundHalfAwayFromZero)
 /// Nearest, Half To Even     | \[-2.5, -1.5] |  (-1.5, -0.5) | \[-0.5, 0.5] |  (0.5, 1.5) | \[1.5, 2.5] | [`RoundHalfToEven`](Rounding::RoundHalfToEven)
 /// Nearest, half To Odd      |  (-2.5, -1.5) | \[-1.5, -0.5] |  (-0.5, 0.5) | \[0.5, 1.5] |  (1.5, 2.5) | [`RoundHalfToOdd`](Rounding::RoundHalfToOdd)
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Default)]
 #[non_exhaustive]
 #[cfg_attr(no_re_export, allow(dead_code))]
 pub enum Rounding {
@@ -29,15 +29,10 @@ pub enum Rounding {
   RoundHalfDown,
   RoundHalfUp,
   RoundHalfTowardsZero,
+  #[default]
   RoundHalfAwayFromZero,
   RoundHalfToEven,
   RoundHalfToOdd,
-}
-
-impl Default for Rounding {
-  fn default() -> Self {
-    Rounding::RoundHalfAwayFromZero
-  }
 }
 
 impl Rounding {
