@@ -23,18 +23,25 @@ fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: isize) -> Sci {
 
   let (result, result_ptr) = Builder::new(sign, result_len, exponent);
 
-  let lhs_end = lhs.data.offset(lhs.len - 1);
   let rhs_end = rhs.data.offset(rhs.len - 1);
   let mut result_end = result_ptr.offset(result_len - 1);
   let mut sum = 0;
 
   for index in 0..result_len - 1 {
-    let mut lhs_ptr = lhs_end.offset(-((index - rhs.len + 1).max(0)));
-    let mut rhs_ptr = rhs_end.offset(-(index.min(rhs.len - 1)));
-    while lhs_ptr >= lhs.data && rhs_ptr <= rhs_end {
-      sum += (*lhs_ptr * *rhs_ptr) as usize;
-      lhs_ptr.dec();
-      rhs_ptr.inc();
+    let lhs_ofs = lhs.len - 1 - ((index - rhs.len + 1).max(0));
+    let rhs_ofs = rhs.len - 1 - (index.min(rhs.len - 1));
+    if lhs_ofs >= 0 && lhs_ofs < lhs.len && rhs_ofs >= 0 && rhs_ofs < rhs.len {
+      let mut lhs_ptr = lhs.data.offset(lhs_ofs);
+      let mut rhs_ptr = rhs.data.offset(rhs_ofs);
+      loop {
+        sum += (*lhs_ptr * *rhs_ptr) as usize;
+        if lhs_ptr > lhs.data && rhs_ptr < rhs_end {
+          lhs_ptr.dec();
+          rhs_ptr.inc();
+        } else {
+          break;
+        }
+      }
     }
     *result_end = (sum % 10) as i8;
     result_end.dec();

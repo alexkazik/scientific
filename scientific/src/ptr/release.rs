@@ -18,7 +18,7 @@ impl Ptr {
   #[inline(always)]
   pub(crate) fn new_mut(slice: &mut [u8]) -> Ptr {
     Ptr {
-      ptr: Self::new_ptr(slice.as_ptr()),
+      ptr: Self::new_ptr(slice.as_mut_ptr()),
     }
   }
 
