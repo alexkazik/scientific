@@ -1,8 +1,8 @@
-use crate::ptr::Ptr;
 use crate::types::builder::Builder;
 use crate::types::error::Error;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
+use crate::types::ptr::Ptr;
 use crate::types::rounding_mode::RoundingMode;
 use crate::types::rounding_rpsp::RPSP;
 use crate::types::sci::Sci;

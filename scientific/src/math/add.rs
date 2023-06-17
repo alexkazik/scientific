@@ -38,7 +38,7 @@ impl Sci {
     let mut carry = 0;
 
     self.data.copy_to_nonoverlapping(self.len, result_ptr, 1);
-    result_ptr.mut_offset(result_len - (rhs.exponent - min_exponent));
+    result_ptr = result_ptr.offset(result_len - (rhs.exponent - min_exponent));
     let mut rhs_ptr = rhs.data.offset(rhs.len);
     while rhs.data < rhs_ptr {
       rhs_ptr.dec();

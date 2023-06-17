@@ -55,7 +55,7 @@ macro_rules! conversion_signed {
             value = -value;
           }
           let (result, mut result_ptr) = Builder::new(sign, $len, 0);
-          result_ptr.mut_offset($len);
+          result_ptr = result_ptr.offset($len);
           while value > 0 {
             result_ptr.dec();
             *result_ptr = (value % 10) as i8;
@@ -106,7 +106,7 @@ macro_rules! conversion_unsigned {
           Scientific::ZERO
         } else {
           let (result, mut result_ptr) = Builder::new(Sign::POSITIVE, $len, 0);
-          result_ptr.mut_offset($len);
+          result_ptr = result_ptr.offset($len);
           while value > 0 {
             result_ptr.dec();
             *result_ptr = (value % 10) as i8;

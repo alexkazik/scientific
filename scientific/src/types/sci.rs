@@ -1,6 +1,6 @@
-use crate::ptr::Ptr;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
+use crate::types::ptr::Ptr;
 use crate::types::sign::Sign;
 
 const MANTISSA_1: [u8; 1] = [1];
@@ -43,7 +43,6 @@ impl Sci {
 
   #[inline(always)]
   pub(crate) fn assign_zero(&mut self) {
-    self.data.invalidate();
     self.len = 0; // required for is_zero() to work
     self.exponent = 1; // required for exponent() to work
     self.owner = Owner::None;

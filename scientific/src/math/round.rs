@@ -1,6 +1,6 @@
-use crate::ptr::Ptr;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
+use crate::types::ptr::Ptr;
 use crate::types::rounding_mode::RoundingMode;
 use crate::types::rounding_rpsp::RPSP;
 use crate::types::sci::Sci;
@@ -36,7 +36,7 @@ impl Sci {
       self.len = len;
 
       let mut ptr = make_writeable(self);
-      ptr.mut_offset(self.len - 1);
+      ptr = ptr.offset(self.len - 1);
 
       while self.len > 0 && *ptr == 9 {
         self.len -= 1;
@@ -69,5 +69,5 @@ fn make_writeable(sci: &mut Sci) -> Ptr {
     }
   }
 
-  sci.data.as_mutable() // remainder: Ptr is Copy
+  sci.data // reminder: Ptr is Copy
 }

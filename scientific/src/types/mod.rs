@@ -6,6 +6,7 @@ pub(crate) mod error;
 pub(crate) mod hash;
 pub(crate) mod owner;
 pub(crate) mod precision;
+pub(crate) mod ptr;
 pub(crate) mod rounding;
 pub(crate) mod rounding_mode;
 pub(crate) mod rounding_rpsp;

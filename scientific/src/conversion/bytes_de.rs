@@ -1,6 +1,6 @@
-use crate::ptr::Ptr;
 use crate::types::conversion_error::ConversionError;
 use crate::types::owner::Owner;
+use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 use alloc::vec::Vec;

@@ -1,5 +1,5 @@
-use crate::ptr::Ptr;
 use crate::types::owner::Owner;
+use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 
@@ -15,7 +15,7 @@ impl Builder {
     (
       Builder(Sci {
         sign,
-        data: data.as_immutable(),
+        data,
         len,
         exponent,
         owner: Owner::new(vec),
@@ -34,7 +34,7 @@ impl Builder {
   ) -> Builder {
     Builder(Sci {
       sign,
-      data: data.as_immutable(),
+      data,
       len,
       exponent,
       owner,

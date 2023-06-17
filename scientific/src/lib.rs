@@ -113,5 +113,4 @@ pub mod __private;
 
 pub(crate) mod conversion;
 pub(crate) mod math;
-pub(crate) mod ptr;
 pub(crate) mod types;
