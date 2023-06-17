@@ -31,7 +31,7 @@ impl Ptr {
 
   #[inline(always)]
   pub(crate) const fn new_ptr(ptr: *const u8) -> NonNull<u8> {
-    unsafe { NonNull::new_unchecked(ptr as *mut u8) }
+    unsafe { NonNull::new_unchecked(ptr.cast_mut()) }
   }
 
   #[inline(always)]
