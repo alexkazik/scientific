@@ -104,3 +104,13 @@ fn raw_parts() {
   );
   assert_eq!(Ok(n1), n2);
 }
+
+#[test]
+fn test_make_writeable() {
+  let n1 = Scientific::from_string("7.77777".to_string()).unwrap();
+  let mut n2 = n1.round(Decimals(3), RHAFZ);
+  let n3 = &n1 - &n2;
+  assert_eq!(n3, Scientific::from_string("-0.00023".to_string()).unwrap());
+  n2.round_assign(Decimals(2), RHAFZ);
+  assert_eq!(n2, Scientific::from_string("7.78".to_string()).unwrap());
+}
