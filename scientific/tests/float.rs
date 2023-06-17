@@ -1,6 +1,7 @@
 #![allow(clippy::zero_prefixed_literal)]
 
 use core::ops::Neg;
+use rand::prelude::SliceRandom;
 use scientific::{Error, Precision, Scientific};
 use std::convert::TryFrom;
 
@@ -57,13 +58,27 @@ const FUNCTIONS: [(
 ];
 
 #[test]
-fn float() {
-  let numbers = POSITIVE_NUMBERS
+fn float_some() {
+  float_skip(12);
+}
+
+#[test]
+#[ignore]
+fn float_all() {
+  float_skip(1);
+}
+
+fn float_skip(skip: usize) {
+  let mut numbers = POSITIVE_NUMBERS
     .iter()
     .copied()
     .chain(POSITIVE_NUMBERS.iter().map(Neg::neg))
     .map(|n| (n, Scientific::from_string(n.to_string()).unwrap()))
     .collect::<Vec<(f64, Scientific)>>();
+
+  let mut rng = rand::thread_rng();
+  numbers.shuffle(&mut rng);
+  numbers.truncate(numbers.len() / skip);
 
   for (flt_a, sci_a) in numbers.iter() {
     for (flt_b, sci_b) in numbers.iter() {

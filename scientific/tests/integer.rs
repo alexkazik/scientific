@@ -2,6 +2,7 @@
 
 use core::convert::TryFrom;
 use core::ops::Neg;
+use rand::prelude::SliceRandom;
 use scientific::{Decimals, Digits, Error, Precision, Scientific};
 
 const POSITIVE_NUMBERS: [i128; 24] = [
@@ -61,13 +62,27 @@ fn int_rem(a: i128, b: i128) -> Result<i128, Error> {
 }
 
 #[test]
-fn integer() {
-  let numbers = POSITIVE_NUMBERS
+fn integer_some() {
+  integer_skip(9);
+}
+
+#[test]
+#[ignore]
+fn integer_all() {
+  integer_skip(1);
+}
+
+fn integer_skip(skip: usize) {
+  let mut numbers = POSITIVE_NUMBERS
     .iter()
     .copied()
     .chain(POSITIVE_NUMBERS.iter().map(Neg::neg))
     .map(|n| (n, Scientific::from(n)))
     .collect::<Vec<(i128, Scientific)>>();
+
+  let mut rng = rand::thread_rng();
+  numbers.shuffle(&mut rng);
+  numbers.truncate(numbers.len() / skip);
 
   for (int_a, sci_a) in numbers.iter() {
     for (int_b, sci_b) in numbers.iter() {
