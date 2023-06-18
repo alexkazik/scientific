@@ -69,7 +69,13 @@ impl Remainder for Sci {
 
   #[inline(always)]
   fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self> {
-    Some(Builder::new_with_data(sign, data, len, exponent, Owner::new(vec)).finish())
+    Some(Builder::from_data(
+      sign,
+      data,
+      len,
+      exponent,
+      Owner::new(vec),
+    ))
   }
 }
 

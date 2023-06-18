@@ -108,6 +108,12 @@ impl Sci {
 
     let len = mantissa_end.offset_from(data_start);
 
-    Ok(Builder::new_with_data(sign, data_start, len, exponent - dot_len, Owner::new(data)).finish())
+    Ok(Builder::from_data(
+      sign,
+      data_start,
+      len,
+      exponent - dot_len,
+      Owner::new(data),
+    ))
   }
 }

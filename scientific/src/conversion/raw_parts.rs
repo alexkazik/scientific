@@ -31,15 +31,12 @@ impl Sci {
     }
 
     let len = mantissa.len() as isize;
-    Ok(
-      Builder::new_with_data(
-        Sign::new(is_negative),
-        Ptr::new(mantissa.as_slice()),
-        len,
-        exponent,
-        Owner::new(mantissa),
-      )
-      .finish(),
-    )
+    Ok(Builder::from_data(
+      Sign::new(is_negative),
+      Ptr::new(mantissa.as_slice()),
+      len,
+      exponent,
+      Owner::new(mantissa),
+    ))
   }
 }

@@ -25,13 +25,7 @@ impl Builder {
   }
 
   #[inline(always)]
-  pub(crate) fn new_with_data(
-    sign: Sign,
-    data: Ptr,
-    len: isize,
-    exponent: isize,
-    owner: Owner,
-  ) -> Builder {
+  pub(crate) fn from_data(sign: Sign, data: Ptr, len: isize, exponent: isize, owner: Owner) -> Sci {
     Builder(Sci {
       sign,
       data,
@@ -39,6 +33,7 @@ impl Builder {
       exponent,
       owner,
     })
+    .finish()
   }
 
   #[inline(always)]
