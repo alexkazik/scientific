@@ -1,5 +1,10 @@
 # Changelog for scientific
 
+## 0.2.1 -- 2023-07-04
+
+* Fix miri errors
+* Several small improvements
+
 ## 0.2.0 -- 2022-12-15
 
 * Breaking change!
