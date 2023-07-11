@@ -63,6 +63,12 @@ fn nz_sqrt(
     guess.truncate_assign(precision);
   }
 
+  // fix limit (there may be trailing zeroes due to how limit works)
+  while guess.data[guess.len - 1] == 0 {
+    guess.len -= 1;
+    guess.exponent += 1;
+  }
+
   Ok(guess)
 }
 
