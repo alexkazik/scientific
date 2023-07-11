@@ -19,6 +19,7 @@ use core::str::FromStr;
 /// See the [module-level documentation](crate) for more details.
 #[derive(Clone)]
 #[must_use]
+#[repr(transparent)]
 pub struct Scientific {
   pub(crate) inner: Sci,
 }
