@@ -2,6 +2,7 @@
 
 use core::convert::TryFrom;
 use core::ops::Neg;
+use num_integer::Roots;
 use rand::prelude::SliceRandom;
 use scientific::{Decimals, Error, Precision, Scientific};
 
@@ -111,6 +112,13 @@ fn integer_skip(skip: usize) {
       });
       let fast = sci_a.div_rpsp(sci_b, Decimals(1));
       assert_eq!(big, fast, "div_rpsp vs. div_truncate and round_rpsp");
+      // div_truncate
+      let big = sci_a.div_rpsp(sci_b, Decimals(1)).map(|mut b| {
+        b.truncate_assign(Decimals(1));
+        b
+      });
+      let fast = sci_a.div_truncate(sci_b, Decimals(1));
+      assert_eq!(big, fast, "div_truncate vs. div_rpsp and truncate");
     }
     // i128 via string
     let i2s = sci_a;
@@ -129,6 +137,7 @@ fn integer_skip(skip: usize) {
     assert_eq!(Ok(*int_a as i32), s2i, "conversion from/to i32");
     // sqrt
     if *int_a >= 0 {
+      // v1
       let sci_cubed = sci_a * sci_a;
       let sci_result = sci_cubed.sqrt_truncate(Decimals(100));
       assert_eq!(
@@ -138,6 +147,44 @@ fn integer_skip(skip: usize) {
         "sqrt_v1",
         int_a * int_a,
         int_a,
+        sci_result,
+      );
+      // v1.2
+      let sci_cubed = sci_a * sci_a;
+      let sci_result = sci_cubed.sqrt_rpsp(Decimals(1));
+      assert_eq!(
+        Ok(sci_a.clone()),
+        sci_result,
+        "function {}({}) -> {:?} = {:?}",
+        "sqrt_v1.2",
+        int_a * int_a,
+        int_a,
+        sci_result,
+      );
+      // v2
+      let int_result = int_a.sqrt();
+      let sci_result = sci_a.sqrt_truncate(Decimals(0));
+      assert_eq!(
+        Ok(Scientific::from(int_result)),
+        sci_result,
+        "function {}({}) -> {:?} = {:?}",
+        "sqrt_v2",
+        int_a,
+        int_result,
+        sci_result,
+      );
+      // v2.1
+      let int_result = int_a.sqrt();
+      let sci_result = sci_a
+        .sqrt_rpsp(Decimals(0))
+        .map(|s| s.truncate(Decimals(0)));
+      assert_eq!(
+        Ok(Scientific::from(int_result)),
+        sci_result,
+        "function {}({}) -> {:?} = {:?}",
+        "sqrt_v2",
+        int_a,
+        int_result,
         sci_result,
       );
     }
