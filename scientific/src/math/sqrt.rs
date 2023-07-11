@@ -3,6 +3,7 @@ use crate::types::precision::Precision;
 use crate::types::rounding_mode::RoundingMode;
 use crate::types::rounding_rpsp::RPSP;
 use crate::types::sci::Sci;
+use crate::types::sign::Sign;
 use core::cmp::Ordering;
 
 impl Sci {
@@ -11,36 +12,27 @@ impl Sci {
       Ok(Sci::ZERO)
     } else if self.sign.is_negative() {
       Err(Error::NumberIsNegative)
-    } else {
-      match self.compare::<false>(&Sci::ONE) {
-        Ordering::Less => nz_sqrt(self, precision, self.exponent1() / 2 - 1, use_rpsp),
-        Ordering::Equal => {
-          if Sci::ONE.precision_len(precision) >= 1 {
-            Ok(Sci::ONE)
-          } else if use_rpsp {
-            let mut result = Sci::ONE;
-            result.round_assign(precision, RoundingMode::RPSP(RPSP));
-            Ok(result)
-          } else {
-            Ok(Sci::ZERO)
-          }
-        }
-        Ordering::Greater => nz_sqrt(self, precision, self.exponent1() / 2 - 1, use_rpsp),
+    } else if self.compare::<false>(&Sci::ONE) == Ordering::Equal {
+      if Sci::ONE.precision_len(precision) >= 1 {
+        Ok(Sci::ONE)
+      } else if use_rpsp {
+        let mut result = Sci::ONE;
+        result.round_assign(precision, RoundingMode::RPSP(RPSP));
+        Ok(result)
+      } else {
+        Ok(Sci::ZERO)
       }
+    } else {
+      nz_sqrt(self, precision, use_rpsp)
     }
   }
 }
 
 // Babylonian method
-fn nz_sqrt(
-  value: &Sci,
-  precision: Precision,
-  guess_exponent_adapt: isize,
-  use_rpsp: bool,
-) -> Result<Sci, Error> {
+fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Error> {
   let mut guess = value.clone();
-  guess.shr_assign(guess_exponent_adapt);
-  limit(&mut guess, precision, use_rpsp);
+  guess.shr_assign(value.exponent1() / 2 - 1);
+  limit(&mut guess, precision);
 
   #[cfg(all(feature = "debug", feature = "std"))]
   {
@@ -61,10 +53,10 @@ fn nz_sqrt(
       &(guess.add(&value.div(
         &guess,
         Precision::Digits(limit_div(value, &guess, precision)),
-        use_rpsp,
+        false,
       )?)),
     );
-    limit(&mut next_guess, precision, use_rpsp);
+    limit(&mut next_guess, precision);
     if guess.compare::<false>(&next_guess) != Ordering::Greater {
       break;
     }
@@ -72,6 +64,25 @@ fn nz_sqrt(
   }
 
   if use_rpsp {
+    if value.compare::<false>(&guess.mul(&guess)) == Ordering::Greater {
+      // value is bigger than result*result => increase the result by a tiny bit, if necessary
+      if guess.len >= guess.precision_len(precision) {
+        // there is enough precision to simply adapt the last digit, if necessary
+        // (may be behind the actual limit, will be fixed with round_assign afterwards)
+        if guess.data[guess.len - 1] == 0 || guess.data[guess.len - 1] == 5 {
+          guess.data[guess.len - 1] += 1;
+        }
+      } else {
+        // there is not enough space to add it in place, add a 1 at the actual limit
+        guess = guess.add(&Sci::one(
+          Sign::POSITIVE,
+          match precision {
+            Precision::Digits(d) => guess.exponent0() - d,
+            Precision::Decimals(d) => -d,
+          },
+        ));
+      }
+    }
     guess.round_assign(precision, RoundingMode::RPSP(RPSP));
   } else {
     guess.truncate_assign(precision);
@@ -87,16 +98,11 @@ fn nz_sqrt(
 }
 
 #[inline]
-fn limit(value: &mut Sci, precision: Precision, use_rpsp: bool) {
+fn limit(value: &mut Sci, precision: Precision) {
   let len = value.precision_len(precision).max(1);
-  if use_rpsp {
-    value.round_assign(Precision::Digits(len), RoundingMode::RPSP(RPSP));
-  } else {
-    // do truncate
-    if value.len > len {
-      value.exponent += value.len - len;
-      value.len = len;
-    }
+  if value.len > len {
+    value.exponent += value.len - len;
+    value.len = len;
   }
 }
 
@@ -107,5 +113,4 @@ fn limit_div(lhs: &Sci, rhs: &Sci, precision: Precision) -> isize {
     Precision::Decimals(d) => lhs.exponent0() - rhs.exponent0() + d + 1,
   }
   .max(1)
-    + 1
 }
