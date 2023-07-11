@@ -75,7 +75,7 @@ impl Scientific {
   #[inline(always)]
   pub fn sqrt_rpsp(&self, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
-      inner: self.inner.sqrt(precision, true)?,
+      inner: self.inner.sqrt(precision + 1, true)?,
     })
   }
 
@@ -120,7 +120,7 @@ impl Scientific {
   #[inline(always)]
   pub fn div_rpsp(&self, rhs: &Scientific, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
-      inner: self.inner.div(&rhs.inner, precision, true)?,
+      inner: self.inner.div(&rhs.inner, precision + 1, true)?,
     })
   }
 
@@ -153,13 +153,16 @@ impl Scientific {
 
   #[inline(always)]
   pub fn round_rpsp_assign(&mut self, precision: Precision) {
-    self.inner.round_assign(precision, RoundingMode::RPSP(RPSP));
+    self
+      .inner
+      .round_assign(precision + 1, RoundingMode::RPSP(RPSP));
   }
 
   #[inline]
   pub fn round_rpsp(&self, precision: Precision) -> Scientific {
     let mut r = self.clone();
-    r.inner.round_assign(precision, RoundingMode::RPSP(RPSP));
+    r.inner
+      .round_assign(precision + 1, RoundingMode::RPSP(RPSP));
     r
   }
 

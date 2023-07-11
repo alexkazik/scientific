@@ -66,7 +66,8 @@
 //! The function [`round`](crate::Scientific::round)/[`round_assign`](crate::Scientific::round_assign) support several rounding options. See [`Rounding`](crate::Rounding).
 //!
 //! The functions above should be only used for the final rounding. If rounding in between is required (e.g. to keep the mantissa manageable) use
-//! [`round_rpsp`](crate::Scientific::round_rpsp)/[`round_assign`](crate::Scientific::round_rpsp_assign) with a higher precision than the final one. It's ok to be just one digit longer.
+//! [`round_rpsp`](crate::Scientific::round_rpsp)/[`round_assign`](crate::Scientific::round_rpsp_assign) with at least the same precision than the final one.
+//! The rounding will create one more digit than you required, to easily use it.
 //! RPSP stands for Rounding to prepare for shorter precision, see [Wikipedia](https://en.wikipedia.org/wiki/Rounding#Rounding_to_prepare_for_shorter_precision) for more information.
 //!
 //! # Features
