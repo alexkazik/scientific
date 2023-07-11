@@ -47,7 +47,7 @@
 //!
 //! For example: adding 1e1000 and 1e-1000, which both have only one byte of mantissa, results in 2001 bytes of mantissa.
 //!
-//! [`Scientific::div`](crate::Scientific::div), and [`Scientific::sqrt`](crate::Scientific::sqrt) (which depends on div) as also [`Scientific::round`](crate::Scientific::round) require
+//! Functions for division and square root (which depends on div) as also all rounding functions require
 //! a precision to be specified, the result is only calculated to that precision.
 //!
 //! It can be specified as [`Decimals`](crate::Decimals) or [`Digits`](crate::Digits). When using decimals specify the number of decimal places to
@@ -63,12 +63,33 @@
 //!
 //! # Rounding
 //!
-//! The function [`round`](crate::Scientific::round)/[`round_assign`](crate::Scientific::round_assign) support several rounding options. See [`Rounding`](crate::Rounding).
+//! The functions [`round`](crate::Scientific::round)/[`round_assign`](crate::Scientific::round_assign) support several rounding options. See [`Rounding`](crate::Rounding).
 //!
 //! The functions above should be only used for the final rounding. If rounding in between is required (e.g. to keep the mantissa manageable) use
 //! [`round_rpsp`](crate::Scientific::round_rpsp)/[`round_assign`](crate::Scientific::round_rpsp_assign) with at least the same precision than the final one.
 //! The rounding will create one more digit than you required, to easily use it.
 //! RPSP stands for Rounding to prepare for shorter precision, see [Wikipedia](https://en.wikipedia.org/wiki/Rounding#Rounding_to_prepare_for_shorter_precision) for more information.
+//!
+//! In any case it's preferred to use the `*_assign` version since it can save reallocation of the mantissa (though not everytime relocation is required or can be avoided).
+//!
+//! ## Example
+//!
+//! ```
+//! # use scientific::{Precision, RoundHalfUp, Scientific};
+//! # let mut value = Scientific::ZERO;
+//! let precision = Precision::Digits(30); // precision for intermediate roundings and the final one
+//! // do calculations
+//! value.round_rpsp_assign(precision); // round to 31 digits with 'Rounding to prepare for shorter precision'
+//! // do more calculations
+//! value.round_assign(precision, RoundHalfUp); // round to 30 digits with the method 'RoundHalfUp'
+//! ```
+//!
+//! # Truncating
+//!
+//! The functions [`truncate`](crate::Scientific::truncate)/[`truncate_assign`](crate::Scientific::truncate_assign) are identical to rounding with [`RoundTowardsZero`](crate::Rounding::RoundTowardsZero) but faster.
+//!
+//! Also [`truncate_assign`](crate::Scientific::truncate_assign) is faster than [`truncate`](crate::Scientific::truncate) because it does not need to clone.
+//! Either way it does never require relocation of the mantissa (since it's not changed, just maybe referenced to a prefix of it).
 //!
 //! # Features
 //!
@@ -81,8 +102,7 @@
 //!   Though [`Arc`](::alloc::sync::Arc) is more expensive, but since it's only used during create/clone/drop of
 //!   the [`Scientific`](crate::Scientific) number it's probably not that much.
 //!
-//! - `debug`: Enabled tracking of pointer operations and some more checks. Very helpful during development
-//!   of this lib.
+//! - `debug`: Enables several checks. Very helpful during development of this lib.
 //!
 //! # Exponent
 //!

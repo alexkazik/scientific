@@ -43,7 +43,7 @@ Most functions work in truly arbitrary precision, please be aware of this.
 
 For example: adding 1e1000 and 1e-1000, which both have only one byte of mantissa, results in 2001 bytes of mantissa.
 
-`Scientific::div`, and `Scientific::sqrt` (which depends on div) as also `Scientific::round` require
+Functions for division and square root (which depends on div) as also all rounding functions require
 a precision to be specified, the result is only calculated to that precision.
 
 It can be specified as `Decimals` or `Digits`. When using decimals specify the number of decimal places to
@@ -59,12 +59,31 @@ The shifting operators do shift by one digit (and not one bit as you may expecte
 
 ## Rounding
 
-The function `round`/`round_assign` support several rounding options. See `Rounding`.
+The functions `round`/`round_assign` support several rounding options. See `Rounding`.
 
 The functions above should be only used for the final rounding. If rounding in between is required (e.g. to keep the mantissa manageable) use
 `round_rpsp`/`round_assign` with at least the same precision than the final one.
 The rounding will create one more digit than you required, to easily use it.
 RPSP stands for Rounding to prepare for shorter precision, see [Wikipedia](https://en.wikipedia.org/wiki/Rounding#Rounding_to_prepare_for_shorter_precision) for more information.
+
+In any case it's preferred to use the `*_assign` version since it can save reallocation of the mantissa (though not everytime relocation is required or can be avoided).
+
+### Example
+
+```rust
+let precision = Precision::Digits(30); // precision for intermediate roundings and the final one
+// do calculations
+value.round_rpsp_assign(precision); // round to 31 digits with 'Rounding to prepare for shorter precision'
+// do more calculations
+value.round_assign(precision, RoundHalfUp); // round to 30 digits with the method 'RoundHalfUp'
+```
+
+## Truncating
+
+The functions `truncate`/`truncate_assign` are identical to rounding with `RoundTowardsZero` but faster.
+
+Also `truncate_assign` is faster than `truncate` because it does not need to clone.
+Either way it does never require relocation of the mantissa (since it's not changed, just maybe referenced to a prefix of it).
 
 ## Features
 
@@ -77,8 +96,7 @@ RPSP stands for Rounding to prepare for shorter precision, see [Wikipedia](https
   Though `Arc` is more expensive, but since it's only used during create/clone/drop of
   the `Scientific` number it's probably not that much.
 
-- `debug`: Enabled tracking of pointer operations and some more checks. Very helpful during development
-  of this lib.
+- `debug`: Enables several checks. Very helpful during development of this lib.
 
 ## Exponent
 
