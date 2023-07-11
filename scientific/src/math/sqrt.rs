@@ -13,7 +13,7 @@ impl Sci {
       Err(Error::NumberIsNegative)
     } else {
       match self.compare::<false>(&Sci::ONE) {
-        Ordering::Less => nz_sqrt(self, precision, (self.exponent0() - 1) / 2, use_rpsp),
+        Ordering::Less => nz_sqrt(self, precision, self.exponent1() / 2 - 1, use_rpsp),
         Ordering::Equal => {
           if Sci::ONE.precision_len(precision) >= 1 {
             Ok(Sci::ONE)
@@ -25,7 +25,7 @@ impl Sci {
             Ok(Sci::ZERO)
           }
         }
-        Ordering::Greater => nz_sqrt(self, precision, self.exponent0() / 2, use_rpsp),
+        Ordering::Greater => nz_sqrt(self, precision, self.exponent1() / 2 - 1, use_rpsp),
       }
     }
   }
@@ -42,6 +42,20 @@ fn nz_sqrt(
   guess.shr_assign(guess_exponent_adapt);
   limit(&mut guess, precision, use_rpsp);
 
+  #[cfg(all(feature = "debug", feature = "std"))]
+  {
+    let f_guess = guess.to_f64();
+    let f_value = value.to_f64();
+    let f_sqrt_value = f_value.sqrt();
+    if f_guess.is_finite() && f_value.is_finite() && f_sqrt_value.is_finite() {
+      assert!(
+        f_guess > f_sqrt_value,
+        "{}",
+        format!("initial guess {f_guess} should be larger than sqrt({f_value})={f_sqrt_value}")
+      );
+    }
+  }
+
   loop {
     let mut next_guess = Sci::POINT5.mul(
       &(guess.add(&value.div(
@@ -51,7 +65,7 @@ fn nz_sqrt(
       )?)),
     );
     limit(&mut next_guess, precision, use_rpsp);
-    if guess.compare::<false>(&next_guess) == Ordering::Equal {
+    if guess.compare::<false>(&next_guess) != Ordering::Greater {
       break;
     }
     guess = next_guess;
