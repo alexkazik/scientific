@@ -41,6 +41,7 @@ fn nz_sqrt(
   let mut guess = value.clone();
   guess.shr_assign(guess_exponent_adapt);
   limit(&mut guess, precision, use_rpsp);
+
   loop {
     let mut next_guess = Sci::POINT5.mul(
       &(guess.add(&value.div(
@@ -51,15 +52,18 @@ fn nz_sqrt(
     );
     limit(&mut next_guess, precision, use_rpsp);
     if guess.compare::<false>(&next_guess) == Ordering::Equal {
-      if use_rpsp {
-        guess.round_assign(precision, RoundingMode::RPSP(RPSP));
-      } else {
-        guess.truncate_assign(precision);
-      }
-      return Ok(guess);
+      break;
     }
     guess = next_guess;
   }
+
+  if use_rpsp {
+    guess.round_assign(precision, RoundingMode::RPSP(RPSP));
+  } else {
+    guess.truncate_assign(precision);
+  }
+
+  Ok(guess)
 }
 
 #[inline]
