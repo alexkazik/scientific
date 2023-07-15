@@ -3,7 +3,7 @@
 use core::convert::TryFrom;
 use core::ops::Neg;
 use rand::prelude::SliceRandom;
-use scientific::{Decimals, Digits, Error, Precision, Scientific};
+use scientific::{Decimals, Error, Precision, Scientific};
 
 const POSITIVE_NUMBERS: [i128; 24] = [
   9_223_372_036_854_775_807, // 1<<63-1, i64::MAX
@@ -105,12 +105,12 @@ fn integer_skip(skip: usize) {
         "cmp", int_a, int_b, int_result, sci_result,
       );
       // div_rpsp
-      let big = sci_a.div_truncate(sci_b, Digits(20)).map(|mut b| {
+      let big = sci_a.div_truncate(sci_b, Decimals(20)).map(|mut b| {
         b.round_rpsp_assign(Decimals(1));
         b
       });
       let fast = sci_a.div_rpsp(sci_b, Decimals(1));
-      assert_eq!(big, fast, "div_rpsp vs. div and round_rpsp");
+      assert_eq!(big, fast, "div_rpsp vs. div_truncate and round_rpsp");
     }
     // i128 via string
     let i2s = sci_a;
@@ -135,8 +135,8 @@ fn integer_skip(skip: usize) {
         Ok(sci_a.clone()),
         sci_result,
         "function {}({}) -> {:?} = {:?}",
-        "sqrt",
-        int_a,
+        "sqrt_v1",
+        int_a * int_a,
         int_a,
         sci_result,
       );
