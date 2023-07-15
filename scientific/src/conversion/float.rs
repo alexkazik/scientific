@@ -1,88 +1,55 @@
-use crate::types::conversion_error::ConversionError;
 use crate::types::sci::Sci;
-use crate::types::scientific::Scientific;
 use crate::types::sign::Sign;
 use alloc::string::{String, ToString};
-use core::convert::TryFrom;
 use core::str::FromStr;
 
-impl TryFrom<f64> for Scientific {
-  type Error = ConversionError;
-
-  fn try_from(value: f64) -> Result<Self, Self::Error> {
-    if value.is_finite() {
-      Ok(Scientific {
-        inner: Sci::from_string(value.to_string())?,
-      })
-    } else {
-      Err(ConversionError::FloatIsNotFinite)
-    }
-  }
-}
-
-impl From<&Scientific> for f64 {
-  fn from(value: &Scientific) -> Self {
-    if value.inner.is_zero() {
+impl Sci {
+  pub(crate) fn to_f64(&self) -> f64 {
+    if self.is_zero() {
       0f64
-    } else if value.inner.exponent1() > f64::MAX_10_EXP as isize {
-      match value.inner.sign {
+    } else if self.exponent1() > f64::MAX_10_EXP as isize {
+      match self.sign {
         Sign::POSITIVE => f64::INFINITY,
         Sign::NEGATIVE => f64::NEG_INFINITY,
       }
-    } else if value.inner.exponent1() < f64::MIN_10_EXP as isize {
+    } else if self.exponent1() < f64::MIN_10_EXP as isize {
       0f64
     } else {
       const DIGITS: isize = 18;
       let mut str = String::with_capacity(6 + DIGITS as usize);
-      if value.inner.sign.is_negative() {
+      if self.sign.is_negative() {
         str.push('-');
       }
-      for i in 0..value.inner.len.min(DIGITS) {
-        str.push((b'0' + value.inner.data[i] as u8) as char);
+      for i in 0..self.len.min(DIGITS) {
+        str.push((b'0' + self.data[i] as u8) as char);
       }
       str.push('e');
-      str.push_str(&(value.inner.exponent + (value.inner.len - DIGITS).max(0)).to_string());
+      str.push_str(&(self.exponent + (self.len - DIGITS).max(0)).to_string());
       f64::from_str(&str).unwrap()
     }
   }
-}
 
-impl TryFrom<f32> for Scientific {
-  type Error = ConversionError;
-
-  fn try_from(value: f32) -> Result<Self, Self::Error> {
-    if value.is_finite() {
-      Ok(Scientific {
-        inner: Sci::from_string(value.to_string())?,
-      })
-    } else {
-      Err(ConversionError::FloatIsNotFinite)
-    }
-  }
-}
-
-impl From<&Scientific> for f32 {
-  fn from(value: &Scientific) -> Self {
-    if value.inner.is_zero() {
+  pub(crate) fn to_f32(&self) -> f32 {
+    if self.is_zero() {
       0f32
-    } else if value.inner.exponent1() > f32::MAX_10_EXP as isize {
-      match value.inner.sign {
+    } else if self.exponent1() > f32::MAX_10_EXP as isize {
+      match self.sign {
         Sign::POSITIVE => f32::INFINITY,
         Sign::NEGATIVE => f32::NEG_INFINITY,
       }
-    } else if value.inner.exponent1() < f32::MIN_10_EXP as isize {
+    } else if self.exponent1() < f32::MIN_10_EXP as isize {
       0f32
     } else {
       const DIGITS: isize = 10;
       let mut str = String::with_capacity(6 + DIGITS as usize);
-      if value.inner.sign.is_negative() {
+      if self.sign.is_negative() {
         str.push('-');
       }
-      for i in 0..value.inner.len.min(DIGITS) {
-        str.push((b'0' + value.inner.data[i] as u8) as char);
+      for i in 0..self.len.min(DIGITS) {
+        str.push((b'0' + self.data[i] as u8) as char);
       }
       str.push('e');
-      str.push_str(&(value.inner.exponent + (value.inner.len - DIGITS).max(0)).to_string());
+      str.push_str(&(self.exponent + (self.len - DIGITS).max(0)).to_string());
       f32::from_str(&str).unwrap()
     }
   }

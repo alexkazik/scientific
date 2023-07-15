@@ -366,3 +366,45 @@ impl Hash for &Scientific {
     self.inner.hash(state);
   }
 }
+
+impl TryFrom<f64> for Scientific {
+  type Error = ConversionError;
+
+  fn try_from(value: f64) -> Result<Self, Self::Error> {
+    if value.is_finite() {
+      Ok(Scientific {
+        inner: Sci::from_string(value.to_string())?,
+      })
+    } else {
+      Err(ConversionError::FloatIsNotFinite)
+    }
+  }
+}
+
+impl From<&Scientific> for f64 {
+  #[inline(always)]
+  fn from(value: &Scientific) -> Self {
+    value.inner.to_f64()
+  }
+}
+
+impl TryFrom<f32> for Scientific {
+  type Error = ConversionError;
+
+  fn try_from(value: f32) -> Result<Self, Self::Error> {
+    if value.is_finite() {
+      Ok(Scientific {
+        inner: Sci::from_string(value.to_string())?,
+      })
+    } else {
+      Err(ConversionError::FloatIsNotFinite)
+    }
+  }
+}
+
+impl From<&Scientific> for f32 {
+  #[inline(always)]
+  fn from(value: &Scientific) -> Self {
+    value.inner.to_f32()
+  }
+}
