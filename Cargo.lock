@@ -107,6 +107,12 @@ dependencies = [
 [[package]]
 name = "scientific"
 version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4d7e4995357cd0b8f1d9f5f5b23507364932decf2f68cca74b4720ecfb617011"
+
+[[package]]
+name = "scientific"
+version = "0.2.2"
 dependencies = [
  "num-integer",
  "rand",
@@ -114,18 +120,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "scientific"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d7e4995357cd0b8f1d9f5f5b23507364932decf2f68cca74b4720ecfb617011"
-
-[[package]]
 name = "scientific-macro"
 version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
- "scientific 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "scientific 0.2.1",
  "syn",
 ]
 

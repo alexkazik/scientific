@@ -1,5 +1,12 @@
 # Changelog for scientific
 
+## 0.2.2 -- 2023-07-15
+
+* Fix sqrt errors
+* RPSP now calculates one more digit
+* Add more tests
+* Several small improvements
+
 ## 0.2.1 -- 2023-07-04
 
 * Fix miri errors
