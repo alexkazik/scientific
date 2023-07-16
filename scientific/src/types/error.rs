@@ -1,10 +1,11 @@
 use core::fmt::{Display, Formatter};
 
+/// Errors which can occur during calculation.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Error {
-  /// Used by div
+  /// Used by `div`.
   DivisionByZero,
-  /// Used by sqrt
+  /// Used by `sqrt`.
   NumberIsNegative,
 }
 

@@ -25,22 +25,34 @@ pub struct Scientific {
 }
 
 impl Scientific {
+  /// A value of zero.
   pub const ZERO: Scientific = Scientific { inner: Sci::ZERO };
+
+  /// A value of one.
   pub const ONE: Scientific = Scientific { inner: Sci::ONE };
 
   #[inline(always)]
+  /// Convert an [`String`] into a value.
+  ///
+  /// This does consume the String and does not require allocation.
+  ///
+  /// # Errors
+  ///
+  /// Will return [`ConversionError::ParseError`] if the string is invalid.
   pub fn from_string(source: String) -> Result<Scientific, ConversionError> {
     Ok(Scientific {
       inner: Sci::from_string(source)?,
     })
   }
 
+  /// Convert a value into a compressed binary format.
   #[inline(always)]
   #[must_use]
   pub fn to_bytes(&self) -> Vec<u8> {
     self.inner.to_bytes()
   }
 
+  /// Convert a compressed binary format into a value.
   #[inline(always)]
   pub fn from_bytes(bytes: &[u8]) -> Result<Scientific, ConversionError> {
     Ok(Scientific {
@@ -49,12 +61,18 @@ impl Scientific {
   }
 
   // This function must not change before 0.5 since scientific-macro depends on it.
+  /// Return a reference to the mantissa.
   #[inline(always)]
   #[must_use]
   pub fn as_raw_mantissa(&self) -> &[u8] {
     self.inner.as_raw_mantissa()
   }
 
+  /// Convert raw parts into an value.
+  ///
+  /// # Errors
+  ///
+  /// Will return [`ConversionError::ParseError`] if the mantissa contains values other than 0..=9.
   #[inline(always)]
   pub fn from_raw_parts(
     negative: bool,
@@ -66,6 +84,9 @@ impl Scientific {
     })
   }
 
+  /// Returns the square root of an number, truncating.
+  ///
+  /// The square root will be calculated up to a given precision.
   #[inline(always)]
   pub fn sqrt_truncate(&self, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
@@ -73,6 +94,13 @@ impl Scientific {
     })
   }
 
+  /// Returns the square root of an number, rounding.
+  ///
+  /// The square root will be calculated up to a given precision, but correctly
+  /// rounded.
+  ///
+  /// As all RPSP functions it calculates one more digit than requested for simpler
+  /// usage of the final rounding.
   #[inline(always)]
   pub fn sqrt_rpsp(&self, precision: Precision) -> Result<Scientific, Error> {
     Ok(Scientific {
@@ -80,6 +108,7 @@ impl Scientific {
     })
   }
 
+  /// Computes the absolute value.
   #[inline]
   pub fn abs(&self) -> Scientific {
     let mut result = self.clone();
@@ -87,16 +116,20 @@ impl Scientific {
     result
   }
 
+  /// Computes the absolute value, storing it in self.
   #[inline(always)]
   pub fn abs_assign(&mut self) {
     self.inner.sign = Sign::POSITIVE;
   }
 
+  /// Negating the value, storing it in self.
   #[inline(always)]
   pub fn neg_assign(&mut self) {
     self.inner.neg_assign();
   }
 
+  /// Calculate division, truncating.
+  ///
   /// Please be aware that `div_truncate` is only calculating digits up to the specified precision.
   ///
   /// For example 509/100 with a precision of 2 digits or 1 decimals will calculate 5.0 and
@@ -108,6 +141,9 @@ impl Scientific {
     })
   }
 
+  /// Calculate division and remainder at the same time.
+  ///
+  /// This will be faster than calculating them separately.
   #[inline(always)]
   pub fn div_rem(&self, rhs: &Scientific) -> Result<(Scientific, Scientific), Error> {
     let (d, r) = self.inner.div_rem(&rhs.inner)?;
@@ -125,11 +161,13 @@ impl Scientific {
     })
   }
 
+  /// Truncate the value and store it in self.
   #[inline(always)]
   pub fn truncate_assign(&mut self, precision: Precision) {
     self.inner.truncate_assign(precision);
   }
 
+  /// Truncate the value.
   #[inline]
   pub fn truncate(&self, precision: Precision) -> Scientific {
     let mut r = self.clone();
@@ -137,6 +175,7 @@ impl Scientific {
     r
   }
 
+  /// Round the value and store it in self.
   #[inline(always)]
   pub fn round_assign(&mut self, precision: Precision, rounding: Rounding) {
     self
@@ -144,6 +183,7 @@ impl Scientific {
       .round_assign(precision, RoundingMode::Rounding(rounding));
   }
 
+  /// Round the value.
   #[inline]
   pub fn round(&self, precision: Precision, rounding: Rounding) -> Scientific {
     let mut r = self.clone();
@@ -152,6 +192,7 @@ impl Scientific {
     r
   }
 
+  /// Round the value with RPSP and store it in self.
   #[inline(always)]
   pub fn round_rpsp_assign(&mut self, precision: Precision) {
     self
@@ -159,6 +200,7 @@ impl Scientific {
       .round_assign(precision + 1, RoundingMode::RPSP(RPSP));
   }
 
+  /// Round the value with RPSP.
   #[inline]
   pub fn round_rpsp(&self, precision: Precision) -> Scientific {
     let mut r = self.clone();
@@ -167,6 +209,9 @@ impl Scientific {
     r
   }
 
+  /// Returns the length of the mantissa.
+  ///
+  /// Will return length zero for the value zero.
   #[allow(clippy::len_without_is_empty)]
   #[inline(always)]
   #[must_use]
@@ -174,18 +219,27 @@ impl Scientific {
     self.inner.len
   }
 
+  /// Returns the number of decimals.
+  ///
+  /// `0.001`/`1e-3` will return 3, `1000`/`1e3` will return -3.
   #[inline(always)]
   #[must_use]
   pub fn decimals(&self) -> isize {
     -self.inner.exponent
   }
 
+  /// Returns the exponent if the mantissa is written directly behind the decimal dot.
+  ///
+  /// `123` will return `3` (because it was interpreted as `0.123e3`).
   #[inline(always)]
   #[must_use]
   pub fn exponent0(&self) -> isize {
     self.inner.exponent0()
   }
 
+  /// Returns the exponent if the mantissa is written with one digit in front ot the decimal dot.
+  ///
+  /// `123` will return `2` (because it was interpreted as `1.23e3`).
   #[inline(always)]
   #[must_use]
   pub fn exponent1(&self) -> isize {
@@ -193,12 +247,16 @@ impl Scientific {
   }
 
   // This function must not change before 0.5 since scientific-macro depends on it.
+  /// Returns the exponent if the mantissa is written directly in front ot the decimal dot.
+  ///
+  /// `1.23` will return `-2` (because it was interpreted as `123e-2`).
   #[inline(always)]
   #[must_use]
   pub fn exponent(&self) -> isize {
     self.inner.exponent
   }
 
+  /// Raise a number to an integer power.
   #[inline(always)]
   pub fn powi(&self, exponent: usize) -> Scientific {
     Scientific {
@@ -207,20 +265,21 @@ impl Scientific {
   }
 
   // This function must not change before 0.5 since scientific-macro depends on it.
+  /// Returns `true` if the number is zero.
   #[inline(always)]
   #[must_use]
   pub fn is_zero(&self) -> bool {
     self.inner.is_zero()
   }
 
-  /// Returns true if self has a positive sign, this excludes 0.
+  /// Returns `true` if the number is positive and not zero.
   #[inline(always)]
   #[must_use]
   pub fn is_sign_positive(&self) -> bool {
     !self.is_zero() && !self.inner.sign.is_negative()
   }
 
-  /// Returns true if self has a negative sign, this excludes 0.
+  /// Returns `true` if the number is negative and not zero.
   #[inline(always)]
   #[must_use]
   pub fn is_sign_negative(&self) -> bool {

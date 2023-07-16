@@ -1,5 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![warn(missing_docs)]
 // enable pedantic group but not all
 #![warn(clippy::pedantic)]
 #![allow(clippy::cast_possible_truncation)]
@@ -95,7 +96,7 @@
 //!
 //! - `serde`: Enable De-/Serialization with serde.
 //!
-//! - `std`: If activated the library requires `std` and the [`Error`](::std::error::Error]) trait is implemented for all error types.
+//! - `std`: If activated the library requires `std` and the [`Error`](::std::error::Error) trait is implemented for all error types.
 //!   Without it the library is `no_std`.
 //!
 //! - `arc`: Use of [`Arc`](::alloc::sync::Arc) instead of [`Rc`](::alloc::rc::Rc), which enables [`Send`](::core::marker::Send) and [`Sync`](::core::marker::Sync) for [`Scientific`](crate::Scientific).

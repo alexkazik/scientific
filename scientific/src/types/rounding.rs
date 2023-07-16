@@ -25,13 +25,22 @@ pub enum Rounding {
   RoundUp,
   /// Also known as truncate.
   RoundTowardsZero,
+  /// Used by [`f64::round`].
   RoundAwayFromZero,
+  ///
   RoundHalfDown,
+  ///
   RoundHalfUp,
+  ///
   RoundHalfTowardsZero,
   #[default]
+  /// \[Default] Probably what you learned in school.
   RoundHalfAwayFromZero,
+  /// Often used in binary IEEE Floating-Point arithmetic.
+  ///
+  /// Not for the rounding operation but by other operations, which create more digits as can be stored.
   RoundHalfToEven,
+  ///
   RoundHalfToOdd,
 }
 
