@@ -285,6 +285,19 @@ impl Scientific {
   pub fn is_sign_negative(&self) -> bool {
     !self.is_zero() && self.inner.sign.is_negative()
   }
+
+  // This function must not change before 0.5 since scientific-macro depends on it.
+  #[doc(hidden)]
+  #[inline(always)]
+  pub const fn unchecked_non_zero_static_new(
+    is_negative: bool,
+    mantissa: &'static [u8],
+    exponent: isize,
+  ) -> Scientific {
+    Scientific {
+      inner: Sci::nz_unsafe_static_new(Sign::new(is_negative), mantissa, exponent),
+    }
+  }
 }
 
 #[cfg(feature = "arc")]

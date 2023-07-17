@@ -48,6 +48,7 @@ impl Sci {
     self.owner = Owner::None;
   }
 
+  // This function must not change before 0.5 since scientific-macro depends on it.
   #[inline(always)]
   pub(crate) const fn nz_unsafe_static_new(
     sign: Sign,

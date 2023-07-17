@@ -129,10 +129,6 @@ pub use crate::types::rounding::Rounding::{
 #[cfg(not(no_re_export))]
 pub use crate::types::scientific::Scientific;
 
-#[doc(hidden)]
-#[cfg(not(no_re_export))]
-pub mod __private;
-
 pub(crate) mod conversion;
 pub(crate) mod math;
 pub(crate) mod types;

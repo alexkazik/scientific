@@ -3,6 +3,7 @@
 //! Allows the creation of [Scientific](struct@Scientific) number constants.
 //!
 //! ```
+//! use scientific::Scientific;
 //! use scientific_macro::Scientific;
 //! let n1 = Scientific!(1e100);
 //! let n2 = Scientific!(1e80);
@@ -113,7 +114,7 @@ pub fn Scientific(item: TokenStream) -> TokenStream {
         quote!(
           {
             const MANTISSA: [u8; #len] = #mantissa;
-            scientific::__private::unsafe_new(#neg, &MANTISSA, #exponent)
+            scientific::Scientific::unchecked_non_zero_static_new(#neg, &MANTISSA, #exponent)
           }
         )
         .into()
