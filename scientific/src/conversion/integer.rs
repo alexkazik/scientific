@@ -135,7 +135,7 @@ mod c_i8 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 3] = [1, 2, 8];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_signed!(i8, DIGITS.len() as isize, SCI);
 }
 
@@ -143,7 +143,7 @@ mod c_u8 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 3] = [2, 5, 6];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_unsigned!(u8, DIGITS.len() as isize, SCI);
 }
 
@@ -151,7 +151,7 @@ mod c_i16 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 5] = [3, 2, 7, 6, 8];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_signed!(i16, DIGITS.len() as isize, SCI);
 }
 
@@ -159,7 +159,7 @@ mod c_u16 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 5] = [6, 5, 5, 3, 6];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_unsigned!(u16, DIGITS.len() as isize, SCI);
 }
 
@@ -167,7 +167,7 @@ mod c_i32 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 10] = [2, 1, 4, 7, 4, 8, 3, 6, 4, 8];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_signed!(i32, DIGITS.len() as isize, SCI);
 }
 
@@ -175,7 +175,7 @@ mod c_u32 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 10] = [4, 2, 9, 4, 9, 6, 7, 2, 9, 6];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_unsigned!(u32, DIGITS.len() as isize, SCI);
 }
 
@@ -183,7 +183,7 @@ mod c_i64 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 19] = [9, 2, 2, 3, 3, 7, 2, 0, 3, 6, 8, 5, 4, 7, 7, 5, 8, 0, 8];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_signed!(i64, DIGITS.len() as isize, SCI);
 }
 
@@ -191,7 +191,7 @@ mod c_u64 {
   use crate::conversion::integer::c_use::*;
 
   const DIGITS: [u8; 20] = [1, 8, 4, 4, 6, 7, 4, 4, 0, 7, 3, 7, 0, 9, 5, 5, 1, 6, 1, 6];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_unsigned!(u64, DIGITS.len() as isize, SCI);
 }
 
@@ -202,7 +202,7 @@ mod c_i128 {
     1, 7, 0, 1, 4, 1, 1, 8, 3, 4, 6, 0, 4, 6, 9, 2, 3, 1, 7, 3, 1, 6, 8, 7, 3, 0, 3, 7, 1, 5, 8, 8,
     4, 1, 0, 5, 7, 2, 8,
   ];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_signed!(i128, DIGITS.len() as isize, SCI);
 }
 
@@ -213,7 +213,7 @@ mod c_u128 {
     3, 4, 0, 2, 8, 2, 3, 6, 6, 9, 2, 0, 9, 3, 8, 4, 6, 3, 4, 6, 3, 3, 7, 4, 6, 0, 7, 4, 3, 1, 7, 6,
     8, 2, 1, 1, 4, 5, 6,
   ];
-  const SCI: Sci = Sci::nz_unsafe_static_new(Sign::NEGATIVE, &DIGITS, 0);
+  const SCI: Sci = Sci::nz_unchecked_static_new(Sign::NEGATIVE, &DIGITS, 0);
   conversion_unsigned!(u128, DIGITS.len() as isize, SCI);
 }
 

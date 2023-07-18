@@ -27,11 +27,11 @@ impl Sci {
     owner: Owner::None,
   };
   pub(crate) const ONE: Sci = Sci::one(Sign::POSITIVE, 0);
-  pub(crate) const POINT5: Sci = Sci::nz_unsafe_static_new(Sign::POSITIVE, &MANTISSA_5, -1);
+  pub(crate) const POINT5: Sci = Sci::nz_unchecked_static_new(Sign::POSITIVE, &MANTISSA_5, -1);
 
   #[inline(always)]
   pub(crate) const fn one(sign: Sign, exponent: isize) -> Sci {
-    Sci::nz_unsafe_static_new(sign, &MANTISSA_1, exponent)
+    Sci::nz_unchecked_static_new(sign, &MANTISSA_1, exponent)
   }
 
   #[inline(always)]
@@ -50,7 +50,7 @@ impl Sci {
 
   // This function must not change before 0.5 since scientific-macro depends on it.
   #[inline(always)]
-  pub(crate) const fn nz_unsafe_static_new(
+  pub(crate) const fn nz_unchecked_static_new(
     sign: Sign,
     mantissa: &'static [u8],
     exponent: isize,

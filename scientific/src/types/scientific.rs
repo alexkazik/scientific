@@ -293,7 +293,7 @@ impl Scientific {
     exponent: isize,
   ) -> Scientific {
     Scientific {
-      inner: Sci::nz_unsafe_static_new(Sign::new(is_negative), mantissa, exponent),
+      inner: Sci::nz_unchecked_static_new(Sign::new(is_negative), mantissa, exponent),
     }
   }
 }
