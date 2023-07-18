@@ -16,6 +16,9 @@ cargo $TOOLCHAIN clippy --release --no-default-features -- -D warnings || exit 1
 # update formatting
 cargo $TOOLCHAIN fmt --all || exit 1
 
+# ensure that the library doesn't use re-exports
+RUSTFLAGS="--cfg no_re_export" cargo build -p scientific
+
 # update readme
 ( cd scientific && cargo rdme --force ) || exit 1
 
