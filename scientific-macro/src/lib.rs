@@ -1,23 +1,13 @@
-//! # Macro for Scientific (Arbitrary precision scientific number)
-//!
-//! Allows the creation of [Scientific](struct@Scientific) number constants.
-//!
-//! ```
-//! use scientific::Scientific;
-//! use scientific_macro::Scientific;
-//! let n1 = Scientific!(1e100);
-//! let n2 = Scientific!(1e80);
-//! assert_eq!(&n1 + &n2, Scientific!(1.00000000000000000001e100));
-//! // An f64 has only a precision of about 15.9 digits, this are already 21.
-//! ```
+//! Macro for [scientific](https://docs.rs/scientific/latest/scientific/), the arbitrary precision scientific number. Not intended to be used directly.
 
+use crate::parser::parse_scientific;
 use proc_macro::TokenStream;
 use proc_macro2::{Delimiter, Group, Punct, Spacing, Span, TokenStream as TokenStream2};
 use quote::{quote, ToTokens, TokenStreamExt};
-use scientific::Scientific;
-use std::str::FromStr;
 use syn::parse::{Parse, ParseStream};
 use syn::{parse_macro_input, Error, LitFloat, LitInt, Token};
+
+mod parser;
 
 // Helper: allow parsing Int or Float
 enum LitIntOrLitFloat {
@@ -93,32 +83,28 @@ impl<'a> ToTokens for AsSlice<'a> {
 // Actual macro
 /// Macro for Scientific (Arbitrary precision scientific number)
 ///
-/// See the [module-level documentation](crate) for more details.
+/// Create a constant `Scientific` number.
 #[allow(non_snake_case)]
 #[proc_macro]
 pub fn Scientific(item: TokenStream) -> TokenStream {
   let LitScientific { neg, num } = parse_macro_input!(item as LitScientific);
   if !num.suffix().is_empty() {
-    return TokenStream::from(Error::new(num.span(), "no suffix allowed").to_compile_error());
+    return TokenStream::from(Error::new(num.span(), "No suffix allowed").to_compile_error());
   }
-  match Scientific::from_str(num.base10_digits()) {
-    Err(e) => TokenStream::from(Error::new(num.span(), e).to_compile_error()),
-    Ok(num) => {
-      if num.is_zero() {
-        quote!(scientific::Scientific::ZERO).into()
-      } else {
-        let neg = neg.is_some();
-        let mantissa = AsSlice(num.as_raw_mantissa());
-        let len = mantissa.0.len();
-        let exponent = num.exponent();
-        quote!(
-          {
-            const MANTISSA: [u8; #len] = #mantissa;
-            scientific::Scientific::unchecked_non_zero_static_new(#neg, &MANTISSA, #exponent)
-          }
-        )
-        .into()
-      }
+  match parse_scientific(num.base10_digits()) {
+    Err(()) => TokenStream::from(Error::new(num.span(), "Parse error").to_compile_error()),
+    Ok(None) => quote!(::scientific::Scientific::ZERO).into(),
+    Ok(Some((mantissa, exponent))) => {
+      let neg = neg.is_some();
+      let len = mantissa.len();
+      let mantissa = AsSlice(&mantissa);
+      quote!(
+        {
+          const MANTISSA: [u8; #len] = #mantissa;
+          ::scientific::Scientific::unchecked_non_zero_static_new(#neg, &MANTISSA, #exponent)
+        }
+      )
+      .into()
     }
   }
 }

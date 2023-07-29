@@ -64,7 +64,6 @@ impl Sci {
     }
   }
 
-  // This function must not change before 0.5 since scientific-macro depends on it.
   #[inline(always)]
   pub(crate) fn is_zero(&self) -> bool {
     self.len == 0

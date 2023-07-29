@@ -2,8 +2,8 @@
 name = "scientific-macro"
 version = "0.1.0"
 authors = ["ALeX Kazik <alex@kazik.de>"]
-edition = "2018"
-description = "Macro for arbitrary precision scientific number"
+edition = "2021"
+description = "Macro for scientific, the arbitrary precision scientific number. Not intended to be used directly."
 repository = "https://github.com/alexkazik/scientific"
 license = "MIT"
 keywords = ["arbitrary", "precision", "scientific", "no_std"]
@@ -12,8 +12,7 @@ categories = ["mathematics", "science", "no-std"]
 [dependencies]
 proc-macro2 = "1.0.60"
 quote = "1.0"
-scientific = { path = "../scientific", version = "<0.5" }
-syn = "1.0"
+syn = { version = "2.0", default-features = false, features = ["parsing", "proc-macro"] }
 
 [lib]
 proc-macro = true

@@ -25,6 +25,7 @@ pub struct Scientific {
 }
 
 impl Scientific {
+  // This constant must not change before 0.5 since scientific-macro depends on it.
   /// A value of zero.
   pub const ZERO: Scientific = Scientific { inner: Sci::ZERO };
 
@@ -60,7 +61,6 @@ impl Scientific {
     })
   }
 
-  // This function must not change before 0.5 since scientific-macro depends on it.
   /// Return a reference to the mantissa.
   #[inline(always)]
   #[must_use]
@@ -246,7 +246,6 @@ impl Scientific {
     self.inner.exponent1()
   }
 
-  // This function must not change before 0.5 since scientific-macro depends on it.
   /// Returns the exponent if the mantissa is written directly in front ot the decimal dot.
   ///
   /// `1.23` will return `-2` (because it was interpreted as `123e-2`).
@@ -264,7 +263,6 @@ impl Scientific {
     }
   }
 
-  // This function must not change before 0.5 since scientific-macro depends on it.
   /// Returns `true` if the number is zero.
   #[inline(always)]
   #[must_use]
@@ -413,7 +411,6 @@ impl Sub for &Scientific {
 impl FromStr for Scientific {
   type Err = ConversionError;
 
-  // This function must not change before 0.5 since scientific-macro depends on it.
   #[inline(always)]
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     Ok(Scientific {
