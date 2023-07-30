@@ -12,10 +12,10 @@ Arbitrary precision scientific number
 
 ## Constants
 
-Use `Scientific!` in the crate [`scientific-macro`](https://docs.rs/scientific-macro) to create constant numbers.
+Use [`Scientific!`](macro@crate::Scientific) to create constant numbers.
 
 ```rust
-use scientific_macro::Scientific;
+use scientific::Scientific;
 let n1 = Scientific!(1e100);
 let n2 = Scientific!(1e80);
 assert_eq!(&n1 + &n2, Scientific!(1.00000000000000000001e100));
@@ -24,11 +24,11 @@ assert_eq!(&n1 + &n2, Scientific!(1.00000000000000000001e100));
 
 ## Invocation
 
-All functions expect a reference to the `Scientific` number. (See example above.)
+All functions expect a reference to the [`Scientific`](struct@crate::Scientific) number. (See example above.)
 
 ## Conversion
 
-There are `From` and `TryFrom` traits for conversion between `Scientific` and integers, floats and strings.
+There are `From` and `TryFrom` traits for conversion between [`Scientific`](struct@crate::Scientific) and integers, floats and strings.
 
 Converting a scientific number with decimals to an integer will fail.
 
@@ -89,12 +89,14 @@ Either way it does never require relocation of the mantissa (since it's not chan
 
 - `serde`: Enable De-/Serialization with serde.
 
+- `macro`: Re-export the [`Scientific!`](macro@crate::Scientific) macro, enabled by default.
+
 - `std`: If activated the library requires `std` and the `Error` trait is implemented for all error types.
   Without it the library is `no_std`.
 
-- `arc`: Use of `Arc` instead of `Rc`, which enables `Send` and `Sync` for `Scientific`.
+- `arc`: Use of `Arc` instead of `Rc`, which enables `Send` and `Sync` for [`Scientific`](struct@crate::Scientific).
   Though `Arc` is more expensive, but since it's only used during create/clone/drop of
-  the `Scientific` number it's probably not that much.
+  the [`Scientific`](struct@crate::Scientific) number it's probably not that much.
 
 - `debug`: Enables several checks. Very helpful during development of this lib.
 

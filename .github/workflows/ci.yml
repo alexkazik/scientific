@@ -29,8 +29,8 @@ jobs:
       - run: cargo test
 
       # additional testing
-      - run: cargo test --features=debug
-      - run: cargo test --all-features
+      - run: cargo test --all-features -- --include-ignored
+      - run: cargo test --no-default-features --features debug --lib --bins --tests -- --include-ignored
 
       # check fmt and clippy
       - run: cargo fmt --all -- --check

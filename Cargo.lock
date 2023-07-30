@@ -110,6 +110,7 @@ version = "0.2.2"
 dependencies = [
  "num-integer",
  "rand",
+ "scientific-macro",
  "serde",
 ]
 

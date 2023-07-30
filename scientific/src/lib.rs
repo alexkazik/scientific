@@ -17,10 +17,10 @@
 //!
 //! # Constants
 //!
-//! Use `Scientific!` in the crate [`scientific-macro`](https://docs.rs/scientific-macro) to create constant numbers.
+//! Use [`Scientific!`](macro@crate::Scientific) to create constant numbers.
 //!
-//! ```ignore
-//! use scientific_macro::Scientific;
+//! ```
+//! use scientific::Scientific;
 //! let n1 = Scientific!(1e100);
 //! let n2 = Scientific!(1e80);
 //! assert_eq!(&n1 + &n2, Scientific!(1.00000000000000000001e100));
@@ -29,11 +29,11 @@
 //!
 //! # Invocation
 //!
-//! All functions expect a reference to the [`Scientific`](crate::Scientific) number. (See example above.)
+//! All functions expect a reference to the [`Scientific`](struct@crate::Scientific) number. (See example above.)
 //!
 //! # Conversion
 //!
-//! There are `From` and `TryFrom` traits for conversion between [`Scientific`](crate::Scientific) and integers, floats and strings.
+//! There are `From` and `TryFrom` traits for conversion between [`Scientific`](struct@crate::Scientific) and integers, floats and strings.
 //!
 //! Converting a scientific number with decimals to an integer will fail.
 //!
@@ -96,12 +96,14 @@
 //!
 //! - `serde`: Enable De-/Serialization with serde.
 //!
+//! - `macro`: Re-export the [`Scientific!`](macro@crate::Scientific) macro, enabled by default.
+//!
 //! - `std`: If activated the library requires `std` and the [`Error`](::std::error::Error) trait is implemented for all error types.
 //!   Without it the library is `no_std`.
 //!
-//! - `arc`: Use of [`Arc`](::alloc::sync::Arc) instead of [`Rc`](::alloc::rc::Rc), which enables [`Send`](::core::marker::Send) and [`Sync`](::core::marker::Sync) for [`Scientific`](crate::Scientific).
+//! - `arc`: Use of [`Arc`](::alloc::sync::Arc) instead of [`Rc`](::alloc::rc::Rc), which enables [`Send`](::core::marker::Send) and [`Sync`](::core::marker::Sync) for [`Scientific`](struct@crate::Scientific).
 //!   Though [`Arc`](::alloc::sync::Arc) is more expensive, but since it's only used during create/clone/drop of
-//!   the [`Scientific`](crate::Scientific) number it's probably not that much.
+//!   the [`Scientific`](struct@crate::Scientific) number it's probably not that much.
 //!
 //! - `debug`: Enables several checks. Very helpful during development of this lib.
 //!
@@ -128,6 +130,9 @@ pub use crate::types::rounding::Rounding::{
 };
 #[cfg(not(no_re_export))]
 pub use crate::types::scientific::Scientific;
+#[cfg_attr(docsrs, doc(cfg(feature = "macro")))]
+#[cfg(all(not(no_re_export), feature = "macro"))]
+pub use scientific_macro::Scientific;
 
 pub(crate) mod conversion;
 pub(crate) mod math;
