@@ -1,5 +1,12 @@
 # Changelog for scientific
 
+## 0.5.0 -- 2023-08-03
+
+* Re-Export macro
+* Improve documentation
+* Change ow the macro works
+* Small internal improvements
+
 ## 0.2.2 -- 2023-07-15
 
 * Fix sqrt errors

@@ -18,7 +18,7 @@ pub(crate) struct Sci {
 }
 
 impl Sci {
-  // This constant must not change before 0.5 since scientific-macro depends on it.
+  // This constant must not change before 0.6 since scientific-macro depends on it.
   pub(crate) const ZERO: Sci = Sci {
     sign: Sign::POSITIVE,     // does not matter
     data: Ptr::new_invalid(), // a pointer to nowhere (is never used for zero)
@@ -48,7 +48,7 @@ impl Sci {
     self.owner = Owner::None;
   }
 
-  // This function must not change before 0.5 since scientific-macro depends on it.
+  // This function must not change before 0.6 since scientific-macro depends on it.
   #[inline(always)]
   pub(crate) const fn nz_unchecked_static_new(
     sign: Sign,

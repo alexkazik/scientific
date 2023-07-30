@@ -25,7 +25,7 @@ pub struct Scientific {
 }
 
 impl Scientific {
-  // This constant must not change before 0.5 since scientific-macro depends on it.
+  // This constant must not change before 0.6 since scientific-macro depends on it.
   /// A value of zero.
   pub const ZERO: Scientific = Scientific { inner: Sci::ZERO };
 
@@ -284,7 +284,7 @@ impl Scientific {
     !self.is_zero() && self.inner.sign.is_negative()
   }
 
-  // This function must not change before 0.5 since scientific-macro depends on it.
+  // This function must not change before 0.6 since scientific-macro depends on it.
   #[doc(hidden)]
   #[inline(always)]
   pub const fn unchecked_non_zero_static_new(
