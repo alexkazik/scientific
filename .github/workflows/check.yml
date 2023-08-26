@@ -79,7 +79,10 @@ jobs:
     # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
     strategy:
       matrix:
-        msrv: ["1.56.1"] # 2021 edition requires 1.56
+        msrv: ["1.65.0"]
+          # 2021 edition: 1.56
+          # derive_default_enum: 1.62
+          # ptr_const_cast: 1.65
     name: ubuntu / ${{ matrix.msrv }}
     steps:
       - uses: actions/checkout@v3
@@ -91,3 +94,30 @@ jobs:
           toolchain: ${{ matrix.msrv }}
       - name: cargo +${{ matrix.msrv }} check
         run: cargo check
+  readme:
+    runs-on: ubuntu-latest
+    name: stable / readme
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-rdme
+        run: cargo install cargo-rdme
+      - name: cargo rdme
+        run: cargo rdme --check
+        working-directory: ./scientific
+  no_re_export:
+    runs-on: ubuntu-latest
+    name: stable / no_re_export
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build without re-exports
+        run: cargo build -p scientific
+        env:
+          RUSTFLAGS: --cfg no_re_export
