@@ -57,11 +57,11 @@ impl Sci {
 /// either ensures that the data is no longer accessed or copy it
 fn make_writeable(sci: &mut Sci) -> Ptr {
   match sci.owner.make_writeable() {
-    Ok(_) => {
+    Ok(()) => {
       // it is guaranteed that there is no other access to the data
       // and thus we can modify it
     }
-    Err(_) => {
+    Err(()) => {
       // copy the data from the old to the new owner
       let mut vec = sci.data.as_slice(sci.len).to_vec();
       sci.data = Ptr::new_mut(vec.as_mut_slice());

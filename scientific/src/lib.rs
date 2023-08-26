@@ -1,6 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
+#![allow(rustdoc::redundant_explicit_links)]
 // enable pedantic group but not all
 #![warn(clippy::pedantic)]
 #![allow(clippy::cast_possible_truncation)]
