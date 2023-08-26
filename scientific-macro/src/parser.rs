@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use core::str::FromStr;
 
 pub(crate) fn parse_scientific(input: &str) -> Result<Option<(Vec<u8>, isize)>, ()> {
   // split at 'e'/'E', and parse second half as isize (defaults to 0)

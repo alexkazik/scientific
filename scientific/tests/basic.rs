@@ -1,6 +1,6 @@
+use core::default::Default;
 use core::str::FromStr;
 use scientific::{Decimals, Digits, Precision, RoundHalfAwayFromZero as RHAFZ, Scientific};
-use std::default::Default;
 
 #[test]
 fn truncate() {

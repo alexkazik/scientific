@@ -1,9 +1,9 @@
 #![allow(clippy::zero_prefixed_literal)]
 
+use core::convert::TryFrom;
 use core::ops::Neg;
 use rand::prelude::SliceRandom;
 use scientific::{Error, Precision, Scientific};
-use std::convert::TryFrom;
 
 const POSITIVE_NUMBERS: [f64; 32] = [
   9_223_372_036_854_775_807.0, // 1<<63-1, i64::MAX
