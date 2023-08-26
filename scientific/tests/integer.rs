@@ -64,16 +64,10 @@ fn int_rem(a: i128, b: i128) -> Result<i128, Error> {
 
 #[test]
 fn integer_some() {
-  integer_skip(9);
+  integer_skip();
 }
 
-#[test]
-#[ignore]
-fn integer_all() {
-  integer_skip(1);
-}
-
-fn integer_skip(skip: usize) {
+fn integer_skip() {
   let mut numbers = POSITIVE_NUMBERS
     .iter()
     .copied()
@@ -83,7 +77,6 @@ fn integer_skip(skip: usize) {
 
   let mut rng = rand::thread_rng();
   numbers.shuffle(&mut rng);
-  numbers.truncate(numbers.len() / skip);
 
   for (int_a, sci_a) in numbers.iter() {
     for (int_b, sci_b) in numbers.iter() {

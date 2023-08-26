@@ -59,16 +59,10 @@ const FUNCTIONS: [(
 
 #[test]
 fn float_some() {
-  float_skip(12);
+  float_skip();
 }
 
-#[test]
-#[ignore]
-fn float_all() {
-  float_skip(1);
-}
-
-fn float_skip(skip: usize) {
+fn float_skip() {
   let mut numbers = POSITIVE_NUMBERS
     .iter()
     .copied()
@@ -78,7 +72,6 @@ fn float_skip(skip: usize) {
 
   let mut rng = rand::thread_rng();
   numbers.shuffle(&mut rng);
-  numbers.truncate(numbers.len() / skip);
 
   for (flt_a, sci_a) in numbers.iter() {
     for (flt_b, sci_b) in numbers.iter() {
