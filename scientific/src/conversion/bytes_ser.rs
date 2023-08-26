@@ -21,7 +21,7 @@ impl Sci {
           #[cfg(target_pointer_width = "16")]
           {
             result.push(mantissa_sign | 0x3d);
-            result.extend_from_slice(&(value.exponent as i16).to_be_bytes());
+            result.extend_from_slice(&(self.exponent as i16).to_be_bytes());
           }
 
           #[allow(clippy::collapsible_else_if)]
@@ -33,7 +33,7 @@ impl Sci {
             #[cfg(target_pointer_width = "32")]
             {
               result.push(mantissa_sign | 0x3e);
-              result.extend_from_slice(&(value.exponent as i32).to_be_bytes());
+              result.extend_from_slice(&(self.exponent as i32).to_be_bytes());
             }
 
             #[cfg(target_pointer_width = "64")]
