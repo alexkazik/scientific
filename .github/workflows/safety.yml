@@ -60,6 +60,6 @@ jobs:
           toolchain: ${{ env.NIGHTLY }}
           components: miri
       - name: cargo miri test
-        run: cargo miri test
+        run: cargo miri test -- miri
         env:
           MIRIFLAGS: ""

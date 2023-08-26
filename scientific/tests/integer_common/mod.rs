@@ -32,7 +32,7 @@ fn int_rem(a: i128, b: i128) -> Result<i128, Error> {
   }
 }
 
-pub(crate) fn integer_skip<I>(numbers: I)
+pub(crate) fn test_integer<I>(numbers: I, sqrt_decimals: isize, randomize: bool)
 where
   I: Iterator<Item = i128>,
 {
@@ -40,8 +40,11 @@ where
     .map(|n| (n, Scientific::from(n)))
     .collect::<Vec<(i128, Scientific)>>();
 
-  let mut rng = rand::thread_rng();
-  numbers.shuffle(&mut rng);
+  if randomize {
+    // to increase the chance that an error is caught earlier
+    let mut rng = rand::thread_rng();
+    numbers.shuffle(&mut rng);
+  }
 
   for (int_a, sci_a) in numbers.iter() {
     for (int_b, sci_b) in numbers.iter() {
@@ -97,7 +100,7 @@ where
     if *int_a >= 0 {
       // v1
       let sci_cubed = sci_a * sci_a;
-      let sci_result = sci_cubed.sqrt_truncate(Decimals(100));
+      let sci_result = sci_cubed.sqrt_truncate(Decimals(sqrt_decimals));
       assert_eq!(
         Ok(sci_a.clone()),
         sci_result,

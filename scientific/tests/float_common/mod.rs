@@ -19,7 +19,7 @@ const FUNCTIONS: [(
   // rem can't be tested due to the lack of precision in float
 ];
 
-pub(crate) fn float_skip<I>(numbers: I)
+pub(crate) fn test_float<I>(numbers: I, exponents: &[i32], randomize: bool)
 where
   I: Iterator<Item = f64>,
 {
@@ -27,8 +27,11 @@ where
     .map(|n| (n, Scientific::from_string(n.to_string()).unwrap()))
     .collect::<Vec<(f64, Scientific)>>();
 
-  let mut rng = rand::thread_rng();
-  numbers.shuffle(&mut rng);
+  if randomize {
+    // to increase the chance that an error is caught earlier
+    let mut rng = rand::thread_rng();
+    numbers.shuffle(&mut rng);
+  }
 
   for (flt_a, sci_a) in numbers.iter() {
     for (flt_b, sci_b) in numbers.iter() {
@@ -52,7 +55,7 @@ where
     }
 
     // powi
-    for int_b in &[0, 1, 2, 10, 100] {
+    for int_b in exponents {
       let flt_result = flt_a.powi(*int_b);
       let sci_result = sci_a.powi((*int_b) as usize);
       let diff = diff(sci_a, sci_a, flt_result, &Ok(sci_result.clone()));

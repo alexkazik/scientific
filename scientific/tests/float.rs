@@ -1,6 +1,6 @@
 #![allow(clippy::zero_prefixed_literal)]
 
-use crate::float_common::float_skip;
+use crate::float_common::test_float;
 use core::ops::Neg;
 
 mod float_common;
@@ -41,11 +41,13 @@ const POSITIVE_NUMBERS: [f64; 32] = [
 ];
 
 #[test]
-fn float_some() {
-  float_skip(
+fn float() {
+  test_float(
     POSITIVE_NUMBERS
       .iter()
       .copied()
       .chain(POSITIVE_NUMBERS.iter().map(Neg::neg)),
+    &[0, 1, 2, 10, 100],
+    true,
   );
 }

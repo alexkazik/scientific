@@ -1,6 +1,6 @@
 #![allow(clippy::zero_prefixed_literal)]
 
-use crate::integer_common::integer_skip;
+use crate::integer_common::test_integer;
 use core::ops::Neg;
 
 mod integer_common;
@@ -33,11 +33,13 @@ const POSITIVE_NUMBERS: [i128; 24] = [
 ];
 
 #[test]
-fn integer_some() {
-  integer_skip(
+fn integer() {
+  test_integer(
     POSITIVE_NUMBERS
       .iter()
       .copied()
       .chain(POSITIVE_NUMBERS.iter().map(Neg::neg)),
+    100,
+    true,
   );
 }
