@@ -1,7 +1,10 @@
 #![allow(clippy::zero_prefixed_literal)]
 
 use crate::float_common::test_float;
+use core::fmt::Debug;
 use core::ops::Neg;
+use core::str::FromStr;
+use scientific::Scientific;
 
 mod float_common;
 
@@ -50,4 +53,28 @@ fn float() {
     &[0, 1, 2, 10, 100],
     true,
   );
+}
+
+#[test]
+fn float_conversion() {
+  float_conversion_inner::<f32>();
+  float_conversion_inner::<f64>();
+}
+fn float_conversion_inner<N>()
+where
+  N: Copy + Debug + FromStr + PartialEq,
+  <N as FromStr>::Err: Debug,
+  N: for<'a> From<&'a scientific::Scientific>,
+  Scientific: TryFrom<N>,
+{
+  for x in [
+    "-128", "0", "128", "-1e-1000", "1e-1000", "1e1000", "-1e1000",
+  ] {
+    let s = Scientific::from_string(x.to_string()).unwrap();
+    let n = N::from_str(x).unwrap();
+    assert_eq!(n, N::from(&s));
+    if let Ok(n2s) = Scientific::try_from(n) {
+      assert_eq!(n, N::from(&n2s));
+    }
+  }
 }

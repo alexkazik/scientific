@@ -86,6 +86,7 @@ fn test() {
     ("5e3e9", Err(())),
     ("5e3.9", Err(())),
     ("5.3.9", Err(())),
+    ("x", Err(())),
     ("hello.world", Err(())),
     // spacer
     ("6_000", Ok(Some((vec![6], 3)))),

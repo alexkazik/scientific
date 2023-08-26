@@ -5,6 +5,7 @@ use scientific::Scientific;
 #[test]
 fn test_macro() {
   for (sci, string) in [
+    (Scientific!(0), "0"),
     (Scientific!(5), "5"),
     (Scientific!(50), "50"),
     (Scientific!(6_000), "6000"),

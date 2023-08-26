@@ -1,7 +1,10 @@
 #![allow(clippy::zero_prefixed_literal)]
 
 use crate::integer_common::test_integer;
+use core::fmt::Debug;
 use core::ops::Neg;
+use core::str::FromStr;
+use scientific::{ConversionError, Scientific};
 
 mod integer_common;
 
@@ -42,4 +45,76 @@ fn integer() {
     100,
     true,
   );
+}
+
+#[test]
+fn integer_conversion() {
+  integer_conversion_inner::<i8, true>();
+  integer_conversion_inner::<u8, false>();
+  integer_conversion_inner::<i16, true>();
+  integer_conversion_inner::<u16, false>();
+  integer_conversion_inner::<i32, true>();
+  integer_conversion_inner::<u32, false>();
+  integer_conversion_inner::<i64, true>();
+  integer_conversion_inner::<u64, false>();
+  integer_conversion_inner::<i128, true>();
+  integer_conversion_inner::<u128, false>();
+  integer_conversion_inner::<isize, true>();
+  integer_conversion_inner::<usize, false>();
+}
+
+fn integer_conversion_inner<N, const SIGNED: bool>()
+where
+  N: Debug + FromStr + PartialEq,
+  N: for<'a> TryFrom<&'a scientific::Scientific, Error = ConversionError>,
+  Scientific: From<N>,
+{
+  for x in [
+    "0",
+    // i8
+    "-129",
+    "-128",
+    "127",
+    "128",
+    // u8
+    "255",
+    "256",
+    // i16
+    "-32769",
+    "-32768",
+    "32767",
+    "32768",
+    // u16
+    "65535",
+    "65536",
+    // i32
+    "-2147483649",
+    "-2147483648",
+    "2147483647",
+    "2147483648",
+    // u32
+    "4294967295",
+    "4294967296",
+    // i64
+    "-9223372036854775809",
+    "-9223372036854775808",
+    "9223372036854775807",
+    "9223372036854775808",
+    // u64
+    "18446744073709551615",
+    "18446744073709551616",
+  ] {
+    let s = Scientific::from_string(x.to_string()).unwrap();
+    let n = N::from_str(x).map_err(|_| {
+      if SIGNED || s.is_sign_positive() {
+        ConversionError::NumberTooLarge
+      } else {
+        ConversionError::NumberIsNegative
+      }
+    });
+    assert_eq!(n, N::try_from(&s));
+    if let Ok(n) = n {
+      assert_eq!(s, Scientific::from(n));
+    }
+  }
 }
