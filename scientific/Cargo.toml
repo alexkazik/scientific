@@ -1,6 +1,6 @@
 [package]
 name = "scientific"
-version = "0.5.0"
+version = "0.5.1"
 authors = ["ALeX Kazik <alex@kazik.de>"]
 edition = "2021"
 description = "Arbitrary precision scientific number (no_std capable, in pure Rust)"

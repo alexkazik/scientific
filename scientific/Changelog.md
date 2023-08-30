@@ -1,5 +1,11 @@
 # Changelog for scientific
 
+## 0.5.1 -- 2023-08-30
+
+* Fix 16 and 32 bit only code
+* Improve CI
+* Improve tests
+
 ## 0.5.0 -- 2023-08-03
 
 * Re-Export macro
