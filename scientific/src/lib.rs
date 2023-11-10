@@ -9,7 +9,6 @@
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::explicit_iter_loop)]
 #![allow(clippy::if_not_else)]
-#![allow(clippy::inline_always)]
 #![allow(clippy::match_same_arms)]
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::single_match_else)]

@@ -9,40 +9,40 @@ pub(crate) struct Ptr {
 }
 
 impl Ptr {
-  #[inline(always)]
+  #[inline]
   const fn new_ptr(ptr: *const u8) -> NonNull<u8> {
     unsafe { NonNull::new_unchecked(ptr.cast_mut()) }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) const fn new(slice: &[u8]) -> Ptr {
     Ptr {
       ptr: Self::new_ptr(slice.as_ptr()),
     }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn new_mut(slice: &mut [u8]) -> Ptr {
     Ptr {
       ptr: Self::new_ptr(slice.as_mut_ptr()),
     }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) const fn new_invalid() -> Ptr {
     Ptr {
       ptr: NonNull::dangling(),
     }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn offset(self, count: isize) -> Ptr {
     Ptr {
       ptr: Self::new_ptr(unsafe { self.ptr.as_ptr().offset(count) }),
     }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn copy_to_nonoverlapping(&self, len: isize, to: Ptr, offset: isize) {
     unsafe {
       copy_nonoverlapping(
@@ -53,22 +53,22 @@ impl Ptr {
     }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn as_slice(&self, len: isize) -> &[u8] {
     unsafe { from_raw_parts(self.ptr.as_ptr(), len as usize) }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn offset_from(&self, other: Ptr) -> isize {
     unsafe { self.ptr.as_ptr().offset_from(other.ptr.as_ptr()) }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn inc(&mut self) {
     self.ptr = Self::new_ptr(unsafe { self.ptr.as_ptr().add(1) });
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn dec(&mut self) {
     self.ptr = Self::new_ptr(unsafe { self.ptr.as_ptr().sub(1) });
   }
@@ -77,7 +77,7 @@ impl Ptr {
 impl Index<isize> for Ptr {
   type Output = i8;
 
-  #[inline(always)]
+  #[inline]
   fn index(&self, index: isize) -> &Self::Output {
     unsafe {
       self
@@ -92,7 +92,7 @@ impl Index<isize> for Ptr {
 }
 
 impl IndexMut<isize> for Ptr {
-  #[inline(always)]
+  #[inline]
   fn index_mut(&mut self, index: isize) -> &mut Self::Output {
     unsafe {
       self
@@ -109,14 +109,14 @@ impl IndexMut<isize> for Ptr {
 impl Deref for Ptr {
   type Target = i8;
 
-  #[inline(always)]
+  #[inline]
   fn deref(&self) -> &Self::Target {
     self.index(0)
   }
 }
 
 impl DerefMut for Ptr {
-  #[inline(always)]
+  #[inline]
   fn deref_mut(&mut self) -> &mut Self::Target {
     self.index_mut(0)
   }

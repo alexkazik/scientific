@@ -45,7 +45,7 @@ pub enum Rounding {
 }
 
 impl Rounding {
-  #[inline(always)]
+  #[inline]
   pub(crate) fn round_away_from_zero(
     self,
     is_negative: bool,

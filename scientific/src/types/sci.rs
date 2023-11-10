@@ -29,19 +29,19 @@ impl Sci {
   pub(crate) const ONE: Sci = Sci::one(Sign::POSITIVE, 0);
   pub(crate) const POINT5: Sci = Sci::nz_unchecked_static_new(Sign::POSITIVE, &MANTISSA_5, -1);
 
-  #[inline(always)]
+  #[inline]
   pub(crate) const fn one(sign: Sign, exponent: isize) -> Sci {
     Sci::nz_unchecked_static_new(sign, &MANTISSA_1, exponent)
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn assign_one(&mut self) {
     self.len = 1;
     self.data = Ptr::new(&MANTISSA_1);
     self.owner = Owner::None;
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn assign_zero(&mut self) {
     self.len = 0; // required for is_zero() to work
     self.exponent = 1; // required for exponent() to work
@@ -49,7 +49,7 @@ impl Sci {
   }
 
   // This function must not change before 0.6 since scientific-macro depends on it.
-  #[inline(always)]
+  #[inline]
   pub(crate) const fn nz_unchecked_static_new(
     sign: Sign,
     mantissa: &'static [u8],
@@ -64,17 +64,17 @@ impl Sci {
     }
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn is_zero(&self) -> bool {
     self.len == 0
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn exponent0(&self) -> isize {
     self.exponent + self.len
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn exponent1(&self) -> isize {
     self.exponent + self.len - 1
   }

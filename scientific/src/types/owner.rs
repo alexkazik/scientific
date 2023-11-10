@@ -20,12 +20,12 @@ pub(crate) enum Owner {
 
 impl Owner {
   #[cfg(not(feature = "arc"))]
-  #[inline(always)]
+  #[inline]
   pub(crate) fn new(data: Vec<u8>) -> Owner {
     Owner::Vec(Rc::new(data))
   }
   #[cfg(feature = "arc")]
-  #[inline(always)]
+  #[inline]
   pub(crate) fn new(data: Vec<u8>) -> Owner {
     Owner::Vec(Arc::new(data))
   }

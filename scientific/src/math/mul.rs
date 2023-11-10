@@ -17,7 +17,7 @@ impl Sci {
   }
 }
 
-#[inline(always)]
+#[inline]
 fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: isize) -> Sci {
   let result_len = lhs.len + rhs.len + 1;
 

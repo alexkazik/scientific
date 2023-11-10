@@ -24,7 +24,7 @@ impl Builder {
     )
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn from_data(sign: Sign, data: Ptr, len: isize, exponent: isize, owner: Owner) -> Sci {
     Builder(Sci {
       sign,
@@ -36,7 +36,7 @@ impl Builder {
     .finish()
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) fn finish(mut self) -> Sci {
     b_mut_trim_zeroes(&mut self.0);
     self.0

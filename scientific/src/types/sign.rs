@@ -6,12 +6,12 @@ impl Sign {
   pub(crate) const POSITIVE: Sign = Sign(false);
   pub(crate) const NEGATIVE: Sign = Sign(true);
 
-  #[inline(always)]
+  #[inline]
   pub(crate) const fn is_negative(self) -> bool {
     self.0
   }
 
-  #[inline(always)]
+  #[inline]
   pub(crate) const fn new(is_negative: bool) -> Sign {
     Sign(is_negative)
   }
@@ -20,7 +20,7 @@ impl Sign {
 impl Not for Sign {
   type Output = Self;
 
-  #[inline(always)]
+  #[inline]
   fn not(self) -> Self::Output {
     Sign(!self.0)
   }
@@ -29,7 +29,7 @@ impl Not for Sign {
 impl BitXor for Sign {
   type Output = Sign;
 
-  #[inline(always)]
+  #[inline]
   fn bitxor(self, rhs: Self) -> Self::Output {
     Sign(self.0 != rhs.0)
   }

@@ -11,7 +11,7 @@ use alloc::vec::Vec;
 use core::cmp::Ordering;
 use core::convert::Infallible;
 
-#[inline(always)]
+#[inline]
 fn div_results_in_zero(lhs: &Sci, rhs: &Sci, precision: Precision) -> bool {
   match precision {
     Precision::Digits(digits) => digits <= 0,
@@ -30,44 +30,44 @@ where
 }
 
 impl Remainder for Infallible {
-  #[inline(always)]
+  #[inline]
   fn has_result() -> bool {
     false
   }
 
-  #[inline(always)]
+  #[inline]
   fn from_zero() -> Option<Self> {
     None
   }
 
-  #[inline(always)]
+  #[inline]
   fn from_sci(_: &Sci) -> Option<Self> {
     None
   }
 
-  #[inline(always)]
+  #[inline]
   fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: isize, _: isize) -> Option<Self> {
     None
   }
 }
 
 impl Remainder for Sci {
-  #[inline(always)]
+  #[inline]
   fn has_result() -> bool {
     true
   }
 
-  #[inline(always)]
+  #[inline]
   fn from_zero() -> Option<Self> {
     Some(Sci::ZERO)
   }
 
-  #[inline(always)]
+  #[inline]
   fn from_sci(sci: &Sci) -> Option<Self> {
     Some(sci.clone())
   }
 
-  #[inline(always)]
+  #[inline]
   fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self> {
     Some(Builder::from_data(
       sign,
@@ -94,7 +94,7 @@ impl Sci {
     Ok((quot, rem))
   }
 
-  #[inline(always)]
+  #[inline]
   fn div_multi<R: Remainder>(
     &self,
     rhs: &Sci,
@@ -151,7 +151,7 @@ impl Sci {
   }
 }
 
-#[inline(always)]
+#[inline]
 fn nz_div<R: Remainder>(
   lhs: &Sci,
   rhs: &Sci,
@@ -217,7 +217,7 @@ fn nz_div<R: Remainder>(
 }
 
 // Remove leading zeroes, this is important because p_ge assumes that there are no leading zeroes
-#[inline(always)]
+#[inline]
 fn p_trim(value_ptr: &mut Ptr, value_len: &mut isize) {
   while *value_len > 0 && **value_ptr == 0 {
     value_ptr.inc();
@@ -226,7 +226,7 @@ fn p_trim(value_ptr: &mut Ptr, value_len: &mut isize) {
 }
 
 // Compare two mantissa (the exponent and sign is ignored)
-#[inline(always)]
+#[inline]
 fn p_ge(mut lhs_ptr: Ptr, lhs_len: isize, rhs: &Sci) -> bool {
   if lhs_len != rhs.len {
     lhs_len >= rhs.len

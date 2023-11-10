@@ -13,7 +13,7 @@ impl Sci {
   }
 }
 
-#[inline(always)]
+#[inline]
 fn nz_powi(base: &Sci, mut exponent: usize) -> Sci {
   // base is not zero, exponent is greater than zero
   let mut power = base.clone();

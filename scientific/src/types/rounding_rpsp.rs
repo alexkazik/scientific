@@ -2,7 +2,7 @@
 pub(crate) struct RPSP;
 
 impl RPSP {
-  #[inline(always)]
+  #[inline]
   #[allow(clippy::unused_self)]
   pub(crate) fn round_away_from_zero(
     self,

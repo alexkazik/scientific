@@ -125,7 +125,7 @@ impl Sci {
   }
 }
 
-#[inline(always)]
+#[inline]
 fn calculate_trailing_zeroes(len: isize) -> isize {
   // Read in bytes_ser in the section "what to do with the remaining digits?"
   // how it's handled on serialization. This is a shortcut to all the required information.
