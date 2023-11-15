@@ -18,6 +18,8 @@ scientific-macro = { path = "../scientific-macro", version = "0.5", optional = t
 [dev-dependencies]
 rand = "0.8"
 num-integer = "0.1.39"
+serde_json = "1.0.108"
+postcard = "1.0.8"
 
 [features]
 default = ['macro']
