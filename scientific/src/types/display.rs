@@ -2,10 +2,7 @@ use crate::types::sci::Sci;
 use core::fmt::{Formatter, Write};
 
 impl Sci {
-  pub(crate) fn display(&self, f: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
-    if self.is_zero() {
-      return f.write_char('0');
-    }
+  pub(crate) fn nz_display<W: Write>(&self, f: &mut W) -> Result<(), core::fmt::Error> {
     if self.sign.is_negative() {
       f.write_char('-')?;
     }
@@ -47,5 +44,13 @@ impl Sci {
       }
     }
     Ok(())
+  }
+
+  pub(crate) fn display(&self, f: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
+    if self.is_zero() {
+      f.write_char('0')
+    } else {
+      self.nz_display(f)
+    }
   }
 }
