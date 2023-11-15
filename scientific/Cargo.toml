@@ -8,6 +8,8 @@ repository = "https://github.com/alexkazik/scientific"
 license = "MIT"
 keywords = ["arbitrary", "precision", "scientific", "no_std"]
 categories = ["mathematics", "science", "no-std"]
+readme = "README.md"
+rust-version = "1.65.0"
 
 [dependencies]
 serde = { version = "1.0.16", optional = true }

@@ -8,6 +8,7 @@ repository = "https://github.com/alexkazik/scientific"
 license = "MIT"
 keywords = ["arbitrary", "precision", "scientific", "no_std"]
 categories = ["mathematics", "science", "no-std"]
+rust-version = "1.65.0"
 
 [dependencies]
 proc-macro2 = "1.0.60"
