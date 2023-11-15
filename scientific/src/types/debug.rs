@@ -11,9 +11,7 @@ impl Sci {
     if self.sign.is_negative() {
       f.write_char('-')?;
     }
-    for i in 0..self.len {
-      f.write_char((b'0' + self.data[i] as u8).into())?;
-    }
+    self.data.write_chars(f, 0..self.len)?;
     if self.exponent != 0 {
       write!(f, "e{}", self.exponent)?;
     }

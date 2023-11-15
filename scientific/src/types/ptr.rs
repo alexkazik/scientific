@@ -1,4 +1,5 @@
-use core::ops::{Deref, DerefMut, Index, IndexMut};
+use core::fmt::Write;
+use core::ops::{Deref, DerefMut, Index, IndexMut, Range};
 use core::ptr::{copy_nonoverlapping, NonNull};
 use core::slice::from_raw_parts;
 
@@ -43,7 +44,7 @@ impl Ptr {
   }
 
   #[inline]
-  pub(crate) fn copy_to_nonoverlapping(&self, len: isize, to: Ptr, offset: isize) {
+  pub(crate) fn copy_to_nonoverlapping(self, len: isize, to: Ptr, offset: isize) {
     unsafe {
       copy_nonoverlapping(
         self.ptr.as_ptr(),
@@ -59,7 +60,7 @@ impl Ptr {
   }
 
   #[inline]
-  pub(crate) fn offset_from(&self, other: Ptr) -> isize {
+  pub(crate) fn offset_from(self, other: Ptr) -> isize {
     unsafe { self.ptr.as_ptr().offset_from(other.ptr.as_ptr()) }
   }
 
@@ -72,6 +73,27 @@ impl Ptr {
   pub(crate) fn dec(&mut self) {
     self.ptr = Self::new_ptr(unsafe { self.ptr.as_ptr().sub(1) });
   }
+
+  #[inline]
+  pub(crate) fn write_char<W: Write>(
+    self,
+    f: &mut W,
+    offset: isize,
+  ) -> Result<(), core::fmt::Error> {
+    f.write_char((b'0' + (self[offset] as u8)).into())
+  }
+
+  #[inline]
+  pub(crate) fn write_chars<W: Write>(
+    self,
+    f: &mut W,
+    range: Range<isize>,
+  ) -> Result<(), core::fmt::Error> {
+    for i in range {
+      f.write_char((b'0' + (self[i] as u8)).into())?;
+    }
+    Ok(())
+  }
 }
 
 impl Index<isize> for Ptr {
@@ -79,30 +101,14 @@ impl Index<isize> for Ptr {
 
   #[inline]
   fn index(&self, index: isize) -> &Self::Output {
-    unsafe {
-      self
-        .ptr
-        .as_ptr()
-        .cast::<i8>()
-        .offset(index)
-        .as_ref()
-        .unwrap()
-    }
+    unsafe { &*self.ptr.as_ptr().cast::<i8>().offset(index) }
   }
 }
 
 impl IndexMut<isize> for Ptr {
   #[inline]
   fn index_mut(&mut self, index: isize) -> &mut Self::Output {
-    unsafe {
-      self
-        .ptr
-        .as_ptr()
-        .cast::<i8>()
-        .offset(index)
-        .as_mut()
-        .unwrap()
-    }
+    unsafe { &mut *self.ptr.as_ptr().cast::<i8>().offset(index) }
   }
 }
 

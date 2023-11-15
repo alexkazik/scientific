@@ -1,6 +1,7 @@
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
-use alloc::string::{String, ToString};
+use alloc::string::String;
+use core::fmt::Write;
 use core::str::FromStr;
 
 impl Sci {
@@ -20,11 +21,12 @@ impl Sci {
       if self.sign.is_negative() {
         str.push('-');
       }
-      for i in 0..self.len.min(DIGITS) {
-        str.push((b'0' + self.data[i] as u8) as char);
-      }
-      str.push('e');
-      str.push_str(&(self.exponent + (self.len - DIGITS).max(0)).to_string());
+      self
+        .data
+        .write_chars(&mut str, 0..self.len.min(DIGITS))
+        .expect("writing to String should not fail");
+      write!(&mut str, "e{}", self.exponent + (self.len - DIGITS).max(0))
+        .expect("writing to String should not fail");
       f64::from_str(&str).unwrap()
     }
   }
@@ -45,11 +47,12 @@ impl Sci {
       if self.sign.is_negative() {
         str.push('-');
       }
-      for i in 0..self.len.min(DIGITS) {
-        str.push((b'0' + self.data[i] as u8) as char);
-      }
-      str.push('e');
-      str.push_str(&(self.exponent + (self.len - DIGITS).max(0)).to_string());
+      self
+        .data
+        .write_chars(&mut str, 0..self.len.min(DIGITS))
+        .expect("writing to String should not fail");
+      write!(&mut str, "e{}", self.exponent + (self.len - DIGITS).max(0))
+        .expect("writing to String should not fail");
       f32::from_str(&str).unwrap()
     }
   }
