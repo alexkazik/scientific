@@ -26,9 +26,13 @@ pub(crate) fn parse_scientific(input: &str) -> Result<Option<(Vec<u8>, isize)>, 
   // create a vector for the mantissa and copy it
   let mut mantissa = Vec::with_capacity(mantissa_pre.len() + mantissa_post.len());
   let mut leading_zeroes = false;
-  for source in [mantissa_pre, mantissa_post] {
+  for (is_post, source) in [mantissa_pre, mantissa_post].into_iter().enumerate() {
     for m in source.iter().copied() {
       if m == b'_' {
+        if is_post != 0 {
+          // all post decimal dot digits are removed but some are spacers
+          exponent += 1;
+        }
         continue;
       } else if !m.is_ascii_digit() {
         return Err(());
@@ -90,6 +94,8 @@ fn test() {
     ("hello.world", Err(())),
     // spacer
     ("6_000", Ok(Some((vec![6], 3)))),
+    ("70.06", Ok(Some((vec![7, 0, 0, 6], -2)))),
+    ("8_0.0_6", Ok(Some((vec![8, 0, 0, 6], -2)))),
   ] {
     assert_eq!(
       parse_scientific(source),
