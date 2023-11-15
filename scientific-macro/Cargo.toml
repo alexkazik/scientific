@@ -1,6 +1,6 @@
 [package]
 name = "scientific-macro"
-version = "0.5.0"
+version = "0.5.2"
 authors = ["ALeX Kazik <alex@kazik.de>"]
 edition = "2021"
 description = "Macro for scientific, the arbitrary precision scientific number. Not intended to be used directly."

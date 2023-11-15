@@ -1,5 +1,9 @@
 # Changelog for scientific-macro
 
+## 0.5.2 -- 2023-11-15
+
+* Fix bug in parser
+
 ## 0.5.0 -- 2023-08-03
 
 * Change ow the macro works

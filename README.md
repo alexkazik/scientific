@@ -1,4 +1,5 @@
-[![Build Status](https://github.com/alexkazik/scientific/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/alexkazik/scientific/actions?query=workflow%3ACI+branch%3Amaster+event%3Apush)
+[![Codecov](https://codecov.io/github/alexkazik/scientific/coverage.svg?branch=main)](https://codecov.io/gh/alexkazik/scientific)
+[![Dependency status](https://deps.rs/repo/github/alexkazik/scientific/status.svg)](https://deps.rs/repo/github/alexkazik/scientific)
 [![crates.io](https://img.shields.io/crates/v/scientific.svg)](https://crates.io/crates/scientific)
 [![Downloads](https://img.shields.io/crates/d/scientific.svg)](https://crates.io/crates/scientific)
 [![Github stars](https://img.shields.io/github/stars/alexkazik/scientific.svg?logo=github)](https://github.com/alexkazik/scientific/stargazers)

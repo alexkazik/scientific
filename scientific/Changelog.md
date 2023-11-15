@@ -1,5 +1,12 @@
 # Changelog for scientific
 
+## 0.5.2 -- 2023-11-15
+
+* Fix bug in serde human-readable serialization 
+* Improve CI
+* Improve tests
+* Small optimizations
+
 ## 0.5.1 -- 2023-08-30
 
 * Fix 16 and 32 bit only code
