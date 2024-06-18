@@ -2,7 +2,7 @@ use core::str::FromStr;
 
 pub(crate) fn parse_scientific(input: &str) -> Result<Option<(Vec<u8>, isize)>, ()> {
   // split at 'e'/'E', and parse second half as isize (defaults to 0)
-  let mut input = input.split(|i| i == 'e' || i == 'E');
+  let mut input = input.split(['e', 'E']);
   let mantissa = input.next().ok_or(())?;
   let mut exponent = input
     .next()

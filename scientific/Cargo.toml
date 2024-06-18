@@ -32,3 +32,6 @@ macro = ["scientific-macro"]
 all-features = true
 # enable unstable features in the documentation
 rustdoc-args = ["--cfg", "docsrs"]
+
+[lints.rust]
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(no_re_export)'] }

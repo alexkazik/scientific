@@ -13,7 +13,7 @@ pub enum ConversionError {
   NumberIsNegative,
   /// Number is not an integer. (Only for `Into<integer>` conversion.)
   NumberIsNotAnInteger,
-  /// Exponent is too large for this platform. (Only used by [Scientific::from_bytes](crate::Scientific::from_bytes).)
+  /// Exponent is too large for this platform. (Only used by [`Scientific::from_bytes`](crate::Scientific::from_bytes).)
   ExponentTooLargeForThisPlatform,
 }
 

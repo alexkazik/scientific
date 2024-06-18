@@ -18,6 +18,7 @@ use core::hint::unreachable_unchecked;
 #[derive(Copy, Clone, Debug, Default)]
 #[non_exhaustive]
 #[cfg_attr(no_re_export, allow(dead_code))]
+#[allow(clippy::empty_docs)]
 pub enum Rounding {
   /// Also known as floor.
   RoundDown,
