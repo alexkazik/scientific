@@ -1,8 +1,12 @@
 # Changelog for scientific
 
+## 0.5.3 -- 2024-06-18
+
+* Add Add-, Sub-, MulAssign
+
 ## 0.5.2 -- 2023-11-15
 
-* Fix bug in serde human-readable serialization 
+* Fix bug in serde human-readable serialization
 * Improve CI
 * Improve tests
 * Small optimizations
