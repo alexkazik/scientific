@@ -8,12 +8,39 @@ const FUNCTIONS: [(
   &str,
   fn(i128, i128) -> Result<i128, Error>,
   fn(&Scientific, &Scientific) -> Result<Scientific, Error>,
+  Option<fn(&mut Scientific, &Scientific)>,
 ); 5] = [
-  ("add", |a, b| Ok(a + b), |a, b| Ok(a + b)),
-  ("sub", |a, b| Ok(a - b), |a, b| Ok(a - b)),
-  ("mul", |a, b| Ok(a * b), |a, b| Ok(a * b)),
-  ("div", int_div, |a, b| a.div_truncate(b, Precision::INTEGER)),
-  ("rem", int_rem, |a, b| a.div_rem(b).map(|(_, r)| r)),
+  (
+    "add",
+    |a, b| Ok(a + b),
+    |a, b| Ok(a + b),
+    Some(|a, b| {
+      *a += b;
+    }),
+  ),
+  (
+    "sub",
+    |a, b| Ok(a - b),
+    |a, b| Ok(a - b),
+    Some(|a, b| {
+      *a -= b;
+    }),
+  ),
+  (
+    "mul",
+    |a, b| Ok(a * b),
+    |a, b| Ok(a * b),
+    Some(|a, b| {
+      *a *= b;
+    }),
+  ),
+  (
+    "div",
+    int_div,
+    |a, b| a.div_truncate(b, Precision::INTEGER),
+    None,
+  ),
+  ("rem", int_rem, |a, b| a.div_rem(b).map(|(_, r)| r), None),
 ];
 
 fn int_div(a: i128, b: i128) -> Result<i128, Error> {
@@ -49,7 +76,7 @@ where
   for (int_a, sci_a) in numbers.iter() {
     for (int_b, sci_b) in numbers.iter() {
       // several functions
-      for (name, int_fn, sci_fn) in FUNCTIONS.iter() {
+      for (name, int_fn, sci_fn, sci_assign_fn) in FUNCTIONS.iter() {
         let int_result = int_fn(*int_a, *int_b);
         let sci_result = sci_fn(sci_a, sci_b);
         assert_eq!(
@@ -57,6 +84,15 @@ where
           sci_result,
           "function {name}({int_a}, {int_b}) -> {int_result:?} = {sci_result:?}",
         );
+        if let Some(sci_assign_fn) = sci_assign_fn {
+          let mut sci_a_clone = sci_a.clone();
+          sci_assign_fn(&mut sci_a_clone, sci_b);
+          assert_eq!(
+            sci_result,
+            Ok(sci_a_clone.clone()),
+            "function {name}({int_a}, {int_b}) assign mismatch -> {sci_result:?} = {sci_a_clone:?}",
+          );
+        }
       }
       // compare
       let int_result = int_a.cmp(int_b);

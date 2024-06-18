@@ -11,7 +11,9 @@ use alloc::vec::Vec;
 use core::cmp::Ordering;
 use core::fmt::{Debug, Display, Formatter};
 use core::hash::{Hash, Hasher};
-use core::ops::{Add, Mul, Neg, Shl, ShlAssign, Shr, ShrAssign, Sub};
+use core::ops::{
+  Add, AddAssign, Mul, MulAssign, Neg, Shl, ShlAssign, Shr, ShrAssign, Sub, SubAssign,
+};
 use core::str::FromStr;
 
 /// Arbitrary precision scientific number
@@ -339,6 +341,12 @@ impl Add for &Scientific {
   }
 }
 
+impl AddAssign<&Self> for Scientific {
+  fn add_assign(&mut self, rhs: &Self) {
+    *self = self.add(rhs);
+  }
+}
+
 impl Mul for &Scientific {
   type Output = Scientific;
 
@@ -347,6 +355,12 @@ impl Mul for &Scientific {
     Scientific {
       inner: self.inner.mul(&rhs.inner),
     }
+  }
+}
+
+impl MulAssign<&Self> for Scientific {
+  fn mul_assign(&mut self, rhs: &Self) {
+    *self = self.mul(rhs);
   }
 }
 
@@ -405,6 +419,12 @@ impl Sub for &Scientific {
     Scientific {
       inner: self.inner.sub(&rhs.inner),
     }
+  }
+}
+
+impl SubAssign<&Self> for Scientific {
+  fn sub_assign(&mut self, rhs: &Self) {
+    *self = self.sub(rhs);
   }
 }
 
