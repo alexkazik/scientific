@@ -69,7 +69,7 @@ where
 
   if randomize {
     // to increase the chance that an error is caught earlier
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     numbers.shuffle(&mut rng);
   }
 
