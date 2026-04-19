@@ -1,3 +1,4 @@
+#![allow(clippy::approx_constant)]
 #![allow(clippy::zero_prefixed_literal)]
 
 use crate::float_common::test_float;
