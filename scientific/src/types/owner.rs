@@ -32,7 +32,7 @@ impl Owner {
 
   #[cfg(not(feature = "arc"))]
   #[inline]
-  pub(crate) fn make_writeable(&mut self) -> Result<(), ()> {
+  pub(crate) fn make_writable(&mut self) -> Result<(), ()> {
     match self {
       Owner::None => Err(()),
       Owner::Vec(ref v) => {
@@ -47,7 +47,7 @@ impl Owner {
 
   #[cfg(feature = "arc")]
   #[inline]
-  pub(crate) fn make_writeable(&mut self) -> Result<(), ()> {
+  pub(crate) fn make_writable(&mut self) -> Result<(), ()> {
     match core::mem::replace(self, Owner::None) {
       Owner::None => Err(()),
       Owner::Vec(v) => match Arc::try_unwrap(v) {

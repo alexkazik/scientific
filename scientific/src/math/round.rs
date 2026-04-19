@@ -35,7 +35,7 @@ impl Sci {
       self.exponent += self.len - len;
       self.len = len;
 
-      let mut ptr = make_writeable(self);
+      let mut ptr = make_writable(self);
       ptr = ptr.offset(self.len - 1);
 
       while self.len > 0 && *ptr == 9 {
@@ -55,8 +55,8 @@ impl Sci {
 }
 
 /// either ensures that the data is no longer accessed or copy it
-fn make_writeable(sci: &mut Sci) -> Ptr {
-  match sci.owner.make_writeable() {
+fn make_writable(sci: &mut Sci) -> Ptr {
+  match sci.owner.make_writable() {
     Ok(()) => {
       // it is guaranteed that there is no other access to the data
       // and thus we can modify it

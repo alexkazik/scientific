@@ -106,7 +106,7 @@ fn raw_parts() {
 }
 
 #[test]
-fn test_make_writeable() {
+fn test_make_writable() {
   let n1 = Scientific::from_string("7.77777".to_string()).unwrap();
   let mut n2 = n1.round(Decimals(3), RHAFZ);
   let n3 = &n1 - &n2;

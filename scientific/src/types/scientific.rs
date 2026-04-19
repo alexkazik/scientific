@@ -239,7 +239,7 @@ impl Scientific {
     self.inner.exponent0()
   }
 
-  /// Returns the exponent if the mantissa is written with one digit in front ot the decimal dot.
+  /// Returns the exponent if the mantissa is written with one digit in front of the decimal dot.
   ///
   /// `123` will return `2` (because it was interpreted as `1.23e3`).
   #[inline]
@@ -248,7 +248,7 @@ impl Scientific {
     self.inner.exponent1()
   }
 
-  /// Returns the exponent if the mantissa is written directly in front ot the decimal dot.
+  /// Returns the exponent if the mantissa is written directly in front of the decimal dot.
   ///
   /// `1.23` will return `-2` (because it was interpreted as `123e-2`).
   #[inline]
