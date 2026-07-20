@@ -1,5 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::error::Error;
+use crate::types::exponent::Exponent;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::ptr::Ptr;
@@ -26,7 +27,13 @@ where
   fn has_result() -> bool;
   fn from_zero() -> Option<Self>;
   fn from_sci(sci: &Sci) -> Option<Self>;
-  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self>;
+  fn from_parts(
+    sign: Sign,
+    vec: Vec<u8>,
+    data: Ptr,
+    len: isize,
+    exponent: Exponent,
+  ) -> Option<Self>;
 }
 
 impl Remainder for Infallible {
@@ -46,7 +53,7 @@ impl Remainder for Infallible {
   }
 
   #[inline]
-  fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: isize, _: isize) -> Option<Self> {
+  fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: isize, _: Exponent) -> Option<Self> {
     None
   }
 }
@@ -68,7 +75,13 @@ impl Remainder for Sci {
   }
 
   #[inline]
-  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self> {
+  fn from_parts(
+    sign: Sign,
+    vec: Vec<u8>,
+    data: Ptr,
+    len: isize,
+    exponent: Exponent,
+  ) -> Option<Self> {
     Some(Builder::from_data(
       sign,
       data,
@@ -110,13 +123,13 @@ impl Sci {
       Ok((Sci::ZERO, R::from_zero()))
     } else if div_results_in_zero(self, rhs, precision) {
       if let (true, Precision::Decimals(d)) = (use_rpsp, precision) {
-        Ok((Sci::one(self.sign ^ rhs.sign, -d), None))
+        Ok((Sci::one(self.sign ^ rhs.sign, Exponent::new(-d)), None))
       } else {
         Ok((Sci::ZERO, R::from_sci(self)))
       }
     } else if rhs.len == 1 && *rhs.data == 1 {
       let mut r = self.clone();
-      r.shr_assign(rhs.exponent);
+      r.shr_assign(*rhs.exponent);
       if use_rpsp {
         r.round_assign(precision, RoundingMode::RPSP(RPSP));
       } else {
@@ -141,7 +154,7 @@ impl Sci {
     } else {
       let mut extra_digits = match precision {
         Precision::Digits(digits) => digits - (self.len - rhs.len),
-        Precision::Decimals(decimals) => self.exponent - rhs.exponent + decimals,
+        Precision::Decimals(decimals) => *(self.exponent - rhs.exponent + decimals),
       };
       if R::has_result() {
         extra_digits = extra_digits.max(0);

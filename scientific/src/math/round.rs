@@ -1,3 +1,4 @@
+use crate::types::exponent::Exponent;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::ptr::Ptr;
@@ -10,7 +11,7 @@ impl Sci {
     let len = self.precision_len(precision);
     if len < 0 {
       if let (RoundingMode::RPSP(RPSP), Precision::Decimals(d)) = (rounding, precision) {
-        self.exponent = -d;
+        self.exponent = Exponent::new(-d);
         self.assign_one();
       } else {
         self.assign_zero();

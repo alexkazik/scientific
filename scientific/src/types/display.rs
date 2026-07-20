@@ -6,7 +6,7 @@ impl Sci {
     if self.sign.is_negative() {
       f.write_char('-')?;
     }
-    let exp = self.exponent0();
+    let exp = *self.exponent0();
     #[allow(clippy::manual_range_contains)]
     if exp >= -1 && exp <= 0 {
       f.write_char('0')?;

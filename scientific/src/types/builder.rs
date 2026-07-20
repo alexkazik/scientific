@@ -1,3 +1,4 @@
+use crate::types::exponent::Exponent;
 use crate::types::owner::Owner;
 use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
@@ -6,7 +7,7 @@ use crate::types::sign::Sign;
 pub(crate) struct Builder(Sci);
 
 impl Builder {
-  pub(crate) fn new(sign: Sign, len: isize, exponent: isize) -> (Builder, Ptr) {
+  pub(crate) fn new(sign: Sign, len: isize, exponent: Exponent) -> (Builder, Ptr) {
     #[cfg(feature = "debug")]
     assert!(len > 0);
 
@@ -25,7 +26,13 @@ impl Builder {
   }
 
   #[inline]
-  pub(crate) fn from_data(sign: Sign, data: Ptr, len: isize, exponent: isize, owner: Owner) -> Sci {
+  pub(crate) fn from_data(
+    sign: Sign,
+    data: Ptr,
+    len: isize,
+    exponent: Exponent,
+    owner: Owner,
+  ) -> Sci {
     Builder(Sci {
       sign,
       data,

@@ -3,6 +3,7 @@ pub(crate) mod conversion_error;
 pub(crate) mod debug;
 pub(crate) mod display;
 pub(crate) mod error;
+pub(crate) mod exponent;
 pub(crate) mod hash;
 pub(crate) mod owner;
 pub(crate) mod precision;
