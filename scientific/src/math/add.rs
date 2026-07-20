@@ -33,12 +33,12 @@ impl Sci {
     let min_exponent = self.exponent.min(rhs.exponent);
     let result_len = 1 + (lhs_exponent0.max(rhs_exponent0) - min_exponent);
 
-    let (result, mut result_ptr) = Builder::new(sign, result_len, min_exponent);
+    let (result, mut result_ptr) = Builder::new(sign, *result_len, min_exponent);
 
     let mut carry = 0;
 
     self.data.copy_to_nonoverlapping(self.len, result_ptr, 1);
-    result_ptr = result_ptr.offset(result_len - (rhs.exponent - min_exponent));
+    result_ptr = result_ptr.offset(*(result_len - (rhs.exponent - min_exponent)));
     let mut rhs_ptr = rhs.data.offset(rhs.len);
     while rhs.data < rhs_ptr {
       rhs_ptr.dec();

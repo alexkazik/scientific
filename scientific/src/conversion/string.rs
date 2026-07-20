@@ -1,5 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::conversion_error::ConversionError;
+use crate::types::exponent::Exponent;
 use crate::types::owner::Owner;
 use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
@@ -112,7 +113,7 @@ impl Sci {
       sign,
       data_start,
       len,
-      exponent - dot_len,
+      Exponent::new(exponent - dot_len),
       Owner::new(data),
     ))
   }

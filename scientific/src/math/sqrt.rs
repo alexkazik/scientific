@@ -1,4 +1,5 @@
 use crate::types::error::Error;
+use crate::types::exponent::Exponent;
 use crate::types::precision::Precision;
 use crate::types::rounding_mode::RoundingMode;
 use crate::types::rounding_rpsp::RPSP;
@@ -31,7 +32,7 @@ impl Sci {
 // Babylonian method
 fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Error> {
   let mut guess = value.clone();
-  guess.shr_assign(value.exponent1() / 2 - 1);
+  guess.shr_assign(*value.exponent1() / 2 - 1);
   limit(&mut guess, precision);
 
   #[cfg(all(feature = "debug", feature = "std"))]
@@ -77,8 +78,8 @@ fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Err
         guess = guess.add(&Sci::one(
           Sign::POSITIVE,
           match precision {
-            Precision::Digits(d) => guess.exponent0() - d,
-            Precision::Decimals(d) => -d,
+            Precision::Digits(d) => (guess.exponent0() - d).into(),
+            Precision::Decimals(d) => Exponent::new(-d),
           },
         ));
       }
@@ -89,10 +90,12 @@ fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Err
   }
 
   // fix limit (there may be trailing zeroes due to how limit works)
-  while guess.data[guess.len - 1] == 0 {
-    guess.len -= 1;
-    guess.exponent += 1;
-  }
+  guess.exponent.modify(|exponent| {
+    while guess.data[guess.len - 1] == 0 {
+      guess.len -= 1;
+      *exponent += 1;
+    }
+  });
 
   Ok(guess)
 }
@@ -101,7 +104,7 @@ fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Err
 fn limit(value: &mut Sci, precision: Precision) {
   let len = value.precision_len(precision).max(1);
   if value.len > len {
-    value.exponent += value.len - len;
+    value.exponent = (value.exponent + value.len - len).into();
     value.len = len;
   }
 }
@@ -110,7 +113,7 @@ fn limit(value: &mut Sci, precision: Precision) {
 fn limit_div(lhs: &Sci, rhs: &Sci, precision: Precision) -> isize {
   match precision {
     Precision::Digits(d) => d,
-    Precision::Decimals(d) => lhs.exponent0() - rhs.exponent0() + d + 1,
+    Precision::Decimals(d) => *(lhs.exponent0() - rhs.exponent0() + d + 1),
   }
   .max(1)
 }

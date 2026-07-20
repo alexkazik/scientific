@@ -1,5 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::conversion_error::ConversionError;
+use crate::types::exponent::Exponent;
 use crate::types::owner::Owner;
 use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
@@ -22,7 +23,7 @@ impl Sci {
   pub(crate) fn from_raw_parts(
     is_negative: bool,
     mantissa: Vec<u8>,
-    exponent: isize,
+    exponent: Exponent,
   ) -> Result<Sci, ConversionError> {
     for v in mantissa.iter() {
       if *v > 9 {

@@ -1,3 +1,4 @@
+use crate::types::exponent::Exponent;
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::ptr::Ptr;
@@ -10,7 +11,7 @@ impl Sci {
     let len = self.precision_len(precision);
     if len < 0 {
       if let (RoundingMode::RPSP(RPSP), Precision::Decimals(d)) = (rounding, precision) {
-        self.exponent = -d;
+        self.exponent = Exponent::new(-d);
         self.assign_one();
       } else {
         self.assign_zero();
@@ -28,21 +29,24 @@ impl Sci {
     } else if len == 0 {
       // the new number should have 0 of the current digits but due to overflow one
       // is added in front
-      self.exponent += self.len;
+      self.exponent = (self.exponent + self.len).into();
       self.assign_one();
     } else {
       // adapt length (and exponent)
-      self.exponent += self.len - len;
+      let exponent_change = self.len - len;
       self.len = len;
 
       let mut ptr = make_writable(self);
       ptr = ptr.offset(self.len - 1);
 
-      while self.len > 0 && *ptr == 9 {
-        self.len -= 1;
-        self.exponent += 1;
-        ptr.dec();
-      }
+      self.exponent.modify(|exponent| {
+        *exponent += exponent_change;
+        while self.len > 0 && *ptr == 9 {
+          self.len -= 1;
+          *exponent += 1;
+          ptr.dec();
+        }
+      });
       if self.len == 0 {
         // all digits where 9 and this is an overflow
         // replace mantissa with `1` and set exponent/len/owner accordingly

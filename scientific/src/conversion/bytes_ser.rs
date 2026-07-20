@@ -12,7 +12,7 @@ impl Sci {
       let mantissa_sign = if self.sign.is_negative() { 0x80 } else { 0 };
       #[allow(clippy::collapsible_else_if)]
       if self.exponent >= -64 && self.exponent <= 59 {
-        result.push(mantissa_sign | (((self.exponent as i8) as u8) & 0x7f));
+        result.push(mantissa_sign | (((**self.exponent as i8) as u8) & 0x7f));
       } else {
         if let Ok(e) = i8::try_from(self.exponent) {
           result.push(mantissa_sign | 0x3c);
@@ -21,7 +21,7 @@ impl Sci {
           #[cfg(target_pointer_width = "16")]
           {
             result.push(mantissa_sign | 0x3d);
-            result.extend_from_slice(&(self.exponent as i16).to_be_bytes());
+            result.extend_from_slice(&(**self.exponent as i16).to_be_bytes());
           }
 
           #[allow(clippy::collapsible_else_if)]
@@ -33,7 +33,7 @@ impl Sci {
             #[cfg(target_pointer_width = "32")]
             {
               result.push(mantissa_sign | 0x3e);
-              result.extend_from_slice(&(self.exponent as i32).to_be_bytes());
+              result.extend_from_slice(&(**self.exponent as i32).to_be_bytes());
             }
 
             #[cfg(target_pointer_width = "64")]
@@ -42,7 +42,7 @@ impl Sci {
               result.extend_from_slice(&e.to_be_bytes());
             } else {
               result.push(mantissa_sign | 0x3f);
-              result.extend_from_slice(&(self.exponent as i64).to_be_bytes());
+              result.extend_from_slice(&(**self.exponent as i64).to_be_bytes());
             }
           }
         }

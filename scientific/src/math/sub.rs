@@ -25,7 +25,7 @@ impl Sci {
 
   pub(crate) fn nz_sub(&self, rhs: &Sci, sign: Sign) -> Sci {
     let min_exponent = self.exponent.min(rhs.exponent);
-    let result_len = self.exponent0() - rhs.exponent;
+    let result_len = *(self.exponent0() - rhs.exponent);
 
     let (result, result_ptr) = Builder::new(sign, result_len.max(self.len), min_exponent);
 
