@@ -114,3 +114,10 @@ fn test_make_writable() {
   n2.round_assign(Decimals(2), RHAFZ);
   assert_eq!(n2, Scientific::from_string("7.78".to_string()).unwrap());
 }
+
+#[test]
+#[should_panic]
+fn exponent_out_of_range() {
+  let mut n1 = Scientific::ONE;
+  n1 <<= isize::MAX / 2;
+}

@@ -23,7 +23,7 @@ impl Sci {
       }
       self
         .data
-        .write_chars(&mut str, 0..self.len.min(DIGITS))
+        .write_chars(&mut str, 0..self.len.get().min(DIGITS))
         .expect("writing to String should not fail");
       write!(&mut str, "e{}", self.exponent + (self.len - DIGITS).max(0))
         .expect("writing to String should not fail");
@@ -49,7 +49,7 @@ impl Sci {
       }
       self
         .data
-        .write_chars(&mut str, 0..self.len.min(DIGITS))
+        .write_chars(&mut str, 0..self.len.get().min(DIGITS))
         .expect("writing to String should not fail");
       write!(&mut str, "e{}", self.exponent + (self.len - DIGITS).max(0))
         .expect("writing to String should not fail");

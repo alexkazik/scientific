@@ -14,22 +14,22 @@ impl Sci {
       for _ in exp..0 {
         f.write_char('0')?;
       }
-      self.data.write_chars(f, 0..self.len)?;
+      self.data.write_chars(f, 0..*self.len)?;
     } else if exp > 1 && exp <= 7 {
-      let mid = exp.min(self.len);
+      let mid = exp.min(*self.len);
       self.data.write_chars(f, 0..mid)?;
       for _ in mid..exp {
         f.write_char('0')?;
       }
       if self.len > exp {
         f.write_char('.')?;
-        self.data.write_chars(f, exp..self.len)?;
+        self.data.write_chars(f, exp..*self.len)?;
       }
     } else {
       self.data.write_char(f, 0)?;
       if self.len > 1 {
         f.write_char('.')?;
-        self.data.write_chars(f, 1..self.len)?;
+        self.data.write_chars(f, 1..*self.len)?;
       }
       if exp != 1 {
         write!(f, "e{}", exp - 1)?;

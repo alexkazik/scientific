@@ -1,3 +1,4 @@
+use crate::types::limited::Length;
 use core::fmt::Write;
 use core::ops::{Deref, DerefMut, Index, IndexMut, Range};
 use core::ptr::{copy_nonoverlapping, NonNull};
@@ -44,24 +45,24 @@ impl Ptr {
   }
 
   #[inline]
-  pub(crate) fn copy_to_nonoverlapping(self, len: isize, to: Ptr, offset: isize) {
+  pub(crate) fn copy_to_nonoverlapping(self, len: Length, to: Ptr, offset: isize) {
     unsafe {
       copy_nonoverlapping(
         self.ptr.as_ptr(),
         to.ptr.as_ptr().offset(offset),
-        len as usize,
+        len.to_usize(),
       );
     }
   }
 
   #[inline]
-  pub(crate) fn as_slice(&self, len: isize) -> &[u8] {
-    unsafe { from_raw_parts(self.ptr.as_ptr(), len as usize) }
+  pub(crate) fn as_slice(&self, len: Length) -> &[u8] {
+    unsafe { from_raw_parts(self.ptr.as_ptr(), len.to_usize()) }
   }
 
   #[inline]
-  pub(crate) fn offset_from(self, other: Ptr) -> isize {
-    unsafe { self.ptr.as_ptr().offset_from(other.ptr.as_ptr()) }
+  pub(crate) fn offset_from(self, other: Ptr) -> Length {
+    Length::new(unsafe { self.ptr.as_ptr().offset_from(other.ptr.as_ptr()) })
   }
 
   #[inline]

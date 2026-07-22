@@ -1,4 +1,5 @@
 use crate::types::builder::Builder;
+use crate::types::limited::{Exponent, Length};
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 
@@ -11,15 +12,15 @@ impl Sci {
         self.sign ^ rhs.sign,
         self,
         rhs,
-        self.exponent + rhs.exponent,
+        Exponent::new(self.exponent + rhs.exponent),
       )
     }
   }
 }
 
 #[inline]
-fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: isize) -> Sci {
-  let result_len = lhs.len + rhs.len + 1;
+fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: Exponent) -> Sci {
+  let result_len = Length::new(lhs.len + rhs.len + 1);
 
   let (result, result_ptr) = Builder::new(sign, result_len, exponent);
 

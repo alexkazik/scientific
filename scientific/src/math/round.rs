@@ -1,3 +1,4 @@
+use crate::types::limited::{Exponent, Length, Unchecked};
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::ptr::Ptr;
@@ -10,7 +11,7 @@ impl Sci {
     let len = self.precision_len(precision);
     if len < 0 {
       if let (RoundingMode::RPSP(RPSP), Precision::Decimals(d)) = (rounding, precision) {
-        self.exponent = -d;
+        self.exponent = Exponent::new(-d);
         self.assign_one();
       } else {
         self.assign_zero();
@@ -28,19 +29,19 @@ impl Sci {
     } else if len == 0 {
       // the new number should have 0 of the current digits but due to overflow one
       // is added in front
-      self.exponent += self.len;
+      self.exponent = Exponent::new(self.exponent + self.len);
       self.assign_one();
     } else {
       // adapt length (and exponent)
-      self.exponent += self.len - len;
-      self.len = len;
+      let mut exponent = self.exponent + self.len - len;
+      self.len = Length::new(len);
 
       let mut ptr = make_writable(self);
       ptr = ptr.offset(self.len - 1);
 
       while self.len > 0 && *ptr == 9 {
-        self.len -= 1;
-        self.exponent += 1;
+        self.len -= Unchecked(1);
+        exponent += 1;
         ptr.dec();
       }
       if self.len == 0 {
@@ -50,6 +51,7 @@ impl Sci {
       } else {
         *ptr += 1;
       }
+      self.exponent = Exponent::new(exponent);
     }
   }
 }

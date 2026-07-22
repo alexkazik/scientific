@@ -1,5 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::error::Error;
+use crate::types::limited::{Exponent, Length};
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::ptr::Ptr;
@@ -26,7 +27,13 @@ where
   fn has_result() -> bool;
   fn from_zero() -> Option<Self>;
   fn from_sci(sci: &Sci) -> Option<Self>;
-  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self>;
+  fn from_parts(
+    sign: Sign,
+    vec: Vec<u8>,
+    data: Ptr,
+    len: Length,
+    exponent: Exponent,
+  ) -> Option<Self>;
 }
 
 impl Remainder for Infallible {
@@ -46,7 +53,7 @@ impl Remainder for Infallible {
   }
 
   #[inline]
-  fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: isize, _: isize) -> Option<Self> {
+  fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: Length, _: Exponent) -> Option<Self> {
     None
   }
 }
@@ -68,7 +75,13 @@ impl Remainder for Sci {
   }
 
   #[inline]
-  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self> {
+  fn from_parts(
+    sign: Sign,
+    vec: Vec<u8>,
+    data: Ptr,
+    len: Length,
+    exponent: Exponent,
+  ) -> Option<Self> {
     Some(Builder::from_data(
       sign,
       data,
@@ -110,13 +123,13 @@ impl Sci {
       Ok((Sci::ZERO, R::from_zero()))
     } else if div_results_in_zero(self, rhs, precision) {
       if let (true, Precision::Decimals(d)) = (use_rpsp, precision) {
-        Ok((Sci::one(self.sign ^ rhs.sign, -d), None))
+        Ok((Sci::one(self.sign ^ rhs.sign, Exponent::new(-d)), None))
       } else {
         Ok((Sci::ZERO, R::from_sci(self)))
       }
     } else if rhs.len == 1 && *rhs.data == 1 {
       let mut r = self.clone();
-      r.shr_assign(rhs.exponent);
+      r.shr_assign(*rhs.exponent);
       if use_rpsp {
         r.round_assign(precision, RoundingMode::RPSP(RPSP));
       } else {
@@ -135,7 +148,10 @@ impl Sci {
       Ok((r, remainder))
     } else if self.len == rhs.len && self.nz_compare_mantissa::<false>(rhs) == Ordering::Equal {
       Ok((
-        Sci::one(self.sign ^ rhs.sign, self.exponent0() - rhs.exponent0()),
+        Sci::one(
+          self.sign ^ rhs.sign,
+          Exponent::new(self.exponent0() - rhs.exponent0()),
+        ),
         R::from_zero(),
       ))
     } else {
@@ -168,12 +184,12 @@ fn nz_div<R: Remainder>(
   let mut tmp_ptr = Ptr::new_mut(tmp.as_mut_slice());
   lhs
     .data
-    .copy_to_nonoverlapping(lhs.len + extra_digits.min(0), tmp_ptr, 0);
+    .copy_to_nonoverlapping(Length::new(lhs.len + extra_digits.min(0)), tmp_ptr, 0);
   let mut tmp_len = 0;
   let (result, mut result_ptr) = Builder::new(
     lhs.sign ^ rhs.sign,
-    lhs.len + extra_digits + isize::from(use_rpsp),
-    lhs.exponent - rhs.exponent - extra_digits - isize::from(use_rpsp),
+    Length::new(lhs.len + extra_digits + isize::from(use_rpsp)),
+    Exponent::new(lhs.exponent - rhs.exponent - extra_digits - isize::from(use_rpsp)),
   );
   let result_end = result_ptr.offset(lhs.len + extra_digits);
   while result_ptr < result_end {
@@ -206,7 +222,7 @@ fn nz_div<R: Remainder>(
         lhs.sign,
         tmp,
         tmp_ptr,
-        tmp_len,
+        Length::new(tmp_len),
         rhs.exponent.min(lhs.exponent),
       )
     } else {
@@ -232,7 +248,7 @@ fn p_ge(mut lhs_ptr: Ptr, lhs_len: isize, rhs: &Sci) -> bool {
     lhs_len >= rhs.len
   } else {
     let mut rhs_ptr = rhs.data;
-    let rhs_end = rhs.data.offset(rhs.len);
+    let rhs_end = rhs.data.offset(*rhs.len);
     while rhs_ptr < rhs_end {
       if *lhs_ptr != *rhs_ptr {
         return *lhs_ptr >= *rhs_ptr;

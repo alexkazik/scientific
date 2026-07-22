@@ -1,5 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::conversion_error::ConversionError;
+use crate::types::limited::{Exponent, Length, OutOfRangeError};
 use crate::types::owner::Owner;
 use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
@@ -52,7 +53,7 @@ impl Sci {
     if data_ptr == data_end {
       // end of input = neither dot not exp
       exponent_start = data_end;
-      exponent_len = 0;
+      exponent_len = Length::ZERO;
     } else {
       let next = *data_ptr as u8;
       if next == b'.' {
@@ -72,7 +73,7 @@ impl Sci {
       if data_ptr == data_end {
         // no exp
         exponent_start = data_end;
-        exponent_len = 0;
+        exponent_len = Length::ZERO;
       } else {
         // check for exp
         let next = *data_ptr as u8;
@@ -95,11 +96,15 @@ impl Sci {
       isize::from_str(unsafe {
         core::str::from_utf8_unchecked(core::slice::from_raw_parts(
           exponent_start.as_slice(exponent_len).as_ptr(),
-          exponent_len as usize,
+          exponent_len.to_usize(),
         ))
       })
       .map_err(|_| ConversionError::ParseError)?
     };
+    let exponent = exponent
+      .checked_sub(dot_len)
+      .ok_or(OutOfRangeError)
+      .and_then(Exponent::try_new)?;
 
     if data_start == mantissa_end {
       // no digits given (neither before or after the dot)
@@ -112,7 +117,7 @@ impl Sci {
       sign,
       data_start,
       len,
-      exponent - dot_len,
+      exponent,
       Owner::new(data),
     ))
   }

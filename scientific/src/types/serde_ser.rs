@@ -35,7 +35,7 @@ fn display_to_string(value: &Sci) -> String {
   if value.is_zero() {
     return "0".to_string();
   }
-  let mut result = String::with_capacity(value.len as usize + 7);
+  let mut result = String::with_capacity(value.len.to_usize() + 7);
   value
     .nz_display(&mut result)
     .expect("writing to String should not fail");

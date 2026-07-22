@@ -1,4 +1,5 @@
 use crate::types::builder::Builder;
+use crate::types::limited::Length;
 use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
@@ -25,12 +26,12 @@ impl Sci {
 
   pub(crate) fn nz_sub(&self, rhs: &Sci, sign: Sign) -> Sci {
     let min_exponent = self.exponent.min(rhs.exponent);
-    let result_len = self.exponent0() - rhs.exponent;
+    let result_len = Length::new(self.exponent0() - rhs.exponent);
 
     let (result, result_ptr) = Builder::new(sign, result_len.max(self.len), min_exponent);
 
     self.data.copy_to_nonoverlapping(self.len, result_ptr, 0);
-    Sci::p_sub(result_ptr, result_len, rhs);
+    Sci::p_sub(result_ptr, *result_len, rhs);
     result.finish()
   }
 
@@ -39,7 +40,7 @@ impl Sci {
   #[inline]
   pub(crate) fn p_sub(lhs_ptr: Ptr, lhs_len: isize, rhs: &Sci) {
     let mut lhs_cur = lhs_ptr.offset(lhs_len);
-    let mut rhs_cur = rhs.data.offset(rhs.len);
+    let mut rhs_cur = rhs.data.offset(*rhs.len);
     let mut carry = 0;
     while rhs.data < rhs_cur {
       lhs_cur.dec();

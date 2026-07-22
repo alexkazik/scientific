@@ -1,4 +1,5 @@
 use crate::types::error::Error;
+use crate::types::limited::{Exponent, Length, Unchecked};
 use crate::types::precision::Precision;
 use crate::types::rounding_mode::RoundingMode;
 use crate::types::rounding_rpsp::RPSP;
@@ -76,10 +77,10 @@ fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Err
         // there is not enough space to add it in place, add a 1 at the actual limit
         guess = guess.add(&Sci::one(
           Sign::POSITIVE,
-          match precision {
+          Exponent::new(match precision {
             Precision::Digits(d) => guess.exponent0() - d,
             Precision::Decimals(d) => -d,
-          },
+          }),
         ));
       }
     }
@@ -89,19 +90,21 @@ fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Err
   }
 
   // fix limit (there may be trailing zeroes due to how limit works)
+  let mut exponent = *guess.exponent;
   while guess.data[guess.len - 1] == 0 {
-    guess.len -= 1;
-    guess.exponent += 1;
+    guess.len -= Unchecked(1);
+    exponent += 1;
   }
+  guess.exponent = Exponent::new(exponent);
 
   Ok(guess)
 }
 
 #[inline]
 fn limit(value: &mut Sci, precision: Precision) {
-  let len = value.precision_len(precision).max(1);
+  let len = Length::new(value.precision_len(precision).max(1));
   if value.len > len {
-    value.exponent += value.len - len;
+    value.exponent = Exponent::new(value.exponent + value.len - len);
     value.len = len;
   }
 }

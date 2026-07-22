@@ -15,6 +15,8 @@ pub enum ConversionError {
   NumberIsNotAnInteger,
   /// Exponent is too large for this platform. (Only used by [`Scientific::from_bytes`](crate::Scientific::from_bytes).)
   ExponentTooLargeForThisPlatform,
+  /// Exponent or length out of range. (It's only allowed to be in `±isize::MAX/4`).
+  OutOfRangeError,
 }
 
 impl Display for ConversionError {
@@ -28,6 +30,7 @@ impl Display for ConversionError {
       ConversionError::ExponentTooLargeForThisPlatform => {
         f.write_str("Exponent is too large for this platform")
       }
+      ConversionError::OutOfRangeError => f.write_str("Exponent or length out of range"),
     }
   }
 }

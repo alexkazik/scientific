@@ -43,7 +43,7 @@ impl Sci {
   pub(crate) fn nz_compare_mantissa<const USE_SIGN: bool>(&self, rhs: &Sci) -> Ordering {
     let mut lhs_ptr = self.data;
     let mut rhs_ptr = rhs.data;
-    let mut count = self.len.min(rhs.len);
+    let mut count = *self.len.min(rhs.len);
 
     while count > 0 {
       let lhs_value = *lhs_ptr;
