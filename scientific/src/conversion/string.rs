@@ -1,5 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::conversion_error::ConversionError;
+use crate::types::limited::{Exponent, ExponentOutOfRangeError, Length};
 use crate::types::owner::Owner;
 use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
@@ -10,7 +11,7 @@ use core::str::FromStr;
 impl Sci {
   pub(crate) fn from_string(data: String) -> Result<Sci, ConversionError> {
     let mut data = data.into_bytes();
-    let len = data.len() as isize;
+    let len = Length::from_usize(data.len());
     let mut data_start = Ptr::new_mut(data.as_mut_slice());
     let data_end = data_start.offset(len);
 
@@ -52,7 +53,7 @@ impl Sci {
     if data_ptr == data_end {
       // end of input = neither dot not exp
       exponent_start = data_end;
-      exponent_len = 0;
+      exponent_len = Length::ZERO;
     } else {
       let next = *data_ptr as u8;
       if next == b'.' {
@@ -72,7 +73,7 @@ impl Sci {
       if data_ptr == data_end {
         // no exp
         exponent_start = data_end;
-        exponent_len = 0;
+        exponent_len = Length::ZERO;
       } else {
         // check for exp
         let next = *data_ptr as u8;
@@ -81,7 +82,7 @@ impl Sci {
         }
         data_ptr.inc();
         exponent_start = data_ptr;
-        exponent_len = data_end.offset_from(data_ptr);
+        exponent_len = data_end.try_offset_from(data_ptr)?;
         if exponent_len == 0 {
           // specified 'e' but nothing behind it
           return Err(ConversionError::ParseError);
@@ -95,24 +96,28 @@ impl Sci {
       isize::from_str(unsafe {
         core::str::from_utf8_unchecked(core::slice::from_raw_parts(
           exponent_start.as_slice(exponent_len).as_ptr(),
-          exponent_len as usize,
+          exponent_len.to_usize(),
         ))
       })
       .map_err(|_| ConversionError::ParseError)?
     };
+    let exponent = exponent
+      .checked_sub(dot_len)
+      .ok_or(ExponentOutOfRangeError)
+      .and_then(Exponent::try_new)?;
 
     if data_start == mantissa_end {
       // no digits given (neither before or after the dot)
       return Err(ConversionError::ParseError);
     }
 
-    let len = mantissa_end.offset_from(data_start);
+    let len = mantissa_end.try_offset_from(data_start)?;
 
     Ok(Builder::from_data(
       sign,
       data_start,
       len,
-      exponent - dot_len,
+      exponent,
       Owner::new(data),
     ))
   }

@@ -1,3 +1,4 @@
+use crate::types::limited::RangeTo;
 use crate::types::sci::Sci;
 use core::fmt::{Formatter, Write};
 
@@ -11,25 +12,26 @@ impl Sci {
     if exp >= -1 && exp <= 0 {
       f.write_char('0')?;
       f.write_char('.')?;
-      for _ in exp..0 {
+      for _ in exp.range_to(0) {
         f.write_char('0')?;
       }
-      self.data.write_chars(f, 0..self.len)?;
+      self.data.write_chars(f, 0.range_to(self.len))?;
     } else if exp > 1 && exp <= 7 {
-      let mid = exp.min(self.len);
-      self.data.write_chars(f, 0..mid)?;
-      for _ in mid..exp {
+      // the ` + 0` is a noop in calculation, but expands the type from `Limited<1>` to `Limited<2>` to match the left size
+      let mid = exp.min(self.len + 0);
+      self.data.write_chars(f, 0.range_to(mid))?;
+      for _ in mid.range_to(exp) {
         f.write_char('0')?;
       }
       if self.len > exp {
         f.write_char('.')?;
-        self.data.write_chars(f, exp..self.len)?;
+        self.data.write_chars(f, exp.range_to(self.len))?;
       }
     } else {
       self.data.write_first_char(f)?;
       if self.len > 1 {
         f.write_char('.')?;
-        self.data.write_chars(f, 1..self.len)?;
+        self.data.write_chars(f, 1.range_to(self.len))?;
       }
       if exp != 1 {
         write!(f, "e{}", exp - 1)?;

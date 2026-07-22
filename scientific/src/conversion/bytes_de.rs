@@ -1,4 +1,5 @@
 use crate::types::conversion_error::ConversionError;
+use crate::types::limited::{Exponent, Length, LengthOutOfRangeError, Unchecked};
 use crate::types::owner::Owner;
 use crate::types::ptr::Ptr;
 use crate::types::sci::Sci;
@@ -69,8 +70,17 @@ impl Sci {
       )))]
       compile_error!("This target_pointer_width is not yet supported, please open a issue.")
     }
+    let exponent = Exponent::try_new(exponent)?;
 
-    let mut owned = Vec::with_capacity(((bytes.len() - pos + 11) * 12) / 5);
+    let mut owned = Vec::with_capacity(
+      bytes
+        .len()
+        .checked_sub(pos)
+        .and_then(|x| x.checked_add(11))
+        .and_then(|x| x.checked_mul(12))
+        .and_then(|x| x.checked_div(5))
+        .ok_or(LengthOutOfRangeError)?,
+    );
     let mut buf = 0;
     let mut buf_len = 0;
     let mut it = bytes[pos..].iter();
@@ -104,11 +114,11 @@ impl Sci {
     if buf_len > 0 && buf << (16 - buf_len) != 0 {
       return Err(ConversionError::ParseError);
     }
-    let mut len = owned.len() as isize;
+    let mut len = Length::try_from_usize(owned.len())?;
     let data = Ptr::new(owned.as_slice());
     let mut trailing_zeroes = 0;
     while len > 0 && data[len - 1] == 0 {
-      len -= 1;
+      len -= Unchecked(1);
       trailing_zeroes += 1;
     }
     if len == 0 || *data == 0 || trailing_zeroes != calculate_trailing_zeroes(len) {
@@ -126,7 +136,7 @@ impl Sci {
 }
 
 #[inline]
-fn calculate_trailing_zeroes(len: isize) -> isize {
+fn calculate_trailing_zeroes(len: Length) -> isize {
   // Read in bytes_ser in the section "what to do with the remaining digits?"
   // how it's handled on serialization. This is a shortcut to all the required information.
   const TRAILING_ZEROES: u32 =

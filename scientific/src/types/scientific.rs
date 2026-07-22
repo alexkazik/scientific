@@ -1,5 +1,6 @@
 use crate::types::conversion_error::ConversionError;
 use crate::types::error::Error;
+use crate::types::limited::{Exponent, ToIsize};
 use crate::types::precision::Precision;
 use crate::types::rounding::Rounding;
 use crate::types::rounding_mode::RoundingMode;
@@ -82,7 +83,7 @@ impl Scientific {
     exponent: isize,
   ) -> Result<Scientific, ConversionError> {
     Ok(Scientific {
-      inner: Sci::from_raw_parts(negative, mantissa, exponent)?,
+      inner: Sci::from_raw_parts(negative, mantissa, Exponent::try_new(exponent)?)?,
     })
   }
 
@@ -218,7 +219,7 @@ impl Scientific {
   #[inline]
   #[must_use]
   pub fn len(&self) -> isize {
-    self.inner.len
+    self.inner.len.to_isize()
   }
 
   /// Returns the number of decimals.
@@ -227,7 +228,7 @@ impl Scientific {
   #[inline]
   #[must_use]
   pub fn decimals(&self) -> isize {
-    -self.inner.exponent
+    -self.inner.exponent.to_isize()
   }
 
   /// Returns the exponent if the mantissa is written directly behind the decimal dot.
@@ -236,7 +237,7 @@ impl Scientific {
   #[inline]
   #[must_use]
   pub fn exponent0(&self) -> isize {
-    self.inner.exponent0()
+    self.inner.exponent0().to_isize()
   }
 
   /// Returns the exponent if the mantissa is written with one digit in front of the decimal dot.
@@ -245,7 +246,7 @@ impl Scientific {
   #[inline]
   #[must_use]
   pub fn exponent1(&self) -> isize {
-    self.inner.exponent1()
+    self.inner.exponent1().to_isize()
   }
 
   /// Returns the exponent if the mantissa is written directly in front of the decimal dot.
@@ -254,7 +255,7 @@ impl Scientific {
   #[inline]
   #[must_use]
   pub fn exponent(&self) -> isize {
-    self.inner.exponent
+    self.inner.exponent.to_isize()
   }
 
   /// Raise a number to an integer power.
@@ -295,7 +296,11 @@ impl Scientific {
     exponent: isize,
   ) -> Scientific {
     Scientific {
-      inner: Sci::nz_unchecked_static_new(Sign::new(is_negative), mantissa, exponent),
+      inner: Sci::nz_unchecked_static_new(
+        Sign::new(is_negative),
+        mantissa,
+        Exponent::from_isize(exponent),
+      ),
     }
   }
 }

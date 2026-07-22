@@ -1,4 +1,5 @@
 use crate::types::error::Error;
+use crate::types::limited::{Exponent, Length, Unchecked};
 use crate::types::precision::Precision;
 use crate::types::rounding_mode::RoundingMode;
 use crate::types::rounding_rpsp::RPSP;
@@ -77,8 +78,8 @@ fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Err
         guess = guess.add(&Sci::one(
           Sign::POSITIVE,
           match precision {
-            Precision::Digits(d) => guess.exponent0() - d,
-            Precision::Decimals(d) => -d,
+            Precision::Digits(d) => Exponent::new(guess.exponent0().saturating_sub(d)),
+            Precision::Decimals(d) => Exponent::new(-d),
           },
         ));
       }
@@ -89,19 +90,21 @@ fn nz_sqrt(value: &Sci, precision: Precision, use_rpsp: bool) -> Result<Sci, Err
   }
 
   // fix limit (there may be trailing zeroes due to how limit works)
+  let mut exponent = guess.exponent;
   while guess.data[guess.len - 1] == 0 {
-    guess.len -= 1;
-    guess.exponent += 1;
+    guess.len -= Unchecked(1);
+    exponent += Unchecked(1);
   }
+  guess.exponent = Exponent::new(exponent);
 
   Ok(guess)
 }
 
 #[inline]
 fn limit(value: &mut Sci, precision: Precision) {
-  let len = value.precision_len(precision).max(1);
+  let len = Length::new(value.precision_len(precision).max(1));
   if value.len > len {
-    value.exponent += value.len - len;
+    value.exponent = Exponent::new(value.exponent + value.len - len);
     value.len = len;
   }
 }
@@ -110,7 +113,7 @@ fn limit(value: &mut Sci, precision: Precision) {
 fn limit_div(lhs: &Sci, rhs: &Sci, precision: Precision) -> isize {
   match precision {
     Precision::Digits(d) => d,
-    Precision::Decimals(d) => lhs.exponent0() - rhs.exponent0() + d + 1,
+    Precision::Decimals(d) => (lhs.exponent0() - rhs.exponent0() + 1).saturating_add(d),
   }
   .max(1)
 }

@@ -1,4 +1,5 @@
 use crate::types::builder::Builder;
+use crate::types::limited::{Exponent, Length, Limited, RangeTo, Unchecked};
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 
@@ -11,15 +12,15 @@ impl Sci {
         self.sign ^ rhs.sign,
         self,
         rhs,
-        self.exponent + rhs.exponent,
+        Exponent::new(self.exponent + rhs.exponent),
       )
     }
   }
 }
 
 #[inline]
-fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: isize) -> Sci {
-  let result_len = lhs.len + rhs.len + 1;
+fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: Exponent) -> Sci {
+  let result_len = Length::new(lhs.len + rhs.len + 1);
 
   let (result, result_ptr) = Builder::new(sign, result_len, exponent);
 
@@ -27,9 +28,10 @@ fn nz_mul(sign: Sign, lhs: &Sci, rhs: &Sci, exponent: isize) -> Sci {
   let mut result_end = result_ptr.offset(result_len - 1);
   let mut sum = 0;
 
-  for index in 0..result_len - 1 {
-    let lhs_ofs = lhs.len - 1 - ((index - rhs.len + 1).max(0));
-    let rhs_ofs = rhs.len - 1 - (index.min(rhs.len - 1));
+  for index in 0.range_to(result_len - Unchecked(1)) {
+    let lhs_ofs = lhs.len - 1 - ((index - rhs.len + 1).max(Limited::ZERO));
+    // the ` + 0` is a noop in calculation, but expands the type from `Limited<1>` to `Limited<2>` to match the right size
+    let rhs_ofs = rhs.len - 1 - (index + 0).min(rhs.len - 1);
     if lhs_ofs >= 0 && lhs_ofs < lhs.len && rhs_ofs >= 0 && rhs_ofs < rhs.len {
       let mut lhs_ptr = lhs.data.offset(lhs_ofs);
       let mut rhs_ptr = rhs.data.offset(rhs_ofs);

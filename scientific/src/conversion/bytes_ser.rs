@@ -1,3 +1,4 @@
+use crate::types::limited::ToIsize;
 use crate::types::sci::Sci;
 use alloc::vec::Vec;
 use core::convert::TryFrom;
@@ -8,41 +9,42 @@ impl Sci {
     if self.is_zero() {
       result = Vec::new();
     } else {
-      result = Vec::with_capacity((self.len as usize * 5) / 12 + 4);
+      // Safety: len is guaranteed to be at most `isize::MAX / 8`
+      result = Vec::with_capacity(self.len.to_usize() * 5 / 12 + 4);
       let mantissa_sign = if self.sign.is_negative() { 0x80 } else { 0 };
       #[allow(clippy::collapsible_else_if)]
       if self.exponent >= -64 && self.exponent <= 59 {
-        result.push(mantissa_sign | (((self.exponent as i8) as u8) & 0x7f));
+        result.push(mantissa_sign | (((self.exponent.to_isize() as i8) as u8) & 0x7f));
       } else {
-        if let Ok(e) = i8::try_from(self.exponent) {
+        if let Ok(e) = i8::try_from(self.exponent.to_isize()) {
           result.push(mantissa_sign | 0x3c);
           result.push(e as u8);
         } else {
           #[cfg(target_pointer_width = "16")]
           {
             result.push(mantissa_sign | 0x3d);
-            result.extend_from_slice(&(self.exponent as i16).to_be_bytes());
+            result.extend_from_slice(&(self.exponent.to_isize() as i16).to_be_bytes());
           }
 
           #[allow(clippy::collapsible_else_if)]
           #[cfg(any(target_pointer_width = "32", target_pointer_width = "64"))]
-          if let Ok(e) = i16::try_from(self.exponent) {
+          if let Ok(e) = i16::try_from(self.exponent.to_isize()) {
             result.push(mantissa_sign | 0x3d);
             result.extend_from_slice(&e.to_be_bytes());
           } else {
             #[cfg(target_pointer_width = "32")]
             {
               result.push(mantissa_sign | 0x3e);
-              result.extend_from_slice(&(self.exponent as i32).to_be_bytes());
+              result.extend_from_slice(&(self.exponent.to_isize() as i32).to_be_bytes());
             }
 
             #[cfg(target_pointer_width = "64")]
-            if let Ok(e) = i32::try_from(self.exponent) {
+            if let Ok(e) = i32::try_from(self.exponent.to_isize()) {
               result.push(mantissa_sign | 0x3e);
               result.extend_from_slice(&e.to_be_bytes());
             } else {
               result.push(mantissa_sign | 0x3f);
-              result.extend_from_slice(&(self.exponent as i64).to_be_bytes());
+              result.extend_from_slice(&(self.exponent.to_isize() as i64).to_be_bytes());
             }
           }
         }
@@ -57,7 +59,7 @@ impl Sci {
       let mut p = self.data;
       let mut buf = 0;
       let mut buf_len = 0;
-      let mut len = self.len;
+      let mut len = self.len.to_usize();
 
       while len >= 3 {
         let a = *p;

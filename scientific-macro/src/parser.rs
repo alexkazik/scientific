@@ -12,6 +12,11 @@ pub(crate) fn parse_scientific(input: &str) -> Result<Option<(Vec<u8>, isize)>, 
     return Err(()); // there is more than one 'e'/'E'
   }
 
+  // the macro can't check if exponent or the length of the mantissa is too long
+  // as it may run (on compile time) on a different platform as than where the
+  // library is used. And it's tied to isize, which is can be different on
+  // different platforms.
+
   // split mantissa at '.', the second half defaults to an empty slice
   let mut input = mantissa.as_bytes().split(|m| *m == b'.');
   let mantissa_pre = input.next().ok_or(())?;

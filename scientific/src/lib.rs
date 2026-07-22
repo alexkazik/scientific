@@ -107,12 +107,13 @@
 //!
 //! - `debug`: Enables several checks. Very helpful during development of this lib.
 //!
-//! # Exponent
+//! # Exponent and length of the mantissa
 //!
-//! The exponent is represented as an [`isize`](::core::isize). It is expected that it will never under-/overflow,
-//! even when smaller numbers are added/subtracted, like e.g. the length of the mantissa.
+//! The exponent and the length are represented as an [`isize`](::core::isize).
+//! The allowed range is (at least) `±isize::MAX/16`.
 //!
-//! This is not checked!
+//! Conversion functions (`from_string`, `from_bytes`, `from_raw_parts` and serde) will
+//! return a corresponding error. All other functions will panic!
 
 #[macro_use]
 extern crate alloc;

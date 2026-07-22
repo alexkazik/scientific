@@ -4,6 +4,7 @@ pub(crate) mod debug;
 pub(crate) mod display;
 pub(crate) mod error;
 pub(crate) mod hash;
+pub(crate) mod limited;
 pub(crate) mod owner;
 pub(crate) mod precision;
 pub(crate) mod ptr;

@@ -1,3 +1,4 @@
+use crate::types::limited::{Exponent, Length, Unchecked};
 use crate::types::precision::Precision;
 use crate::types::sci::Sci;
 
@@ -5,17 +6,22 @@ impl Sci {
   pub(crate) fn truncate_assign(&mut self, precision: Precision) {
     let len = self.precision_len(precision);
     if self.len > len {
-      self.exponent += self.len - len;
-      self.len = len; // len may be zero or negative
+      // Safety: len is less than self.len
+      let mut len = Length::from_isize_unchecked(len);
+      let mut exponent = self.exponent + self.len - len;
 
       // remove trailing zeroes
-      while self.len > 0 && self.data[self.len - 1] == 0 {
-        self.len -= 1;
-        self.exponent += 1;
+      while len > 0 && self.data[len - 1] == 0 {
+        len -= Unchecked(1);
+        // Safety: exponent uses only 3/8 and has at most 1/8 new additions, thus always fits
+        exponent += Unchecked(1);
       }
 
-      if self.len <= 0 {
+      if len <= 0 {
         self.assign_zero();
+      } else {
+        self.len = len;
+        self.exponent = Exponent::new(exponent);
       }
     }
   }

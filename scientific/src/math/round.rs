@@ -1,3 +1,4 @@
+use crate::types::limited::{Exponent, Length, ToIsize, Unchecked};
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::ptr::Ptr;
@@ -10,45 +11,51 @@ impl Sci {
     let len = self.precision_len(precision);
     if len < 0 {
       if let (RoundingMode::RPSP(RPSP), Precision::Decimals(d)) = (rounding, precision) {
-        self.exponent = -d;
+        self.exponent = Exponent::new(-d);
         self.assign_one();
       } else {
         self.assign_zero();
       }
     } else if len >= self.len {
       // more precision requested as available: just return the number
-    } else if !rounding.round_away_from_zero(
-      self.sign.is_negative(),
-      if len == 0 { 0 } else { self.data[len - 1] },
-      self.data[len],
-      len + 1 == self.len,
-    ) {
-      // the rounding does result in no change
-      self.truncate_assign(Precision::Digits(len));
-    } else if len == 0 {
-      // the new number should have 0 of the current digits but due to overflow one
-      // is added in front
-      self.exponent += self.len;
-      self.assign_one();
     } else {
-      // adapt length (and exponent)
-      self.exponent += self.len - len;
-      self.len = len;
+      // Safety: is <= the current length (and >= 0)
+      let len = Length::from_isize_unchecked(len);
 
-      let mut ptr = make_writable(self);
-      ptr = ptr.offset(self.len - 1);
-
-      while self.len > 0 && *ptr == 9 {
-        self.len -= 1;
-        self.exponent += 1;
-        ptr.dec();
-      }
-      if self.len == 0 {
-        // all digits where 9 and this is an overflow
-        // replace mantissa with `1` and set exponent/len/owner accordingly
+      if !rounding.round_away_from_zero(
+        self.sign.is_negative(),
+        if len == 0 { 0 } else { self.data[len - 1] },
+        self.data[len],
+        len + 1 == self.len,
+      ) {
+        // the rounding does result in no change
+        self.truncate_assign(Precision::Digits(len.to_isize()));
+      } else if len == 0 {
+        // the new number should have 0 of the current digits but due to overflow one
+        // is added in front
+        self.exponent = Exponent::new(self.exponent + self.len);
         self.assign_one();
       } else {
-        *ptr += 1;
+        // adapt length (and exponent)
+        let mut exponent = self.exponent + self.len - len;
+        self.len = len;
+
+        let mut ptr = make_writable(self);
+        ptr = ptr.offset(self.len - 1);
+
+        while self.len > 0 && *ptr == 9 {
+          self.len -= Unchecked(1);
+          exponent += Unchecked(1);
+          ptr.dec();
+        }
+        if self.len == 0 {
+          // all digits where 9 and this is an overflow
+          // replace mantissa with `1` and set exponent/len/owner accordingly
+          self.assign_one();
+        } else {
+          *ptr += 1;
+        }
+        self.exponent = Exponent::new(exponent);
       }
     }
   }

@@ -1,3 +1,4 @@
+use crate::types::limited::RangeTo;
 use crate::types::sci::Sci;
 #[cfg(feature = "debug")]
 use core::fmt::Debug;
@@ -11,7 +12,7 @@ impl Sci {
     if self.sign.is_negative() {
       f.write_char('-')?;
     }
-    self.data.write_chars(f, 0..self.len)?;
+    self.data.write_chars(f, 0.range_to(self.len))?;
     if self.exponent != 0 {
       write!(f, "e{}", self.exponent)?;
     }

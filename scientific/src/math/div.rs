@@ -1,5 +1,6 @@
 use crate::types::builder::Builder;
 use crate::types::error::Error;
+use crate::types::limited::{Exponent, Length, Limited, ToIsize, Unchecked};
 use crate::types::owner::Owner;
 use crate::types::precision::Precision;
 use crate::types::ptr::Ptr;
@@ -15,7 +16,7 @@ use core::convert::Infallible;
 fn div_results_in_zero(lhs: &Sci, rhs: &Sci, precision: Precision) -> bool {
   match precision {
     Precision::Digits(digits) => digits <= 0,
-    Precision::Decimals(decimals) => lhs.exponent0() - rhs.exponent0() + decimals < 0,
+    Precision::Decimals(decimals) => rhs.exponent0() - lhs.exponent0() > decimals,
   }
 }
 
@@ -26,7 +27,13 @@ where
   fn has_result() -> bool;
   fn from_zero() -> Option<Self>;
   fn from_sci(sci: &Sci) -> Option<Self>;
-  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self>;
+  fn from_parts(
+    sign: Sign,
+    vec: Vec<u8>,
+    data: Ptr,
+    len: Length,
+    exponent: Exponent,
+  ) -> Option<Self>;
 }
 
 impl Remainder for Infallible {
@@ -46,7 +53,7 @@ impl Remainder for Infallible {
   }
 
   #[inline]
-  fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: isize, _: isize) -> Option<Self> {
+  fn from_parts(_: Sign, _: Vec<u8>, _: Ptr, _: Length, _: Exponent) -> Option<Self> {
     None
   }
 }
@@ -68,7 +75,13 @@ impl Remainder for Sci {
   }
 
   #[inline]
-  fn from_parts(sign: Sign, vec: Vec<u8>, data: Ptr, len: isize, exponent: isize) -> Option<Self> {
+  fn from_parts(
+    sign: Sign,
+    vec: Vec<u8>,
+    data: Ptr,
+    len: Length,
+    exponent: Exponent,
+  ) -> Option<Self> {
     Some(Builder::from_data(
       sign,
       data,
@@ -110,13 +123,13 @@ impl Sci {
       Ok((Sci::ZERO, R::from_zero()))
     } else if div_results_in_zero(self, rhs, precision) {
       if let (true, Precision::Decimals(d)) = (use_rpsp, precision) {
-        Ok((Sci::one(self.sign ^ rhs.sign, -d), None))
+        Ok((Sci::one(self.sign ^ rhs.sign, Exponent::new(-d)), None))
       } else {
         Ok((Sci::ZERO, R::from_sci(self)))
       }
     } else if rhs.len == 1 && *rhs.data == 1 {
       let mut r = self.clone();
-      r.shr_assign(rhs.exponent);
+      r.shr_assign(rhs.exponent.to_isize());
       if use_rpsp {
         r.round_assign(precision, RoundingMode::RPSP(RPSP));
       } else {
@@ -135,16 +148,23 @@ impl Sci {
       Ok((r, remainder))
     } else if self.len == rhs.len && self.nz_compare_mantissa::<false>(rhs) == Ordering::Equal {
       Ok((
-        Sci::one(self.sign ^ rhs.sign, self.exponent0() - rhs.exponent0()),
+        Sci::one(
+          self.sign ^ rhs.sign,
+          Exponent::new(self.exponent0() - rhs.exponent0()),
+        ),
         R::from_zero(),
       ))
     } else {
       let mut extra_digits = match precision {
-        Precision::Digits(digits) => digits - (self.len - rhs.len),
-        Precision::Decimals(decimals) => self.exponent - rhs.exponent + decimals,
+        Precision::Digits(digits) => {
+          Exponent::new(digits.saturating_sub((self.len - rhs.len).to_isize()))
+        }
+        Precision::Decimals(decimals) => {
+          Exponent::new((self.exponent - rhs.exponent).saturating_add(decimals))
+        }
       };
       if R::has_result() {
-        extra_digits = extra_digits.max(0);
+        extra_digits = extra_digits.max(Exponent::ZERO);
       }
       Ok(nz_div::<R>(self, rhs, extra_digits, precision, use_rpsp))
     }
@@ -155,7 +175,7 @@ impl Sci {
 fn nz_div<R: Remainder>(
   lhs: &Sci,
   rhs: &Sci,
-  extra_digits: isize,
+  extra_digits: Exponent,
   precision: Precision,
   use_rpsp: bool,
 ) -> (Sci, Option<R>) {
@@ -164,20 +184,22 @@ fn nz_div<R: Remainder>(
   #[cfg(feature = "debug")]
   assert!(lhs.len + extra_digits >= rhs.len);
 
-  let mut tmp = vec![0; (lhs.len + extra_digits) as usize];
+  let mut tmp = vec![0; (lhs.len + extra_digits).to_isize() as usize];
   let mut tmp_ptr = Ptr::new_mut(tmp.as_mut_slice());
-  lhs
-    .data
-    .copy_to_nonoverlapping(lhs.len + extra_digits.min(0), tmp_ptr, 0);
-  let mut tmp_len = 0;
+  lhs.data.copy_to_nonoverlapping(
+    Length::new(lhs.len + extra_digits.min(Exponent::ZERO)),
+    tmp_ptr,
+    0,
+  );
+  let mut tmp_len = Length::ZERO;
   let (result, mut result_ptr) = Builder::new(
     lhs.sign ^ rhs.sign,
-    lhs.len + extra_digits + isize::from(use_rpsp),
-    lhs.exponent - rhs.exponent - extra_digits - isize::from(use_rpsp),
+    Length::new(lhs.len + extra_digits + Limited::from(use_rpsp)),
+    Exponent::new(lhs.exponent - rhs.exponent - extra_digits - Limited::from(use_rpsp)),
   );
   let result_end = result_ptr.offset(lhs.len + extra_digits);
   while result_ptr < result_end {
-    tmp_len += 1;
+    tmp_len += Unchecked(1);
     p_trim(&mut tmp_ptr, &mut tmp_len);
     let mut j = 0;
     while p_ge(tmp_ptr, tmp_len, rhs) {
@@ -218,16 +240,16 @@ fn nz_div<R: Remainder>(
 
 // Remove leading zeroes, this is important because p_ge assumes that there are no leading zeroes
 #[inline]
-fn p_trim(value_ptr: &mut Ptr, value_len: &mut isize) {
+fn p_trim(value_ptr: &mut Ptr, value_len: &mut Length) {
   while *value_len > 0 && **value_ptr == 0 {
     value_ptr.inc();
-    *value_len -= 1;
+    *value_len -= Unchecked(1);
   }
 }
 
 // Compare two mantissa (the exponent and sign is ignored)
 #[inline]
-fn p_ge(mut lhs_ptr: Ptr, lhs_len: isize, rhs: &Sci) -> bool {
+fn p_ge(mut lhs_ptr: Ptr, lhs_len: Length, rhs: &Sci) -> bool {
   if lhs_len != rhs.len {
     lhs_len >= rhs.len
   } else {

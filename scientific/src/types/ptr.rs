@@ -1,5 +1,8 @@
+use crate::types::limited::{
+  Length, LengthOutOfRangeError, RangeToIter, ToIsize, UncheckedFromIsize,
+};
 use core::fmt::Write;
-use core::ops::{Deref, DerefMut, Index, IndexMut, Range};
+use core::ops::{Deref, DerefMut, Index, IndexMut};
 use core::ptr::{copy_nonoverlapping, NonNull};
 use core::slice::from_raw_parts;
 
@@ -37,31 +40,31 @@ impl Ptr {
   }
 
   #[inline]
-  pub(crate) fn offset(self, count: isize) -> Ptr {
+  pub(crate) fn offset<T: ToIsize>(self, count: T) -> Ptr {
     Ptr {
-      ptr: Self::new_ptr(unsafe { self.ptr.as_ptr().offset(count) }),
+      ptr: Self::new_ptr(unsafe { self.ptr.as_ptr().offset(count.to_isize()) }),
     }
   }
 
   #[inline]
-  pub(crate) fn copy_to_nonoverlapping(self, len: isize, to: Ptr, offset: isize) {
+  pub(crate) fn copy_to_nonoverlapping(self, len: Length, to: Ptr, offset: isize) {
     unsafe {
       copy_nonoverlapping(
         self.ptr.as_ptr(),
         to.ptr.as_ptr().offset(offset),
-        len as usize,
+        len.to_usize(),
       );
     }
   }
 
   #[inline]
-  pub(crate) fn as_slice(&self, len: isize) -> &[u8] {
-    unsafe { from_raw_parts(self.ptr.as_ptr(), len as usize) }
+  pub(crate) fn as_slice(&self, len: Length) -> &[u8] {
+    unsafe { from_raw_parts(self.ptr.as_ptr(), len.to_usize()) }
   }
 
   #[inline]
-  pub(crate) fn offset_from(self, other: Ptr) -> isize {
-    unsafe { self.ptr.as_ptr().offset_from(other.ptr.as_ptr()) }
+  pub(crate) fn try_offset_from(self, other: Ptr) -> Result<Length, LengthOutOfRangeError> {
+    Length::try_new(unsafe { self.ptr.as_ptr().offset_from(other.ptr.as_ptr()) })
   }
 
   #[inline]
@@ -80,10 +83,10 @@ impl Ptr {
   }
 
   #[inline]
-  pub(crate) fn write_chars<W: Write>(
+  pub(crate) fn write_chars<W: Write, T: UncheckedFromIsize>(
     self,
     f: &mut W,
-    range: Range<isize>,
+    range: RangeToIter<T>,
   ) -> Result<(), core::fmt::Error> {
     for i in range {
       f.write_char((b'0' + (self[i] as u8)).into())?;
@@ -92,19 +95,19 @@ impl Ptr {
   }
 }
 
-impl Index<isize> for Ptr {
+impl<T: ToIsize> Index<T> for Ptr {
   type Output = i8;
 
   #[inline]
-  fn index(&self, index: isize) -> &Self::Output {
-    unsafe { &*self.ptr.as_ptr().cast::<i8>().offset(index) }
+  fn index(&self, index: T) -> &Self::Output {
+    unsafe { &*self.ptr.as_ptr().cast::<i8>().offset(index.to_isize()) }
   }
 }
 
-impl IndexMut<isize> for Ptr {
+impl<T: ToIsize> IndexMut<T> for Ptr {
   #[inline]
-  fn index_mut(&mut self, index: isize) -> &mut Self::Output {
-    unsafe { &mut *self.ptr.as_ptr().cast::<i8>().offset(index) }
+  fn index_mut(&mut self, index: T) -> &mut Self::Output {
+    unsafe { &mut *self.ptr.as_ptr().cast::<i8>().offset(index.to_isize()) }
   }
 }
 

@@ -1,4 +1,5 @@
 use crate::types::builder::Builder;
+use crate::types::limited::Length;
 use crate::types::sci::Sci;
 use crate::types::sign::Sign;
 use core::cmp::Ordering;
@@ -31,7 +32,7 @@ impl Sci {
     }
 
     let min_exponent = self.exponent.min(rhs.exponent);
-    let result_len = 1 + (lhs_exponent0.max(rhs_exponent0) - min_exponent);
+    let result_len = Length::new(1 + (lhs_exponent0.max(rhs_exponent0) - min_exponent));
 
     let (result, mut result_ptr) = Builder::new(sign, result_len, min_exponent);
 

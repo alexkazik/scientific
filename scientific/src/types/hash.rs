@@ -1,3 +1,4 @@
+use crate::types::limited::ToIsize;
 use crate::types::sci::Sci;
 use core::hash::{Hash, Hasher};
 
@@ -13,6 +14,6 @@ impl Sci {
       Hash::hash_slice(self.data.as_slice(self.len), state);
     }
     // exponent is always 1 for zero and thus consistent
-    self.exponent.hash(state);
+    self.exponent.to_isize().hash(state);
   }
 }

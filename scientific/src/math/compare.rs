@@ -1,3 +1,4 @@
+use crate::types::limited::Unchecked;
 use crate::types::sci::Sci;
 use core::cmp::Ordering;
 
@@ -66,7 +67,7 @@ impl Sci {
       }
       lhs_ptr.inc();
       rhs_ptr.inc();
-      count -= 1;
+      count -= Unchecked(1);
     }
 
     let ordering = self.len.cmp(&rhs.len);
