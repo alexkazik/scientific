@@ -14,7 +14,7 @@ TOOLCHAIN=${1:-+1.65.0}
 echo Using toolchain $TOOLCHAIN
 
 # use crates available at this rust version
-cargo $TOOLCHAIN update
+#cargo $TOOLCHAIN update
 
 # builds (std+arc+debug+macro, std, nothing)
 cargo $TOOLCHAIN build --release --all-features --tests
