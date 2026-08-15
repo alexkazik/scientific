@@ -160,7 +160,7 @@ fn nz_div<R: Remainder>(
   use_rpsp: bool,
 ) -> (Sci, Option<R>) {
   // Notice: extra_digits can be negative!
-  // lhs.len + decimals is guaranteed to be >= rhs.len
+  // lhs.len + extra_digits is guaranteed to be >= rhs.len
   #[cfg(feature = "debug")]
   assert!(lhs.len + extra_digits >= rhs.len);
 
