@@ -23,7 +23,7 @@ impl<'de> Deserialize<'de> for Scientific {
       where
         E: serde::de::Error,
       {
-        Scientific::from_bytes(v).map_err(|bse| serde::de::Error::custom(bse.to_string()))
+        Scientific::from_bytes(v).map_err(|err| serde::de::Error::custom(err.to_string()))
       }
 
       fn visit_newtype_struct<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
@@ -44,7 +44,7 @@ impl<'de> Deserialize<'de> for Scientific {
         while let Some(e) = seq.next_element()? {
           buf.push(e);
         }
-        Scientific::from_bytes(&buf).map_err(|bse| serde::de::Error::custom(bse.to_string()))
+        Scientific::from_bytes(&buf).map_err(|err| serde::de::Error::custom(err.to_string()))
       }
     }
 

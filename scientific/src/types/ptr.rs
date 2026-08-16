@@ -75,12 +75,8 @@ impl Ptr {
   }
 
   #[inline]
-  pub(crate) fn write_char<W: Write>(
-    self,
-    f: &mut W,
-    offset: isize,
-  ) -> Result<(), core::fmt::Error> {
-    f.write_char((b'0' + (self[offset] as u8)).into())
+  pub(crate) fn write_first_char<W: Write>(self, f: &mut W) -> Result<(), core::fmt::Error> {
+    f.write_char((b'0' + (*self as u8)).into())
   }
 
   #[inline]

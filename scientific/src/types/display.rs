@@ -26,7 +26,7 @@ impl Sci {
         self.data.write_chars(f, exp..self.len)?;
       }
     } else {
-      self.data.write_char(f, 0)?;
+      self.data.write_first_char(f)?;
       if self.len > 1 {
         f.write_char('.')?;
         self.data.write_chars(f, 1..self.len)?;
