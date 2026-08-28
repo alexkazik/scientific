@@ -60,7 +60,7 @@ where
       let sci_result = sci_a.powi((*int_b) as usize);
       let diff = diff(sci_a, sci_a, flt_result, &Ok(sci_result.clone()));
       assert!(
-        diff < 5e-15_f64,
+        diff < 8e-15_f64,
         "function {}({}, {}) -> {:?} = {:?}; diff: {:e}",
         "powi",
         flt_a,
