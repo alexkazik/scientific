@@ -1,5 +1,10 @@
 # Changelog for scientific
 
+## 0.5.4 -- 2026-08-28
+
+* Rework exponent and length check/calculations
+* Small improvements
+
 ## 0.5.3 -- 2024-06-18
 
 * Add Add-, Sub-, MulAssign

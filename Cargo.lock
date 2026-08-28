@@ -211,7 +211,7 @@ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 
 [[package]]
 name = "scientific"
-version = "0.5.3"
+version = "0.5.4"
 dependencies = [
  "num-integer",
  "postcard",
